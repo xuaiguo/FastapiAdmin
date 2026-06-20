@@ -1,4 +1,5 @@
 import re
+from dataclasses import dataclass
 
 from fastapi import Query
 from pydantic import (
@@ -83,6 +84,7 @@ class DictTypeOutSchema(DictTypeCreateSchema, BaseSchema, UserBySchema, TenantBy
     model_config = ConfigDict(from_attributes=True)
 
 
+@dataclass
 class DictTypeQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
     """字典类型查询参数"""
 
@@ -94,8 +96,10 @@ class DictTypeQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.dict_name = (QueueEnum.like.value, dict_name)
-        self.dict_type = (QueueEnum.eq.value, dict_type)
+        if dict_name:
+            self.dict_name = (QueueEnum.like.value, dict_name)
+        if dict_type:
+            self.dict_type = (QueueEnum.eq.value, dict_type)
 
 
 class DictDataCreateSchema(BaseModel):
@@ -159,6 +163,7 @@ class DictDataOutSchema(DictDataCreateSchema, BaseSchema, UserBySchema, TenantBy
     model_config = ConfigDict(from_attributes=True)
 
 
+@dataclass
 class DictDataQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
     """字典数据查询参数"""
 
@@ -171,6 +176,9 @@ class DictDataQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.dict_label = (QueueEnum.like.value, dict_label)
-        self.dict_type = (QueueEnum.eq.value, dict_type)
-        self.dict_type_id = (QueueEnum.eq.value, dict_type_id)
+        if dict_label:
+            self.dict_label = (QueueEnum.like.value, dict_label)
+        if dict_type:
+            self.dict_type = (QueueEnum.eq.value, dict_type)
+        if dict_type_id is not None:
+            self.dict_type_id = (QueueEnum.eq.value, dict_type_id)

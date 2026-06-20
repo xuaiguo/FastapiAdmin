@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app.common.enums import QueueEnum
 from app.core.base_params import BaseQueryParam, UserByQueryParam
-from app.core.base_schema import BaseSchema, TenantBySchema
+from app.core.base_schema import BaseSchema, UserBySchema
 from app.core.validator import DateTimeStr
 
 
@@ -108,21 +108,20 @@ class EmailSendSchema(BaseModel):
     biz_type: str = Field(default="other", max_length=50, description="业务类型")
 
 
-class EmailLogOutSchema(BaseSchema, TenantBySchema):
+class EmailLogOutSchema(BaseSchema, UserBySchema):
     """邮件日志响应"""
 
     model_config = ConfigDict(from_attributes=True)
 
-    config_id: int | None = None
-    template_code: str | None = None
-    to_email: str
-    to_name: str | None = None
-    subject: str
-    biz_type: str
-    error_msg: str | None = None
-    retry_count: int
-    tenant_id: int | None = None
-    sent_time: DateTimeStr | None = None
+    config_id: int | None = Field(default=None, description="SMTP 配置 ID")
+    template_code: str | None = Field(default=None, description="模板编码")
+    to_email: str = Field(..., description="收件人邮箱")
+    to_name: str | None = Field(default=None, description="收件人姓名")
+    subject: str = Field(..., description="邮件主题")
+    biz_type: str = Field(..., description="业务类型")
+    error_msg: str | None = Field(default=None, description="错误信息")
+    retry_count: int = Field(..., description="重试次数")
+    sent_time: DateTimeStr | None = Field(default=None, description="发送时间")
 
 
 @dataclass

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from urllib.parse import urlparse
 
 from fastapi import Query
@@ -13,8 +14,9 @@ from pydantic import (
 from app.api.v1.module_platform.menu.schema import MenuOutSchema
 from app.api.v1.module_system.role.schema import RoleOutSchema
 from app.common.enums import QueueEnum
+from app.core.base_params import BaseQueryParam, TenantByQueryParam, UserByQueryParam
 from app.core.base_schema import BaseSchema, CommonSchema, TenantBySchema, UserBySchema
-from app.core.validator import DateTimeStr, email_validator, mobile_validator
+from app.core.validator import email_validator, mobile_validator
 
 
 class CurrentUserUpdateSchema(BaseModel):
@@ -92,6 +94,7 @@ class UserRegisterSchema(BaseModel):
         if not v:
             raise ValueError("账号不能为空")
         import re
+
         if not re.match(r"^[A-Za-z][A-Za-z0-9_.-]{2,31}$", v):
             raise ValueError("账号需以字母开头，3-32 位，仅允许字母、数字、_ . -")
         return v
@@ -133,6 +136,7 @@ class UserForgetPasswordSchema(BaseModel):
         if not v:
             raise ValueError("账号不能为空")
         import re
+
         if not re.match(r"^[A-Za-z][A-Za-z0-9_.-]{2,31}$", v):
             raise ValueError("账号需以字母开头，3-32 位，仅允许字母、数字、_ . -")
         return v
@@ -189,9 +193,9 @@ class ResetPasswordSchema(BaseModel):
 
 
 class UserCreateSchema(CurrentUserUpdateSchema):
-    """新增"""
-
-    model_config = ConfigDict(from_attributes=True)
+    """
+    新增用户
+    """
 
     username: str | None = Field(default=None, max_length=32, description="用户名")
     password: str | None = Field(default=None, min_length=6, max_length=128, description="密码")
@@ -219,6 +223,7 @@ class UserCreateSchema(CurrentUserUpdateSchema):
             return value
         v = value.strip()
         import re
+
         if not re.match(r"^[A-Za-z][A-Za-z0-9_.-]{1,31}$", v):
             raise ValueError("账号需以字母开头，2-32 位，仅允许字母、数字、_ . -")
         return v
@@ -262,6 +267,7 @@ class UserUpdateSchema(CurrentUserUpdateSchema):
             return value
         v = value.strip()
         import re
+
         if not re.match(r"^[A-Za-z][A-Za-z0-9_.-]{1,31}$", v):
             raise ValueError("账号需以字母开头，2-32 位，仅允许字母、数字、_ . -")
         return v
@@ -290,8 +296,17 @@ class UserOutSchema(UserUpdateSchema, BaseSchema, UserBySchema, TenantBySchema):
     menus: list[MenuOutSchema] | None = Field(default=[], description="菜单")
 
 
-class UserQueryParam:
-    """用户管理查询参数"""
+@dataclass
+class UserQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
+    """
+    用户管理查询参数（继承标准 Mixin）
+
+    支持：
+    - 时间范围（BaseQueryParam）
+    - 创建人/更新人筛选（UserByQueryParam）
+    - 租户筛选（TenantByQueryParam）
+    - 业务字段：用户名、名称、手机号、邮箱、部门、状态
+    """
 
     def __init__(
         self,
@@ -304,37 +319,18 @@ class UserQueryParam:
             pattern=r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$",
         ),
         dept_id: int | None = Query(None, description="部门ID"),
-        tenant_id: int | None = Query(None, description="租户ID（仅平台管理员可筛选）"),
         status: str | None = Query(None, description="是否可用"),
-        created_time: list[DateTimeStr] | None = Query(
-            None,
-            description="创建时间范围",
-            examples=["2025-01-01 00:00:00", "2025-12-31 23:59:59"],
-        ),
-        updated_time: list[DateTimeStr] | None = Query(
-            None,
-            description="更新时间范围",
-            examples=["2025-01-01 00:00:00", "2025-12-31 23:59:59"],
-        ),
-        created_id: int | None = Query(None, description="创建人"),
-        updated_id: int | None = Query(None, description="更新人"),
+        *args,
+        **kwargs,
     ) -> None:
-
-        # 模糊查询字段
+        super().__init__(*args, **kwargs)
         self.username = (QueueEnum.like.value, username)
         self.name = (QueueEnum.like.value, name)
-        self.mobile = (QueueEnum.like.value, mobile)
-        self.email = (QueueEnum.like.value, email)
-
-        # 精确查询字段
-        self.dept_id = (QueueEnum.eq.value, dept_id)
-        self.tenant_id = (QueueEnum.eq.value, tenant_id)
-        self.created_id = (QueueEnum.eq.value, created_id)
-        self.updated_id = (QueueEnum.eq.value, updated_id)
-        self.status = (QueueEnum.eq.value, status)
-
-        # 时间范围查询
-        if created_time and len(created_time) == 2:
-            self.created_time = (QueueEnum.between.value, (created_time[0], created_time[1]))
-        if updated_time and len(updated_time) == 2:
-            self.updated_time = (QueueEnum.between.value, (updated_time[0], updated_time[1]))
+        if mobile:
+            self.mobile = (QueueEnum.like.value, mobile)
+        if email:
+            self.email = (QueueEnum.like.value, email)
+        if dept_id:
+            self.dept_id = (QueueEnum.eq.value, dept_id)
+        if status:
+            self.status = (QueueEnum.eq.value, status)

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String, Text
+from sqlalchemy import ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from app.core.base_model import ModelMixin, TenantMixin, UserMixin
@@ -16,10 +16,16 @@ class TicketModel(ModelMixin, TenantMixin, UserMixin):
 
     __tablename__: str = "sys_ticket"
     __table_args__: dict[str, str] = {"comment": "工单表"}
-    __loader_options__: list[str] = ["created_by", "updated_by", "assigned_by"]
+    __loader_options__: list[str] = [
+        "created_by",
+        "updated_by",
+        "deleted_by",
+        "assigned_by",
+        "tenant_by",
+    ]
 
     title: Mapped[str] = mapped_column(String(200), nullable=False, comment="工单标题")
-    status: Mapped[int] = mapped_column(Integer, default=0, nullable=False, comment="状态(0:启动 1:停用)", index=True)
+    status: Mapped[int] = mapped_column(Integer, default=0, nullable=False, comment="状态(0:待处理 1:处理中 2:已完成 3:已关闭)", index=True)
     description: Mapped[str | None] = mapped_column(Text, default=None, nullable=True, comment="备注")
     ticket_content: Mapped[str | None] = mapped_column(Text, nullable=True, comment="工单内容（富文本）")
     summary: Mapped[str | None] = mapped_column(Text, nullable=True, comment="工单内容（纯文本摘要）")

@@ -29,6 +29,7 @@ class LoginLogModel(ModelMixin, TenantMixin, UserMixin):
 
     __tablename__: str = "sys_login_log"
     __table_args__: dict[str, str] = {"comment": "登录日志表"}
+    __loader_options__: list[str] = ["created_by", "updated_by", "deleted_by", "tenant_by"]
 
     status: Mapped[int] = mapped_column(Integer, default=1, comment="登录状态(1成功 2失败)", index=True)
     description: Mapped[str | None] = mapped_column(Text, default=None, nullable=True, comment="备注")
@@ -47,7 +48,7 @@ class OperationLogModel(ModelMixin, TenantMixin, UserMixin):
 
     __tablename__: str = "sys_operation_log"
     __table_args__: dict[str, str] = {"comment": "操作日志表"}
-    __loader_options__: list[str] = ["created_by", "updated_by", "deleted_by"]
+    __loader_options__: list[str] = ["created_by", "updated_by", "deleted_by", "tenant_by"]
 
     status: Mapped[int] = mapped_column(Integer, default=0, nullable=False, comment="状态(0:启动 1:停用)", index=True)
     description: Mapped[str | None] = mapped_column(Text, default=None, nullable=True, comment="备注")

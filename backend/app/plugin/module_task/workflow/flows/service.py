@@ -20,8 +20,8 @@ from .schema import (
 class WorkflowService:
     """工作流：画布存储 + 发布校验 + Prefect 执行"""
 
-    @staticmethod
-    def _out(obj: Any) -> WorkflowOutSchema:
+    @classmethod
+    def _out(cls, obj: Any) -> WorkflowOutSchema:
         return WorkflowOutSchema.model_validate(obj)
 
     @classmethod
@@ -65,7 +65,7 @@ class WorkflowService:
         if order_by is None:
             order_by = [{"updated_time": "desc"}]
         obj_list = await WorkflowCRUD(auth).get_obj_list_crud(
-            search=search.__dict__ if search else None,
+            search=vars(search) if search else None,
             order_by=order_by,
         )
         return [cls._out(o) for o in obj_list]
@@ -98,7 +98,7 @@ class WorkflowService:
             offset=offset,
             limit=page_size,
             order_by=order,
-            search=search.__dict__ if search else {},
+            search=vars(search) if search else None,
             out_schema=WorkflowOutSchema,
         )
         result.items = [WorkflowOutSchema.model_validate(item).model_dump(mode="json") for item in result.items]

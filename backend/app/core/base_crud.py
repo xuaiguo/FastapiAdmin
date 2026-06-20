@@ -136,6 +136,37 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """按主键查询"""
         return await self.get(id=model_id)
 
+    async def get_or_404(
+        self,
+        id: int | None = None,
+        msg: str = "该数据不存在",
+        preload: list[str | Any] | None = None,
+        out_schema: type[OutSchemaType] | None = None,
+        **kwargs,
+    ) -> ModelType | OutSchemaType:
+        """
+        按条件查询单条记录，不存在时抛出 404。
+
+        参数:
+        - id: 主键 ID（快捷方式，等价于 kwargs={"id": id}）。
+        - msg: 不存在时的错误消息。
+        - preload: 预加载关系列表。
+        - out_schema: 输出 Schema，为 None 时返回 ORM 对象。
+        - **kwargs: 其他查询条件（与 id 互斥）。
+
+        返回:
+        - ORM 对象或 Pydantic Schema 实例。
+
+        异常:
+        - CustomException: 记录不存在。
+        """
+        if id is not None:
+            kwargs["id"] = id
+        obj = await self.get(preload=preload, **kwargs)
+        if not obj:
+            raise CustomException(msg=msg)
+        return out_schema.model_validate(obj) if out_schema else obj
+
     async def exists(self, **kwargs) -> bool:
         """
         检查是否存在符合条件的记录
@@ -206,7 +237,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self,
         search: dict | None = None,
         order_by: builtins.list[dict[str, str]] | None = None,
-        children_attr: str = "children",
+        children_attr: str | None = None,
         preload: builtins.list[str | Any] | None = None,
     ) -> Sequence[ModelType]:
         """
@@ -215,12 +246,15 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         参数:
         - search: 查询条件
         - order_by: 排序字段
-        - children_attr: 子节点属性名
+        - children_attr: 子节点属性名（None 时自动从模型 __tree_children_attr__ 推断）
         - preload: 额外预加载关系
 
         返回:
         - 树形结构数据列表
         """
+        # 自动从模型推断 children_attr
+        if children_attr is None:
+            children_attr = getattr(self.model, "__tree_children_attr__", "children")
         try:
             conditions = await self.__build_conditions(**(search or {}))
             order = order_by or [{"id": "asc"}]
@@ -328,8 +362,10 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             obj = self.model(**obj_dict)
 
             if self.auth and self.auth.user:
-                if hasattr(obj, "tenant_id") and getattr(obj, "tenant_id", None) is None:
-                    setattr(obj, "tenant_id", self.auth.user.tenant_id)
+                if hasattr(obj, "tenant_id"):
+                    # 非超管始终使用当前租户；超管仅当未显式指定时自动填充
+                    if not self.auth.user.is_superuser or getattr(obj, "tenant_id", None) is None:
+                        setattr(obj, "tenant_id", self.auth.tenant_id or self.auth.user.tenant_id)
                 if hasattr(obj, "created_id"):
                     setattr(obj, "created_id", self.auth.user.id)
                 if hasattr(obj, "updated_id"):

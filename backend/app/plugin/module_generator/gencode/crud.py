@@ -88,7 +88,7 @@ class GenTableCRUD(CRUDBase[GenTableModel, GenTableSchema, GenTableSchema]):
         - Sequence[GenTableModel]: 业务表列表信息。
         """
         return await self.list(
-            search=search.__dict__,
+            search=vars(search) if search else None,
             order_by=[{"created_time": "desc"}],
             preload=preload,
         )

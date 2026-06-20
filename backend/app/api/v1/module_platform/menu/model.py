@@ -23,6 +23,7 @@ class MenuModel(ModelMixin):
 
     __tablename__: str = "platform_menu"
     __table_args__: dict[str, str] = {"comment": "平台菜单表"}
+    __tree_children_attr__: str = "children"
     __loader_options__: list[str] = ["roles", "children"]
     __permission_strategy__: PermissionFilterStrategy = PermissionFilterStrategy.ROLE_BASED
 

@@ -11,7 +11,7 @@ class NodeModel(ModelMixin, TenantMixin, UserMixin):
 
     __tablename__: str = "task_node"
     __table_args__ = (UniqueConstraint("tenant_id", "code"), {"comment": "节点类型表"})
-    __loader_options__: list[str] = ["created_by", "updated_by", "deleted_by"]
+    __loader_options__: list[str] = ["created_by", "updated_by", "deleted_by", "tenant_by"]
 
     name: Mapped[str] = mapped_column(String(64), nullable=False, comment="节点名称")
     code: Mapped[str] = mapped_column(String(32), nullable=False, comment="节点编码")

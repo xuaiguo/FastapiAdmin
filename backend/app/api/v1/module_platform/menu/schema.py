@@ -5,8 +5,9 @@ from fastapi import Query
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.common.enums import QueueEnum
+from app.core.base_params import BaseQueryParam
 from app.core.base_schema import BaseSchema
-from app.core.validator import DateTimeStr, menu_request_validator
+from app.core.validator import menu_request_validator
 
 
 class MenuCreateSchema(BaseModel):
@@ -188,7 +189,7 @@ class MenuUpdateSchema(BaseModel):
         return menu_request_validator(self)
 
 
-class MenuDetailOutSchema(MenuCreateSchema, BaseSchema):
+class MenuOutSchema(MenuCreateSchema, BaseSchema):
     """菜单详情响应模型（不含 children，用于详情和更新）"""
 
     model_config = ConfigDict(from_attributes=True)
@@ -196,71 +197,50 @@ class MenuDetailOutSchema(MenuCreateSchema, BaseSchema):
     parent_name: str | None = Field(default=None, max_length=50, description="父菜单名称")
 
 
-class MenuTreeOutSchema(MenuDetailOutSchema):
+class MenuTreeOutSchema(MenuOutSchema):
     """菜单树形响应模型（含 children，用于树形列表）"""
 
     children: list["MenuTreeOutSchema"] | None = Field(default=None, description="子菜单列表")
 
 
-# 兼容旧代码的别名（后续可逐步移除）
-MenuOutSchema = MenuDetailOutSchema
-
-
 @dataclass
-class MenuQueryParam:
-    """菜单管理查询参数"""
+class MenuQueryParam(BaseQueryParam):
+    """菜单管理查询参数（菜单为平台级资源，无用户归属）"""
 
-    name: str | None = Query(None, description="菜单名称")
-    route_path: str | None = Query(None, description="路由地址")
-    component_path: str | None = Query(None, description="组件路径")
-    type: Literal[1, 2, 3, 4] | None = Query(None, description="菜单类型(1:目录 2:菜单 3:按钮 4:外链)")
-    permission: str | None = Query(None, description="权限标识")
-    description: str | None = Query(None, description="描述")
-    status: str | None = Query(None, description="是否启用")
-    created_time: list[DateTimeStr] | None = Query(
-        None,
-        description="创建时间范围",
-        examples=["2025-01-01 00:00:00", "2025-12-31 23:59:59"],
-    )
-    updated_time: list[DateTimeStr] | None = Query(
-        None,
-        description="更新时间范围",
-        examples=["2025-01-01 00:00:00", "2025-12-31 23:59:59"],
-    )
-    created_id: int | None = Query(None, description="创建人")
-    updated_id: int | None = Query(None, description="更新人")
-    menu_client: Literal["pc", "app"] | None = Query(
-        None,
-        description="管理端 Tab：pc=桌面端菜单 app=移动端菜单；不传则不过滤终端",
-    )
-    scope: Literal["tenant"] | None = Query(
-        None,
-        description="菜单范围过滤：tenant=仅租户可用菜单",
-    )
-
-    def __post_init__(self) -> None:
-        """处理查询条件，转换为 ORM 表达式"""
-        if self.name:
-            self.name = (QueueEnum.like.value, self.name)
-        if self.route_path:
-            self.route_path = (QueueEnum.like.value, self.route_path)
-        if self.component_path:
-            self.component_path = (QueueEnum.like.value, self.component_path)
-        if self.permission:
-            self.permission = (QueueEnum.like.value, self.permission)
-        if self.description:
-            self.description = (QueueEnum.like.value, self.description)
-        if self.status:
-            self.status = (QueueEnum.eq.value, self.status)
-        if self.created_time and len(self.created_time) == 2:
-            self.created_time = (QueueEnum.between.value, (self.created_time[0], self.created_time[1]))
-        if self.updated_time and len(self.updated_time) == 2:
-            self.updated_time = (QueueEnum.between.value, (self.updated_time[0], self.updated_time[1]))
-        if self.created_id:
-            self.created_id = (QueueEnum.eq.value, self.created_id)
-        if self.updated_id:
-            self.updated_id = (QueueEnum.eq.value, self.updated_id)
-        if self.menu_client in ("pc", "app"):
-            self.client = (QueueEnum.eq.value, self.menu_client)
-        if self.scope == "tenant":
+    def __init__(
+        self,
+        name: str | None = Query(None, description="菜单名称"),
+        route_path: str | None = Query(None, description="路由地址"),
+        component_path: str | None = Query(None, description="组件路径"),
+        type: Literal[1, 2, 3, 4] | None = Query(None, description="菜单类型(1:目录 2:菜单 3:按钮 4:外链)"),
+        permission: str | None = Query(None, description="权限标识"),
+        description: str | None = Query(None, description="描述"),
+        status: str | None = Query(None, description="是否启用"),
+        menu_client: Literal["pc", "app"] | None = Query(
+            None,
+            description="管理端 Tab：pc=桌面端菜单 app=移动端菜单；不传则不过滤终端",
+        ),
+        scope: Literal["tenant"] | None = Query(
+            None,
+            description="菜单范围过滤：tenant=仅租户可用菜单",
+        ),
+        *args,
+        **kwargs,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        if name:
+            self.name = (QueueEnum.like.value, name)
+        if route_path:
+            self.route_path = (QueueEnum.like.value, route_path)
+        if component_path:
+            self.component_path = (QueueEnum.like.value, component_path)
+        if permission:
+            self.permission = (QueueEnum.like.value, permission)
+        if description:
+            self.description = (QueueEnum.like.value, description)
+        if status:
+            self.status = (QueueEnum.eq.value, status)
+        if menu_client in ("pc", "app"):
+            self.client = (QueueEnum.eq.value, menu_client)
+        if scope == "tenant":
             self.scope = (QueueEnum.eq.value, "tenant")

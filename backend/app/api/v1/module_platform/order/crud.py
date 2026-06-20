@@ -63,13 +63,7 @@ class OrderCRUD(CRUDBase[OrderModel, OrderCreateInternalSchema, OrderUpdateInter
         now = datetime.now()
         async with async_db_session() as session:
             async with session.begin():
-                result = await session.execute(
-                    sa_update(OrderModel)
-                    .where(OrderModel.status == 0)
-                    .where(OrderModel.expire_time < now)
-                    .where(OrderModel.is_deleted == False)  # noqa: E712
-                    .values(status=2)
-                )
+                result = await session.execute(sa_update(OrderModel).where(OrderModel.status == 0).where(OrderModel.expire_time < now).where(OrderModel.is_deleted.is_(False)).values(status=2))
             logger.info(f"超时订单取消: 已取消 {result.rowcount} 条订单")
 
 

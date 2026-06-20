@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from fastapi import Query
 from pydantic import BaseModel, Field
 
@@ -24,6 +26,7 @@ class OnlineOutSchema(BaseModel):
     login_type: str | None = Field(default=None, description="登录类型 PC端 | 移动端")
 
 
+@dataclass
 class OnlineQueryParam:
     """在线用户查询参数"""
 

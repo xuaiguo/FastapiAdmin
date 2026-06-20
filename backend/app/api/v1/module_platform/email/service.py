@@ -2,6 +2,7 @@ from datetime import datetime
 
 from app.core.base_schema import AuthSchema
 from app.core.database import async_db_session
+from app.core.dependencies import require_superadmin
 from app.core.exceptions import CustomException
 from app.utils.email_util import render_template, send_email
 
@@ -23,9 +24,17 @@ from .schema import (
 
 
 class EmailConfigService:
-    """SMTP 配置管理"""
+    """
+    邮件配置服务
+    """
+
+    """
+    邮件配置服务
+    """
+    """SMTP 配置管理（仅超级管理员可操作）"""
 
     @classmethod
+    @require_superadmin
     async def page_service(
         cls,
         auth: AuthSchema,
@@ -51,11 +60,12 @@ class EmailConfigService:
             offset=(page_no - 1) * page_size,
             limit=page_size,
             order_by=order_by or [{"id": "asc"}],
-            search=search.__dict__ if search else {},
+            search=vars(search) if search else None,
             out_schema=EmailConfigOutSchema,
         )
 
     @classmethod
+    @require_superadmin
     async def detail_service(cls, auth: AuthSchema, id: int) -> EmailConfigOutSchema:
         """
         SMTP 配置详情
@@ -67,10 +77,7 @@ class EmailConfigService:
         返回:
         - EmailConfigOutSchema: SMTP 配置详情
         """
-        obj = await EmailConfigCRUD(auth).get(id=id)
-        if not obj:
-            raise CustomException(msg="SMTP 配置不存在")
-        return EmailConfigOutSchema.model_validate(obj)
+        return await EmailConfigCRUD(auth).get_or_404(id=id, out_schema=EmailConfigOutSchema, msg="SMTP 配置不存在")
 
     @classmethod
     async def create_service(cls, auth: AuthSchema, data: EmailConfigCreateSchema) -> EmailConfigOutSchema:
@@ -104,9 +111,7 @@ class EmailConfigService:
         - EmailConfigOutSchema: 更新后的 SMTP 配置
         """
         crud = EmailConfigCRUD(auth)
-        obj = await crud.get(id=id)
-        if not obj:
-            raise CustomException(msg="SMTP 配置不存在")
+        _ = await crud.get_or_404(id=id, msg="SMTP 配置不存在")
         if data.is_default is True:
             await crud.clear_default()
         updated = await crud.update(id=id, data=data)
@@ -134,6 +139,7 @@ class EmailConfigService:
         await crud.delete(ids=ids)
 
     @classmethod
+    @require_superadmin
     async def test_service(cls, auth: AuthSchema, data: EmailTestSchema) -> dict:
         """
         测试 SMTP 连接：发送一封测试邮件
@@ -173,9 +179,14 @@ class EmailConfigService:
 
 
 class EmailTemplateService:
-    """邮件模板管理"""
+    """
+    邮件模板服务
+    """
+
+    """邮件模板管理（仅超级管理员可操作）"""
 
     @classmethod
+    @require_superadmin
     async def page_service(
         cls,
         auth: AuthSchema,
@@ -201,11 +212,12 @@ class EmailTemplateService:
             offset=(page_no - 1) * page_size,
             limit=page_size,
             order_by=order_by or [{"id": "asc"}],
-            search=search.__dict__ if search else {},
+            search=vars(search) if search else None,
             out_schema=EmailTemplateOutSchema,
         )
 
     @classmethod
+    @require_superadmin
     async def detail_service(cls, auth: AuthSchema, id: int) -> EmailTemplateOutSchema:
         """
         邮件模板详情
@@ -217,12 +229,10 @@ class EmailTemplateService:
         返回:
         - EmailTemplateOutSchema: 邮件模板详情
         """
-        obj = await EmailTemplateCRUD(auth).get(id=id)
-        if not obj:
-            raise CustomException(msg="邮件模板不存在")
-        return EmailTemplateOutSchema.model_validate(obj)
+        return await EmailTemplateCRUD(auth).get_or_404(id=id, out_schema=EmailTemplateOutSchema, msg="邮件模板不存在")
 
     @classmethod
+    @require_superadmin
     async def create_service(cls, auth: AuthSchema, data: EmailTemplateCreateSchema) -> EmailTemplateOutSchema:
         """
         创建邮件模板
@@ -242,6 +252,7 @@ class EmailTemplateService:
         return EmailTemplateOutSchema.model_validate(obj)
 
     @classmethod
+    @require_superadmin
     async def update_service(cls, auth: AuthSchema, id: int, data: EmailTemplateUpdateSchema) -> EmailTemplateOutSchema:
         """
         更新邮件模板
@@ -254,14 +265,13 @@ class EmailTemplateService:
         返回:
         - EmailTemplateOutSchema: 更新后的邮件模板
         """
-        obj = await EmailTemplateCRUD(auth).get(id=id)
-        if not obj:
-            raise CustomException(msg="邮件模板不存在")
+        _ = await EmailTemplateCRUD(auth).get_or_404(id=id, msg="邮件模板不存在")
 
         updated = await EmailTemplateCRUD(auth).update(id=id, data=data)
         return EmailTemplateOutSchema.model_validate(updated)
 
     @classmethod
+    @require_superadmin
     async def delete_service(cls, auth: AuthSchema, ids: list[int]) -> None:
         """
         删除邮件模板
@@ -279,6 +289,13 @@ class EmailTemplateService:
 
 
 class EmailSendService:
+    """
+    邮件发送服务
+    """
+
+    """
+    邮件发送服务
+    """
     """
     邮件发送服务 — 供其他模块调用。
 
@@ -443,6 +460,13 @@ class EmailSendService:
 
 
 class EmailLogService:
+    """
+    邮件日志服务
+    """
+
+    """
+    邮件日志服务
+    """
     """邮件日志查询"""
 
     @classmethod
@@ -471,6 +495,6 @@ class EmailLogService:
             offset=(page_no - 1) * page_size,
             limit=page_size,
             order_by=order_by or [{"created_time": "desc"}],
-            search=search.__dict__ if search else {},
+            search=vars(search) if search else None,
             out_schema=EmailLogOutSchema,
         )

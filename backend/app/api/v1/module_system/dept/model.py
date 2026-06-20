@@ -1,24 +1,31 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.common.enums import PermissionFilterStrategy
-from app.core.base_model import ModelMixin, TenantMixin
+from app.core.base_model import ModelMixin, TenantMixin, UserMixin
 
 if TYPE_CHECKING:
     from app.api.v1.module_system.role.model import RoleModel
     from app.api.v1.module_system.user.model import UserModel
 
 
-class DeptModel(ModelMixin, TenantMixin):
+class DeptModel(ModelMixin, TenantMixin, UserMixin):
     """
     部门模型
     """
 
     __tablename__: str = "sys_dept"
     __table_args__ = (UniqueConstraint("tenant_id", "code"), {"comment": "部门表"})
-    __loader_options__: list[str] = ["children"]
+    __tree_children_attr__: str = "children"
+    __loader_options__: list[str] = [
+        "children",
+        "created_by",
+        "updated_by",
+        "deleted_by",
+        "tenant_by",
+    ]
     __permission_strategy__: PermissionFilterStrategy = PermissionFilterStrategy.DEPT_BASED
 
     name: Mapped[str] = mapped_column(String(64), nullable=False, comment="部门名称")

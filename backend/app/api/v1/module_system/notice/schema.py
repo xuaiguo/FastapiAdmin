@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from fastapi import Query
 from pydantic import (
     BaseModel,
@@ -62,6 +64,7 @@ class NoticeOutSchema(NoticeCreateSchema, BaseSchema, UserBySchema, TenantBySche
     model_config = ConfigDict(from_attributes=True)
 
 
+@dataclass
 class NoticeQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
     """公告通知查询参数"""
 
@@ -73,26 +76,25 @@ class NoticeQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.notice_title = (QueueEnum.like.value, notice_title)
-        self.notice_type = (QueueEnum.eq.value, notice_type)
-
-
-# ─── 通知面板 ───
+        if notice_title:
+            self.notice_title = (QueueEnum.like.value, notice_title)
+        if notice_type:
+            self.notice_type = (QueueEnum.eq.value, notice_type)
 
 
 class PanelMessageItem(BaseModel):
     """面板-消息项"""
 
-    id: int
-    title: str
-    content: str
-    time: str
-    type: str
+    id: int = Field(..., description="消息ID")
+    title: str = Field(..., description="标题")
+    content: str = Field(..., description="内容")
+    time: str = Field(..., description="时间")
+    type: str = Field(..., description="类型")
 
 
 class PanelDataOut(BaseModel):
     """通知面板聚合数据"""
 
-    notices: list[NoticeOutSchema] = []
-    messages: list[PanelMessageItem] = []
-    pendings: list[dict] = []
+    notices: list[NoticeOutSchema] = Field(default_factory=list, description="通知列表")
+    messages: list[PanelMessageItem] = Field(default_factory=list, description="消息列表")
+    pendings: list[dict] = Field(default_factory=list, description="待办列表")

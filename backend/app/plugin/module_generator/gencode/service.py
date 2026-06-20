@@ -284,7 +284,7 @@ class GenTableService:
             offset=offset,
             limit=page_size,
             order_by=order,
-            search=search.__dict__,
+            search=vars(search) if search else None,
             out_schema=GenTableOutSchema,
         )
 

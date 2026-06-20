@@ -58,8 +58,7 @@ class DemoService:
         返回:
         - list[DemoOutSchema]: 示例列表
         """
-        search_dict = search.__dict__ if search else None
-        obj_list = await DemoCRUD(auth).list(search=search_dict, order_by=order_by)
+        obj_list = await DemoCRUD(auth).list(search=vars(search) if search else None, order_by=order_by)
         return [DemoOutSchema.model_validate(obj) for obj in obj_list]
 
     @classmethod
@@ -84,18 +83,14 @@ class DemoService:
         返回:
         - dict: 分页数据
         """
-        search_dict = search.__dict__ if search else {}
-        order_by_list = order_by or [{"id": "asc"}]
         offset = (page_no - 1) * page_size
-
-        result = await DemoCRUD(auth).page(
+        return await DemoCRUD(auth).page(
             offset=offset,
             limit=page_size,
-            order_by=order_by_list,
-            search=search_dict,
+            order_by=order_by or [{"id": "asc"}],
+            search=vars(search) if search else None,
             out_schema=DemoOutSchema,
         )
-        return result
 
     @classmethod
     async def create_service(cls, auth: AuthSchema, data: DemoCreateSchema) -> DemoOutSchema:
@@ -153,12 +148,11 @@ class DemoService:
         """
         if len(ids) < 1:
             raise CustomException(msg="删除失败，删除对象不能为空")
-
-        for id in ids:
-            obj = await DemoCRUD(auth).get(id=id)
-            if not obj:
-                raise CustomException(msg=f"删除失败，ID为{id}的数据不存在")
-
+        objs = await DemoCRUD(auth).list(search={"id": ("in", ids)})
+        obj_map = {o.id: o for o in objs}
+        for id_ in ids:
+            if id_ not in obj_map:
+                raise CustomException(msg="删除失败，该数据不存在")
         await DemoCRUD(auth).delete(ids=ids)
 
     @classmethod

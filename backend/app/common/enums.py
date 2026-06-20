@@ -122,3 +122,32 @@ class PermissionFilterStrategy(str, Enum):
     DEPT_BASED = "dept_based"  # 基于部门关联（部门、角色）
     SELF_ONLY = "self_only"  # 仅本人数据
     USER_ROLE = "user_role"  # 当前用户绑定的角色
+
+
+@unique
+class OrderTypeEnum(str, Enum):
+    """订单类型"""
+
+    NEW = "new"
+    RENEW = "renew"
+    UPGRADE = "upgrade"
+    DOWNGRADE = "downgrade"
+    PLUGIN = "plugin"
+
+
+@unique
+class InvoiceTypeEnum(str, Enum):
+    """发票类型"""
+
+    VAT_NORMAL = "vat_normal"
+    VAT_SPECIAL = "vat_special"
+
+
+@unique
+class TicketTypeEnum(str, Enum):
+    """工单类型"""
+
+    SUGGESTION = "suggestion"
+    BUG = "bug"
+    OPTIMIZE = "optimize"
+    OTHER = "other"

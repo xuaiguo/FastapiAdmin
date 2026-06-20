@@ -46,24 +46,38 @@ def _generate_refund_no() -> str:
 
 
 class OrderService:
-    @staticmethod
-    async def create_order(auth: AuthSchema, data: OrderCreateSchema, amount: int | None = None) -> OrderOutSchema:
-        """创建订单
+    """
+    订单管理服务
+    """
+
+    @classmethod
+    async def create_order(cls, auth: AuthSchema, data: OrderCreateSchema, amount: int | None = None) -> OrderOutSchema:
+        """
+        创建订单
 
         套餐订单：amount 从套餐价格自动计算
         插件订单：amount 从插件价格自动计算
+        免费订单（amount=0）：自动激活
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - data (OrderCreateSchema): 订单创建模型
+        - amount (int | None): 订单金额(分)，None 时自动计算
+
+        返回:
+        - OrderOutSchema: 新创建的订单详情
         """
         if amount is None:
             if data.order_type == "plugin":
                 from app.api.v1.module_platform.plugin.model import PluginModel
 
                 plugin = await auth.db.get(PluginModel, data.plugin_id)
-                amount = plugin.price if plugin and hasattr(plugin, "price") else 0
+                amount = plugin.price if plugin else 0
             else:
                 from app.api.v1.module_platform.package.model import PackageModel
 
                 pkg = await auth.db.get(PackageModel, data.package_id)
-                amount = pkg.price if pkg and hasattr(pkg, "price") else 0
+                amount = pkg.price if pkg else 0
 
         order = await OrderCRUD(auth).create(
             OrderCreateInternalSchema(
@@ -88,13 +102,35 @@ class OrderService:
 
         return OrderOutSchema.model_validate(order)
 
-    @staticmethod
-    async def get_detail(auth: AuthSchema, order_id: int) -> OrderOutSchema | None:
+    @classmethod
+    async def get_detail(cls, auth: AuthSchema, order_id: int) -> OrderOutSchema | None:
+        """
+        订单详情
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - order_id (int): 订单ID
+
+        返回:
+        - OrderOutSchema | None: 订单详情，不存在时返回 None
+        """
         order = await OrderCRUD(auth).get_by_id(order_id)
         return OrderOutSchema.model_validate(order) if order else None
 
-    @staticmethod
-    async def get_list(auth: AuthSchema, params: OrderQueryParam, offset: int, limit: int) -> tuple[list, int]:
+    @classmethod
+    async def get_list(cls, auth: AuthSchema, params: OrderQueryParam, offset: int, limit: int) -> tuple[list, int]:
+        """
+        订单列表
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - params (OrderQueryParam): 查询参数
+        - offset (int): 偏移量
+        - limit (int): 每页数量
+
+        返回:
+        - tuple[list, int]: (订单列表, 总数)
+        """
         rows, total = await OrderCRUD(auth).query(
             tenant_id=params.tenant_id,
             status=params.status,
@@ -105,20 +141,39 @@ class OrderService:
         items = [OrderOutSchema.model_validate(r) for r in rows]
         return items, total
 
-    @staticmethod
-    async def cancel_order(auth: AuthSchema, order_id: int) -> OrderStatusMessage:
+    @classmethod
+    async def cancel_order(cls, auth: AuthSchema, order_id: int) -> OrderStatusMessage:
+        """
+        取消订单
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - order_id (int): 订单ID
+
+        返回:
+        - OrderStatusMessage: 取消结果
+        """
         crud = OrderCRUD(auth)
         order = await crud.get_by_id(order_id)
         if not order:
-            raise CustomException(msg="订单不存在")
+            raise CustomException(msg="该数据不存在")
         if order.status != 0:
             raise CustomException(msg="仅待支付订单可取消")
         await crud.update(order_id, OrderUpdateInternalSchema(status=2))
         return OrderStatusMessage(id=order.id, status=2, message="已取消")
 
-    @staticmethod
-    async def check_payment_status(auth: AuthSchema, order_id: int) -> PaymentStatusOut:
-        """查询订单支付状态（供前端轮询用）"""
+    @classmethod
+    async def check_payment_status(cls, auth: AuthSchema, order_id: int) -> PaymentStatusOut:
+        """
+        查询订单支付状态（供前端轮询用）
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - order_id (int): 订单ID
+
+        返回:
+        - PaymentStatusOut: 支付状态信息
+        """
         order = await OrderCRUD(auth).get_by_id(order_id)
         if not order:
             return PaymentStatusOut(exists=False)
@@ -131,21 +186,41 @@ class OrderService:
             pay_time=order.pay_time.isoformat() if order.pay_time else None,
         )
 
-    @staticmethod
-    async def cancel_expired_orders() -> None:
-        """定时任务：取消超时未支付的订单"""
+    @classmethod
+    async def cancel_expired_orders(cls) -> None:
+        """
+        定时任务：取消超时未支付的订单
+
+        返回:
+        - None
+        """
         await OrderCRUD.cancel_expired_orders()
 
 
 class PaymentService:
-    @staticmethod
-    async def create_payment(auth: AuthSchema, order_id: int, method: str, notify_base_url: str) -> PaymentCreateOut:
-        """创建支付（调用支付网关）"""
+    """
+    支付管理服务
+    """
+
+    @classmethod
+    async def create_payment(cls, auth: AuthSchema, order_id: int, method: str, notify_base_url: str) -> PaymentCreateOut:
+        """
+        创建支付（调用支付网关）
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - order_id (int): 订单ID
+        - method (str): 支付方式(alipay/wxpay)
+        - notify_base_url (str): 回调基础URL
+
+        返回:
+        - PaymentCreateOut: 支付创建结果（支付URL/二维码）
+        """
         from app.api.v1.module_platform.package.model import PackageModel
 
         order = await OrderCRUD(auth).get_by_id(order_id)
         if not order:
-            raise CustomException(msg="订单不存在")
+            raise CustomException(msg="该数据不存在")
         if order.status != 0:
             raise CustomException(msg="订单状态异常，无法支付")
         if order.amount <= 0:
@@ -178,9 +253,19 @@ class PaymentService:
             amount=order.amount,
         )
 
-    @staticmethod
-    async def handle_callback(auth: AuthSchema, method: str, callback_data: dict) -> dict:
-        """处理支付回调"""
+    @classmethod
+    async def handle_callback(cls, auth: AuthSchema, method: str, callback_data: dict) -> dict:
+        """
+        处理支付回调
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - method (str): 支付方式
+        - callback_data (dict): 支付网关回调数据
+
+        返回:
+        - dict: 处理结果
+        """
         gateway = create_payment_gateway(method)
         callback_result = await gateway.verify_callback(callback_data)
 
@@ -197,7 +282,7 @@ class PaymentService:
             order = await o_crud.get_by_id(callback_result.order_id)
 
         if not order:
-            raise CustomException(msg="订单不存在")
+            raise CustomException(msg="该数据不存在")
         if order.status != 0:
             raise CustomException(msg="订单状态异常")
         if order.amount != callback_result.amount and callback_result.amount > 0:
@@ -232,9 +317,18 @@ class PaymentService:
         logger.info(f"支付回调处理完成: order_id={oid} method={method} tenant_id={tid} type={otype}")
         return {"order_id": oid, "status": 1, "message": "支付成功"}
 
-    @staticmethod
-    async def _activate_tenant_package(auth: AuthSchema, order: OrderModel) -> None:
-        """支付成功后激活套餐/插件"""
+    @classmethod
+    async def _activate_tenant_package(cls, auth: AuthSchema, order: OrderModel) -> None:
+        """
+        支付成功后激活套餐
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - order (OrderModel): 订单模型
+
+        返回:
+        - None
+        """
         from app.api.v1.module_platform.package.model import PackageModel
         from app.api.v1.module_platform.tenant.model import TenantModel
 
@@ -281,9 +375,18 @@ class PaymentService:
         if tenant.contact_email:
             await PaymentService._send_order_email(order, pkg, tenant)
 
-    @staticmethod
-    async def _activate_plugin(auth: AuthSchema, order: OrderModel) -> None:
-        """支付成功后标记插件为已购买"""
+    @classmethod
+    async def _activate_plugin(cls, auth: AuthSchema, order: OrderModel) -> None:
+        """
+        支付成功后标记插件为已购买
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - order (OrderModel): 订单模型
+
+        返回:
+        - None
+        """
         from app.api.v1.module_platform.plugin.model import PluginModel, TenantPluginModel
 
         plugin = await auth.db.get(PluginModel, order.plugin_id)
@@ -321,9 +424,19 @@ class PaymentService:
         if tenant and tenant.contact_email:
             await PaymentService._send_order_email(order, plugin, tenant, order_type_label="购买")
 
-    @staticmethod
-    async def _check_downgrade_quota(auth: AuthSchema, tenant_id: int, new_pkg: object) -> None:
-        """降级前检查：租户当前资源数是否超过新套餐限额"""
+    @classmethod
+    async def _check_downgrade_quota(cls, auth: AuthSchema, tenant_id: int, new_pkg: object) -> None:
+        """
+        降级前检查：租户当前资源数是否超过新套餐限额
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - tenant_id (int): 租户ID
+        - new_pkg (object): 目标套餐
+
+        返回:
+        - None
+        """
         from sqlalchemy import func, select
 
         from app.api.v1.module_system.dept.model import DeptModel
@@ -352,9 +465,20 @@ class PaymentService:
             if current > limit:
                 raise CustomException(msg=f"降级失败：当前租户已有 {current} 个{label}，超过目标套餐限额 {limit}")
 
-    @staticmethod
-    async def _send_order_email(order: "OrderModel", product: object, tenant: object, order_type_label: str = "") -> None:
-        """发送购买确认邮件（失败静默降级）"""
+    @classmethod
+    async def _send_order_email(cls, order: "OrderModel", product: object, tenant: object, order_type_label: str = "") -> None:
+        """
+        发送购买确认邮件（失败静默降级）
+
+        参数:
+        - order (OrderModel): 订单模型
+        - product (object): 商品(套餐/插件)
+        - tenant (object): 租户模型
+        - order_type_label (str): 订单类型文案
+
+        返回:
+        - None
+        """
         try:
             from app.api.v1.module_platform.email.service import EmailSendService
 
@@ -388,20 +512,46 @@ class PaymentService:
         except Exception:
             pass  # 邮件发送失败不阻塞业务流程
 
-    @staticmethod
-    async def get_records(auth: AuthSchema, offset: int, limit: int) -> tuple[list, int]:
+    @classmethod
+    async def get_records(cls, auth: AuthSchema, offset: int, limit: int) -> tuple[list, int]:
+        """
+        支付记录列表
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - offset (int): 偏移量
+        - limit (int): 每页数量
+
+        返回:
+        - tuple[list, int]: (支付记录列表, 总数)
+        """
         rows, total = await PaymentRecordCRUD(auth).query(offset, limit)
         items = [PaymentRecordOutSchema.model_validate(r) for r in rows]
         return items, total
 
 
 class RefundService:
-    @staticmethod
-    async def apply(auth: AuthSchema, data: RefundApplySchema, order_id: int) -> RefundOutSchema:
+    """
+    退款管理服务
+    """
+
+    @classmethod
+    async def apply(cls, auth: AuthSchema, data: RefundApplySchema, order_id: int) -> RefundOutSchema:
+        """
+        申请退款
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - data (RefundApplySchema): 退款申请模型
+        - order_id (int): 订单ID
+
+        返回:
+        - RefundOutSchema: 退款记录详情
+        """
         o_crud = OrderCRUD(auth)
         order = await o_crud.get_by_id(order_id)
         if not order:
-            raise CustomException(msg="订单不存在")
+            raise CustomException(msg="该数据不存在")
         if order.status != 1:
             raise CustomException(msg="仅已支付订单可退款")
         if order.amount == 0:
@@ -421,18 +571,42 @@ class RefundService:
         )
         return RefundOutSchema.model_validate(refund)
 
-    @staticmethod
-    async def get_list(auth: AuthSchema, status: int | None, offset: int, limit: int) -> tuple[list, int]:
+    @classmethod
+    async def get_list(cls, auth: AuthSchema, status: int | None, offset: int, limit: int) -> tuple[list, int]:
+        """
+        退款列表
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - status (int | None): 退款状态筛选
+        - offset (int): 偏移量
+        - limit (int): 每页数量
+
+        返回:
+        - tuple[list, int]: (退款列表, 总数)
+        """
         rows, total = await RefundCRUD(auth).query(status, offset, limit)
         items = [RefundOutSchema.model_validate(r) for r in rows]
         return items, total
 
-    @staticmethod
-    async def approve(auth: AuthSchema, refund_id: int, reviewer_id: int, operator_name: str = "") -> OrderStatusMessage:
+    @classmethod
+    async def approve(cls, auth: AuthSchema, refund_id: int, reviewer_id: int, operator_name: str = "") -> OrderStatusMessage:
+        """
+        批准退款
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - refund_id (int): 退款ID
+        - reviewer_id (int): 审核人ID
+        - operator_name (str): 操作人名称
+
+        返回:
+        - OrderStatusMessage: 审核结果
+        """
         crud = RefundCRUD(auth)
         refund = await crud.get_by_id(refund_id)
         if not refund:
-            raise CustomException(msg="退款记录不存在")
+            raise CustomException(msg="该数据不存在")
         if refund.status != 1:
             raise CustomException(msg="仅申请中可审核")
         await crud.update(
@@ -442,18 +616,32 @@ class RefundService:
         await OrderCRUD(auth).mark_refunded(refund.order_id)
         return OrderStatusMessage(id=refund.id, status=2, message="已批准退款")
 
-    @staticmethod
+    @classmethod
     async def reject(
+        cls,
         auth: AuthSchema,
         refund_id: int,
         reviewer_id: int,
         data: RefundReviewSchema,
         operator_name: str = "",
     ) -> OrderStatusMessage:
+        """
+        驳回退款
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - refund_id (int): 退款ID
+        - reviewer_id (int): 审核人ID
+        - data (RefundReviewSchema): 驳回原因
+        - operator_name (str): 操作人名称
+
+        返回:
+        - OrderStatusMessage: 审核结果
+        """
         crud = RefundCRUD(auth)
         refund = await crud.get_by_id(refund_id)
         if not refund:
-            raise CustomException(msg="退款记录不存在")
+            raise CustomException(msg="该数据不存在")
         if refund.status != 1:
             raise CustomException(msg="仅申请中可审核")
         await crud.update(

@@ -7,6 +7,7 @@ from redis.asyncio.client import Redis
 
 from app.common.enums import RedisInitKeyConfig
 from app.core.base_schema import AuthSchema, BatchSetAvailable
+from app.core.dependencies import require_superadmin
 from app.core.exceptions import CustomException
 from app.core.logger import logger
 from app.core.redis_crud import RedisCURD
@@ -27,15 +28,23 @@ from .schema import (
 
 
 class TenantService:
-    """租户管理模块服务层"""
+    """
+    租户管理服务（查询操作租户可见，写操作仅超级管理员可操作）
+    """
 
     @classmethod
     async def detail_service(cls, auth: AuthSchema, id: int) -> TenantOutSchema:
-        obj = await TenantCRUD(auth).get(id=id)
-        if not obj:
-            raise CustomException(msg="租户不存在")
-        result = TenantOutSchema.model_validate(obj)
-        return result
+        """
+        租户详情
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - id (int): 租户ID
+
+        返回:
+        - TenantOutSchema: 租户详情
+        """
+        return await TenantCRUD(auth).get_or_404(id=id, out_schema=TenantOutSchema)
 
     @classmethod
     async def page_service(
@@ -50,11 +59,12 @@ class TenantService:
             offset=(page_no - 1) * page_size,
             limit=page_size,
             order_by=order_by or [{"id": "asc"}],
-            search=search.__dict__ if search else {},
+            search=vars(search) if search else None,
             out_schema=TenantOutSchema,
         )
 
     @classmethod
+    @require_superadmin
     async def create_service(cls, auth: AuthSchema, data: TenantCreateSchema) -> TenantOutSchema:
         if await TenantCRUD(auth).get(name=data.name):
             raise CustomException(msg="创建失败，名称已存在")
@@ -94,7 +104,7 @@ class TenantService:
             raise
         except Exception as e:
             logger.error(f"为租户[{tenant_obj.name}]创建初始管理员失败: {e!s}")
-            raise CustomException(msg="创建租户初始管理员失败")
+            raise CustomException(msg="创建租户初始管理员失败") from e
 
         logger.info(f"为租户[{tenant_obj.name}]创建初始管理员成功，用户名: {username}，临时密码: {password}")
 
@@ -104,10 +114,20 @@ class TenantService:
         return result
 
     @classmethod
+    @require_superadmin
     async def update_service(cls, auth: AuthSchema, id: int, data: TenantUpdateSchema) -> TenantOutSchema:
-        obj = await TenantCRUD(auth).get(id=id)
-        if not obj:
-            raise CustomException(msg="租户不存在")
+        """
+        更新租户
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - id (int): 租户ID
+        - data (TenantUpdateSchema): 租户更新模型
+
+        返回:
+        - TenantOutSchema: 租户详情
+        """
+        obj = await TenantCRUD(auth).get_or_404(id=id)
 
         old_package_id = obj.package_id
 
@@ -162,15 +182,22 @@ class TenantService:
         return result
 
     @classmethod
+    @require_superadmin
     async def delete_service(cls, auth: AuthSchema, ids: list[int]) -> None:
+        """
+        批量删除租户（含级联资源检查：用户/部门/角色/岗位）
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - ids (list[int]): 租户ID列表
+
+        返回:
+        - None
+        """
         if not ids:
             raise CustomException(msg="删除失败，删除对象不能为空")
         if 1 in ids:
             raise CustomException(msg="系统租户不允许删除")
-        for id in ids:
-            obj = await TenantCRUD(auth).get(id=id)
-            if not obj:
-                continue
         from app.api.v1.module_system.dept.crud import DeptCRUD
         from app.api.v1.module_system.position.crud import PositionCRUD
         from app.api.v1.module_system.role.crud import RoleCRUD
@@ -193,16 +220,33 @@ class TenantService:
 
     @classmethod
     async def set_available_service(cls, auth: AuthSchema, data: BatchSetAvailable) -> None:
+        """
+        批量设置租户状态
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - data (BatchSetAvailable): 批量状态设置
+
+        返回:
+        - None
+        """
         if data.status == 1 and 1 in data.ids:
             raise CustomException(msg="系统租户不允许禁用")
         await TenantCRUD(auth).set(ids=data.ids, status=data.status)
 
     @classmethod
     async def toggle_status_service(cls, auth: AuthSchema, id: int) -> None:
-        """切换单个租户的启用/禁用状态"""
-        obj = await TenantCRUD(auth).get(id=id)
-        if not obj:
-            raise CustomException(msg="租户不存在")
+        """
+        切换单个租户的启用/禁用状态
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - id (int): 租户ID
+
+        返回:
+        - None
+        """
+        obj = await TenantCRUD(auth).get_or_404(id=id)
         if id == 1:
             raise CustomException(msg="系统租户不允许禁用")
         new_status = 0 if obj.status == 1 else 1
@@ -242,18 +286,28 @@ class TenantService:
 
     @classmethod
     async def add_tenant_user_service(cls, auth: AuthSchema, tenant_id: int, data: TenantUserAddSchema) -> None:
-        """向租户添加用户"""
+        """
+        向租户添加用户
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - tenant_id (int): 租户ID
+        - data (TenantUserAddSchema): 用户添加参数
+
+        返回:
+        - None
+        """
         # 验证租户存在
         tenant = await TenantCRUD(auth).get(id=tenant_id)
         if not tenant:
-            raise CustomException(msg="租户不存在")
+            raise CustomException(msg="该数据不存在")
 
         # 验证用户存在
         from app.api.v1.module_system.user.crud import UserCRUD
 
         user = await UserCRUD(auth).get(id=data.user_id)
         if not user:
-            raise CustomException(msg="用户不存在")
+            raise CustomException(msg="该数据不存在")
 
         # 检查是否已关联
         from sqlalchemy import select
@@ -297,7 +351,17 @@ class TenantService:
 
     @classmethod
     async def remove_tenant_user_service(cls, auth: AuthSchema, tenant_id: int, user_id: int) -> None:
-        """从租户移除用户"""
+        """
+        从租户移除用户
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - tenant_id (int): 租户ID
+        - user_id (int): 用户ID
+
+        返回:
+        - None
+        """
         from sqlalchemy import select
 
         # 查找关联记录
@@ -339,7 +403,16 @@ class TenantService:
 
     @classmethod
     async def get_quota_service(cls, auth: AuthSchema, tenant_id: int) -> dict:
-        """获取租户配额（从关联套餐读取，系统租户返回无限配额）"""
+        """
+        获取租户配额（从关联套餐读取，系统租户返回无限配额）
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - tenant_id (int): 租户ID
+
+        返回:
+        - dict: 配额信息
+        """
         if tenant_id == 1:
             return {
                 "tenant_id": 1,
@@ -351,7 +424,7 @@ class TenantService:
             }
         tenant = await TenantCRUD(auth).get(id=tenant_id)
         if not tenant:
-            raise CustomException(msg="租户不存在")
+            raise CustomException(msg="该数据不存在")
         if not tenant.package_id:
             return {
                 "tenant_id": tenant.id,
@@ -466,10 +539,19 @@ class TenantService:
 
     @classmethod
     async def get_config_service(cls, auth: AuthSchema, tenant_id: int) -> dict:
-        """获取租户所有配置（从租户主表读取，返回原始 dict 供内部使用）"""
+        """
+        获取租户所有配置（从租户主表读取，返回原始 dict 供内部使用）
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - tenant_id (int): 租户ID
+
+        返回:
+        - dict: 配置字典
+        """
         tenant = await TenantCRUD(auth).get(id=tenant_id)
         if not tenant:
-            raise CustomException(msg="租户不存在")
+            raise CustomException(msg="该数据不存在")
 
         config_fields = ["name", "description", "version", "logo_url", "favicon", "login_bg", "copyright", "keep_record", "help_doc", "privacy", "clause", "git_code"]
         config = {field: getattr(tenant, field, None) for field in config_fields}
@@ -537,10 +619,21 @@ class TenantService:
 
     @classmethod
     async def update_config_service(cls, auth: AuthSchema, redis: Redis, tenant_id: int, config: dict) -> list[TenantConfigOutSchema]:
-        """更新租户配置（同步 Redis 缓存）"""
+        """
+        更新租户配置（同步 Redis 缓存）
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - redis (Redis): Redis 客户端
+        - tenant_id (int): 租户ID
+        - config (dict): 配置字典
+
+        返回:
+        - list[TenantConfigOutSchema]: 更新后的配置项列表
+        """
         tenant = await TenantCRUD(auth).get(id=tenant_id)
         if not tenant:
-            raise CustomException(msg="租户不存在")
+            raise CustomException(msg="该数据不存在")
 
         config_fields = ["name", "description", "version", "logo_url", "favicon", "login_bg", "copyright", "keep_record", "help_doc", "privacy", "clause", "git_code"]
 
@@ -612,7 +705,7 @@ class TenantService:
 
         tenant = await TenantCRUD(auth).get(id=tenant_id)
         if not tenant:
-            raise CustomException(msg="租户不存在")
+            raise CustomException(msg="该数据不存在")
 
         if tenant.status not in (0, 1, 2):
             status_labels = {0: "正常", 1: "宽限期", 2: "暂停", 3: "冻结", 4: "过期", 5: "归档"}
@@ -634,7 +727,8 @@ class TenantService:
 
     @classmethod
     async def package_change_preview_service(cls, auth: AuthSchema, tenant_id: int, new_package_id: int) -> PackageChangePreviewOut:
-        """套餐变更影响预览
+        """
+        套餐变更影响预览
 
         返回受影响角色、菜单清单、配额对比等，供超管确认后再执行变更。
 
@@ -644,7 +738,7 @@ class TenantService:
         - new_package_id (int): 目标套餐ID
 
         返回:
-        - dict: 预览结果
+        - PackageChangePreviewOut: 预览结果
         """
         from sqlalchemy import func, select
 
@@ -656,11 +750,11 @@ class TenantService:
 
         tenant = await TenantCRUD(auth).get(id=tenant_id)
         if not tenant:
-            raise CustomException(msg="租户不存在")
+            raise CustomException(msg="该数据不存在")
 
         new_package = await PackageCRUD(auth).get(id=new_package_id)
         if not new_package:
-            raise CustomException(msg="目标套餐不存在")
+            raise CustomException(msg="该数据不存在")
 
         # 当前可用菜单
         current_menu_ids = await PackageService.get_tenant_available_menu_ids(auth, tenant_id)

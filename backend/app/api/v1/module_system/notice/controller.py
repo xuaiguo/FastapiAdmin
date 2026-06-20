@@ -32,7 +32,7 @@ _NOTICE_NS = "notice"
     summary="获取公告详情",
     response_model=ResponseSchema[NoticeOutSchema],
 )
-async def get_obj_detail_controller(
+async def get_notice_detail_controller(
     id: Annotated[int, Path(description="公告ID")],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:notice:detail"]))],
 ) -> JSONResponse:
@@ -46,7 +46,7 @@ async def get_obj_detail_controller(
     返回:
     - JSONResponse: 包含公告详情的响应模型。
     """
-    result_dict = await NoticeService.get_notice_detail_service(id=id, auth=auth)
+    result_dict = await NoticeService.detail_service(id=id, auth=auth)
     return SuccessResponse(data=result_dict, msg="获取公告详情成功")
 
 
@@ -55,7 +55,7 @@ async def get_obj_detail_controller(
     summary="查询公告",
     response_model=ResponseSchema[PageResultSchema[NoticeOutSchema]],
 )
-async def get_obj_list_controller(
+async def get_notice_list_controller(
     page: Annotated[PaginationQueryParam, Depends()],
     search: Annotated[NoticeQueryParam, Depends()],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:notice:query"]))],
@@ -71,7 +71,7 @@ async def get_obj_list_controller(
     返回:
     - JSONResponse: 包含分页公告详情的响应模型。
     """
-    result_dict = await NoticeService.get_notice_page_service(
+    result_dict = await NoticeService.page_service(
         auth=auth,
         page_no=page.page_no,
         page_size=page.page_size,
@@ -86,7 +86,7 @@ async def get_obj_list_controller(
     summary="创建公告",
     response_model=ResponseSchema[NoticeOutSchema],
 )
-async def create_obj_controller(
+async def create_notice_controller(
     data: NoticeCreateSchema,
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:notice:create"]))],
 ) -> JSONResponse:
@@ -100,7 +100,7 @@ async def create_obj_controller(
     返回:
     - JSONResponse: 包含创建公告结果的响应模型。
     """
-    result_dict = await NoticeService.create_notice_service(auth=auth, data=data)
+    result_dict = await NoticeService.create_service(auth=auth, data=data)
     await FastAPICache.clear(namespace=_NOTICE_NS)
     return SuccessResponse(data=result_dict, msg="创建公告成功")
 
@@ -110,7 +110,7 @@ async def create_obj_controller(
     summary="修改公告",
     response_model=ResponseSchema[NoticeOutSchema],
 )
-async def update_obj_controller(
+async def update_notice_controller(
     data: NoticeUpdateSchema,
     id: Annotated[int, Path(description="公告ID")],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:notice:update"]))],
@@ -126,7 +126,7 @@ async def update_obj_controller(
     返回:
     - JSONResponse: 包含修改公告结果的响应模型。
     """
-    result_dict = await NoticeService.update_notice_service(auth=auth, id=id, data=data)
+    result_dict = await NoticeService.update_service(auth=auth, id=id, data=data)
     await FastAPICache.clear(namespace=_NOTICE_NS)
     return SuccessResponse(data=result_dict, msg="修改公告成功")
 
@@ -136,7 +136,7 @@ async def update_obj_controller(
     summary="删除公告",
     response_model=ResponseSchema[None],
 )
-async def delete_obj_controller(
+async def delete_notice_controller(
     ids: Annotated[list[int], Body(description="ID列表")],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:notice:delete"]))],
 ) -> JSONResponse:
@@ -150,7 +150,7 @@ async def delete_obj_controller(
     返回:
     - JSONResponse: 包含删除公告结果的响应模型。
     """
-    await NoticeService.delete_notice_service(auth=auth, ids=ids)
+    await NoticeService.delete_service(auth=auth, ids=ids)
     await FastAPICache.clear(namespace=_NOTICE_NS)
     return SuccessResponse(msg="删除公告成功")
 
@@ -160,7 +160,7 @@ async def delete_obj_controller(
     summary="批量修改公告状态",
     response_model=ResponseSchema[None],
 )
-async def batch_set_available_obj_controller(
+async def batch_set_available_notice_controller(
     data: BatchSetAvailable,
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:notice:patch"]))],
 ) -> JSONResponse:
@@ -174,17 +174,16 @@ async def batch_set_available_obj_controller(
     返回:
     - JSONResponse: 包含批量修改公告状态结果的响应模型。
     """
-    await NoticeService.set_notice_available_service(auth=auth, data=data)
+    await NoticeService.set_available_service(auth=auth, data=data)
     await FastAPICache.clear(namespace=_NOTICE_NS)
     return SuccessResponse(msg="批量修改公告状态成功")
 
 
-@NoticeRouter.get(
+@NoticeRouter.post(
     "/export",
     summary="导出公告",
-    response_model=ResponseSchema[None],
 )
-async def export_obj_list_controller(
+async def export_notice_list_controller(
     search: Annotated[NoticeQueryParam, Depends()],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:notice:export"]))],
 ) -> StreamingResponse:
@@ -198,7 +197,7 @@ async def export_obj_list_controller(
     返回:
     - StreamingResponse: 包含导出公告的流式响应模型。
     """
-    result_dict_list = await NoticeService.get_notice_list_service(search=search, auth=auth)
+    result_dict_list = await NoticeService.list_service(search=search, auth=auth)
     export_data = [item.model_dump() for item in result_dict_list]
     export_result = await NoticeService.export_notice_service(notice_list=export_data)
 
@@ -215,7 +214,7 @@ async def export_obj_list_controller(
     response_model=ResponseSchema[list[NoticeOutSchema]],
 )
 @cache(expire=120, namespace=_NOTICE_NS)
-async def get_obj_list_available_controller(
+async def get_notice_list_available_controller(
     auth: Annotated[AuthSchema, Depends(get_current_user)],
 ) -> JSONResponse:
     """
@@ -227,7 +226,7 @@ async def get_obj_list_available_controller(
     返回:
     - JSONResponse: 包含分页已启用公告详情的响应模型。
     """
-    result_dict = await NoticeService.get_notice_available_page_service(auth=auth)
+    result_dict = await NoticeService.available_page_service(auth=auth)
     return SuccessResponse(data=result_dict, msg="查询已启用公告列表成功")
 
 

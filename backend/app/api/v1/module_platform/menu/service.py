@@ -1,6 +1,7 @@
 from typing import Any
 
 from app.core.base_schema import AuthSchema, BatchSetAvailable
+from app.core.dependencies import require_superadmin
 from app.core.exceptions import CustomException
 from app.utils.common_util import (
     get_child_id_map,
@@ -13,7 +14,7 @@ from app.utils.common_util import (
 from .crud import MenuCRUD
 from .schema import (
     MenuCreateSchema,
-    MenuDetailOutSchema,
+    MenuOutSchema,
     MenuQueryParam,
     MenuTreeOutSchema,
     MenuUpdateSchema,
@@ -22,7 +23,7 @@ from .schema import (
 
 class MenuService:
     """
-    菜单模块服务层
+    菜单管理服务（查询操作租户可见，写操作仅超级管理员可操作）
     """
 
     @classmethod
@@ -63,7 +64,7 @@ class MenuService:
             raise CustomException(msg="子菜单终端须与父菜单一致（均为 pc 或均为 app）")
 
     @classmethod
-    async def get_menu_detail_service(cls, auth: AuthSchema, id: int) -> MenuDetailOutSchema:
+    async def detail_service(cls, auth: AuthSchema, id: int) -> MenuOutSchema:
         """
         获取菜单详情。
 
@@ -72,12 +73,12 @@ class MenuService:
         - id (int): 菜单ID。
 
         返回:
-        - MenuDetailOutSchema: 菜单详情对象。
+        - MenuOutSchema: 菜单详情对象。
         """
         menu = await MenuCRUD(auth).get(id=id, preload=["roles"])
         if not menu:
             raise CustomException(msg="菜单不存在")
-        menu_out = MenuDetailOutSchema.model_validate(menu)
+        menu_out = MenuOutSchema.model_validate(menu)
         if menu.parent_id:
             parent = await MenuCRUD(auth).get(id=menu.parent_id)
             if parent:
@@ -85,7 +86,7 @@ class MenuService:
         return menu_out
 
     @classmethod
-    async def get_menu_tree_service(
+    async def tree_service(
         cls,
         auth: AuthSchema,
         search: MenuQueryParam | None = None,
@@ -103,14 +104,15 @@ class MenuService:
         - list[dict]: 菜单树形列表对象。
         """
         # 使用树形结构查询，预加载children关系
-        menu_list = await MenuCRUD(auth).get_tree_list(search=vars(search) if search else None, order_by=order_by)
+        menu_list = await MenuCRUD(auth).tree_list(search=vars(search) if search else None, order_by=order_by)
         # 转换为字典列表（使用树形 Schema）
         menu_dict_list = [MenuTreeOutSchema.model_validate(menu).model_dump() for menu in menu_list]
         # 使用traversal_to_tree构建树形结构
         return traversal_to_tree(menu_dict_list)
 
     @classmethod
-    async def create_menu_service(cls, auth: AuthSchema, data: MenuCreateSchema) -> MenuDetailOutSchema:
+    @require_superadmin
+    async def create_service(cls, auth: AuthSchema, data: MenuCreateSchema) -> MenuOutSchema:
         """
         创建菜单。
 
@@ -119,7 +121,7 @@ class MenuService:
         - data (MenuCreateSchema): 创建参数对象。
 
         返回:
-        - MenuDetailOutSchema: 创建的菜单对象。
+        - MenuOutSchema: 创建的菜单对象。
         """
         search: dict[str, Any] = {}
         if data.title is not None:
@@ -134,10 +136,11 @@ class MenuService:
         await cls._validate_parent_child_client(auth, data.parent_id, data.client)
 
         new_menu = await MenuCRUD(auth).create(data=data)
-        return MenuDetailOutSchema.model_validate(new_menu)
+        return MenuOutSchema.model_validate(new_menu)
 
     @classmethod
-    async def update_menu_service(cls, auth: AuthSchema, id: int, data: MenuUpdateSchema) -> MenuDetailOutSchema:
+    @require_superadmin
+    async def update_service(cls, auth: AuthSchema, id: int, data: MenuUpdateSchema) -> MenuOutSchema:
         """
         更新菜单。
 
@@ -147,11 +150,9 @@ class MenuService:
         - data (MenuUpdateSchema): 更新参数对象。
 
         返回:
-        - MenuDetailOutSchema: 更新的菜单对象。
+        - MenuOutSchema: 更新的菜单对象。
         """
-        menu = await MenuCRUD(auth).get(id=id)
-        if not menu:
-            raise CustomException(msg="更新失败，该菜单不存在")
+        _ = await MenuCRUD(auth).get_or_404(id=id, msg="更新失败，该菜单不存在")
         await cls._validate_parent_child_type(auth, data.parent_id, data.type)
         await cls._validate_parent_child_client(auth, data.parent_id, data.client)
         if data.title is not None:
@@ -170,9 +171,9 @@ class MenuService:
         new_menu = await MenuCRUD(auth).update(id=id, data=data)
 
         if data.status is not None:
-            await cls.set_menu_available_service(auth=auth, data=BatchSetAvailable(ids=[id], status=data.status))
+            await cls.set_available_service(auth=auth, data=BatchSetAvailable(ids=[id], status=data.status))
 
-        menu_out = MenuDetailOutSchema.model_validate(new_menu)
+        menu_out = MenuOutSchema.model_validate(new_menu)
         if menu_out.parent_id:
             parent = await MenuCRUD(auth).get(id=menu_out.parent_id)
             if parent:
@@ -180,7 +181,8 @@ class MenuService:
         return menu_out
 
     @classmethod
-    async def delete_menu_service(cls, auth: AuthSchema, ids: list[int]) -> None:
+    @require_superadmin
+    async def delete_service(cls, auth: AuthSchema, ids: list[int]) -> None:
         """
         删除菜单。
 
@@ -215,7 +217,8 @@ class MenuService:
         await MenuCRUD(auth).delete(ids=delete_ids)
 
     @classmethod
-    async def set_menu_available_service(cls, auth: AuthSchema, data: BatchSetAvailable) -> None:
+    @require_superadmin
+    async def set_available_service(cls, auth: AuthSchema, data: BatchSetAvailable) -> None:
         """
         递归获取所有父、子级菜单，然后批量修改菜单可用状态。
 

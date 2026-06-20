@@ -1,3 +1,6 @@
+from sqlalchemy import select
+
+from app.api.v1.module_system.user.model import UserModel
 from app.core.base_schema import AuthSchema
 from app.core.exceptions import CustomException
 
@@ -26,7 +29,11 @@ _TICKET_STATUS_LABELS = {
 
 
 class TicketService:
-    """工单管理服务层"""
+    """
+    工单管理服务
+
+    提供工单 CRUD、状态流转校验、批量更新、分配处理人等业务能力。
+    """
 
     @classmethod
     def _validate_status_transition(
@@ -35,13 +42,23 @@ class TicketService:
         ticket,
         new_status: int,
     ) -> None:
-        """校验工单状态流转是否合法"""
+        """
+        校验工单状态流转是否合法
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - ticket: 工单对象
+        - new_status (int): 新状态
+
+        异常:
+        - CustomException: 状态流转不合法或权限不足
+        """
         old_status = ticket.status if ticket.status is not None else 0
         old_label = _TICKET_STATUS_LABELS.get(old_status, str(old_status))
         new_label = _TICKET_STATUS_LABELS.get(new_status, str(new_status))
 
         if new_status not in _TICKET_STATUS_TRANSITIONS.get(old_status, set()):
-            raise CustomException(msg=f"不允许从“{old_label}”转换为“{new_label}”")
+            raise CustomException(msg=f"不允许从{old_label}转换为{new_label}")
 
         is_super = auth.user and auth.user.is_superuser
         is_creator = auth.user and ticket.created_id == auth.user.id
@@ -75,23 +92,53 @@ class TicketService:
         search: TicketQueryParam | None = None,
         order_by: list | None = None,
     ) -> dict:
+        """
+        分页查询工单
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - page_no (int): 页码
+        - page_size (int): 每页条数
+        - search (TicketQueryParam | None): 查询参数
+        - order_by (list | None): 排序参数
+
+        返回:
+        - dict: 分页结果
+        """
         return await TicketCRUD(auth).page(
             offset=(page_no - 1) * page_size,
             limit=page_size,
             order_by=order_by or [{"created_time": "desc"}],
-            search=search.__dict__ if search else {},
+            search=vars(search) if search else None,
             out_schema=TicketOutSchema,
         )
 
     @classmethod
     async def detail_service(cls, auth: AuthSchema, id: int) -> TicketOutSchema:
-        obj = await TicketCRUD(auth).get(id=id)
-        if not obj:
-            raise CustomException(msg="工单不存在")
-        return TicketOutSchema.model_validate(obj)
+        """
+        获取工单详情
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - id (int): 工单ID
+
+        返回:
+        - TicketOutSchema: 工单详情响应模型
+        """
+        return await TicketCRUD(auth).get_or_404(id=id, out_schema=TicketOutSchema)
 
     @classmethod
     async def create_service(cls, auth: AuthSchema, data: TicketCreateSchema) -> TicketOutSchema:
+        """
+        创建工单
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - data (TicketCreateSchema): 工单创建数据
+
+        返回:
+        - TicketOutSchema: 创建后的工单响应模型
+        """
         obj = await TicketCRUD(auth).create(data=data)
         if not obj:
             raise CustomException(msg="创建工单失败")
@@ -99,19 +146,24 @@ class TicketService:
 
     @classmethod
     async def update_service(cls, auth: AuthSchema, id: int, data: TicketUpdateSchema) -> TicketOutSchema:
-        obj = await TicketCRUD(auth).get(id=id)
-        if not obj:
-            raise CustomException(msg="工单不存在")
+        """
+        更新工单
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - id (int): 工单ID
+        - data (TicketUpdateSchema): 工单更新数据
+
+        返回:
+        - TicketOutSchema: 更新后的工单响应模型
+        """
+        obj = await TicketCRUD(auth).get_or_404(id=id, msg="工单不存在")
 
         if data.status is not None:
             cls._validate_status_transition(auth, obj, data.status)
 
         # 校验 assigned_id：分配处理人时验证用户是否存在且属于同一租户
         if data.assigned_id is not None:
-            from sqlalchemy import select
-
-            from app.api.v1.module_system.user.model import UserModel
-
             user_stmt = select(UserModel).where(
                 UserModel.id == data.assigned_id,
                 UserModel.is_deleted.is_(False),
@@ -125,18 +177,31 @@ class TicketService:
 
         updated = await TicketCRUD(auth).update(id=id, data=data)
         if not updated:
-            raise CustomException(msg="更新失败")
+            raise CustomException(msg="工单不存在")
         return TicketOutSchema.model_validate(updated)
 
     @classmethod
     async def delete_service(cls, auth: AuthSchema, ids: list[int]) -> None:
+        """
+        删除工单
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - ids (list[int]): 工单ID列表
+        """
         if not ids:
             raise CustomException(msg="删除对象不能为空")
         await TicketCRUD(auth).delete(ids=ids)
 
     @classmethod
     async def batch_service(cls, auth: AuthSchema, data: TicketBatchSchema) -> None:
-        """批量更新工单状态"""
+        """
+        批量更新工单状态
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - data (TicketBatchSchema): 批量更新参数
+        """
         if not data.ids:
             raise CustomException(msg="请选择要操作的工单")
 

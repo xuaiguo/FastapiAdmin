@@ -865,7 +865,7 @@ class TenantRegisterService:
     DEFAULT_TRIAL_DAYS = 7
 
     @classmethod
-    async def register(
+    async def register_service(
         cls,
         db: AsyncSession,
         username: str,
@@ -873,6 +873,22 @@ class TenantRegisterService:
         email: str,
         tenant_name: str | None = None,
     ) -> TenantRegisterOutSchema:
+        """
+        租户自助注册：一次性创建租户 + 管理员 + owner 角色 + 菜单分配。
+
+        参数:
+        - db (AsyncSession): 数据库会话对象。
+        - username (str): 登录账号。
+        - password (str): 登录密码。
+        - email (str): 邮箱。
+        - tenant_name (str | None): 企业/团队名称。
+
+        返回:
+        - TenantRegisterOutSchema: 注册结果。
+
+        异常:
+        - CustomException: 用户名或邮箱已被占用时抛出。
+        """
         from sqlalchemy import func, select
         from sqlalchemy.exc import IntegrityError
 

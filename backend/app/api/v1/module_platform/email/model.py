@@ -1,9 +1,13 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column, validates
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
-from app.core.base_model import ModelMixin, UserMixin
+from app.core.base_model import ModelMixin, TenantMixin, UserMixin
+
+if TYPE_CHECKING:
+    from app.api.v1.module_platform.email.model import EmailConfigModel
 
 
 class EmailConfigModel(ModelMixin):
@@ -70,7 +74,7 @@ class EmailTemplateModel(ModelMixin):
         return value
 
 
-class EmailLogModel(ModelMixin, UserMixin):
+class EmailLogModel(ModelMixin, TenantMixin, UserMixin):
     """
     邮件发送日志表
 
@@ -81,7 +85,7 @@ class EmailLogModel(ModelMixin, UserMixin):
 
     __tablename__: str = "platform_email_log"
     __table_args__: dict = {"comment": "邮件发送日志表"}
-    __loader_options__: list[str] = ["created_by", "updated_by", "deleted_by"]
+    __loader_options__: list[str] = ["created_by", "updated_by", "deleted_by", "tenant_by"]
 
     config_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("platform_email_config.id", ondelete="SET NULL", onupdate="CASCADE"), nullable=True, index=True, comment="使用的 SMTP 配置 ID")
     template_code: Mapped[str | None] = mapped_column(String(100), nullable=True, comment="模板编码（冗余存储，模板删除后仍可追溯）")
@@ -95,3 +99,6 @@ class EmailLogModel(ModelMixin, UserMixin):
     sent_time: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, default=None, comment="实际发送时间")
     status: Mapped[int] = mapped_column(Integer, default=0, nullable=False, comment="状态(0:启动 1:停用)", index=True)
     description: Mapped[str | None] = mapped_column(Text, default=None, nullable=True, comment="备注")
+
+    # 关联关系
+    config: Mapped["EmailConfigModel | None"] = relationship("EmailConfigModel", lazy="selectin")

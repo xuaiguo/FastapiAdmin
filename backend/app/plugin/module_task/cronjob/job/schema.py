@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from fastapi import Query
 from pydantic import (
     BaseModel,
@@ -80,6 +82,7 @@ class JobOutSchema(JobCreateSchema, BaseSchema, UserBySchema, TenantBySchema):
     ...
 
 
+@dataclass
 class JobQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
     """执行日志查询参数"""
 
@@ -93,7 +96,7 @@ class JobQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
     ) -> None:
         super().__init__(*args, **kwargs)
         # 确保 job_id 是字符串类型
-        self.job_id = (QueueEnum.eq.value, str(job_id) if job_id is not None else None)
+        self.job_id = (QueueEnum.eq.value, str(job_id)) if job_id is not None else None
         # 只有当 job_name 不为空时才添加查询条件
         self.job_name = (QueueEnum.like.value, job_name) if job_name else None
-        self.trigger_type = (QueueEnum.eq.value, trigger_type)
+        self.trigger_type = (QueueEnum.eq.value, trigger_type) if trigger_type else None

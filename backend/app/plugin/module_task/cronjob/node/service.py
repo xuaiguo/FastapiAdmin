@@ -84,7 +84,7 @@ class NodeService:
         返回:
         - List[Dict]: 节点详情字典列表
         """
-        obj_list = await NodeCRUD(auth).get_obj_list_crud(search=search.__dict__, order_by=order_by)
+        obj_list = await NodeCRUD(auth).get_obj_list_crud(search=vars(search) if search else None, order_by=order_by)
         return [NodeOutSchema.model_validate(obj) for obj in obj_list]
 
     @classmethod
@@ -114,7 +114,7 @@ class NodeService:
             offset=offset,
             limit=page_size,
             order_by=order_by or [{"id": "asc"}],
-            search=search.__dict__ if search else {},
+            search=vars(search) if search else None,
             out_schema=NodeOutSchema,
         )
 

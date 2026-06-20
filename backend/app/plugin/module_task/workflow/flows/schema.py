@@ -1,4 +1,5 @@
 import re
+from dataclasses import dataclass
 from typing import Any
 
 from fastapi import Query
@@ -6,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from app.common.enums import QueueEnum
 from app.core.base_params import BaseQueryParam, TenantByQueryParam, UserByQueryParam
-from app.core.base_schema import TenantBySchema, UserBySchema
+from app.core.base_schema import BaseSchema, TenantBySchema, UserBySchema
 from app.core.validator import DateTimeStr
 
 
@@ -55,7 +56,7 @@ class WorkflowUpdateSchema(WorkflowCreateSchema):
         return v
 
 
-class WorkflowOutSchema(UserBySchema, TenantBySchema):
+class WorkflowOutSchema(BaseSchema, UserBySchema, TenantBySchema):
     """工作流输出（status 表示流程状态 draft/published/archived，与 ModelMixin.status 区分）"""
 
     model_config = ConfigDict(from_attributes=True)
@@ -94,6 +95,7 @@ class WorkflowOutSchema(UserBySchema, TenantBySchema):
         return data
 
 
+@dataclass
 class WorkflowQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
     """工作流查询"""
 
@@ -121,11 +123,11 @@ class WorkflowExecuteSchema(BaseModel):
 class WorkflowExecuteResultSchema(BaseModel):
     """执行结果"""
 
-    workflow_id: int
-    workflow_name: str
+    workflow_id: int = Field(..., description="工作流ID")
+    workflow_name: str = Field(..., description="工作流名称")
     status: str = Field(description="completed/failed")
-    start_time: str | None = None
-    end_time: str | None = None
-    variables: dict | None = None
-    node_results: dict | None = None
-    error: str | None = None
+    start_time: str | None = Field(default=None, description="开始时间")
+    end_time: str | None = Field(default=None, description="结束时间")
+    variables: dict | None = Field(default=None, description="变量")
+    node_results: dict | None = Field(default=None, description="节点结果")
+    error: str | None = Field(default=None, description="错误信息")

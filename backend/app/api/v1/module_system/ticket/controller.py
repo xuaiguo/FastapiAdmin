@@ -22,7 +22,7 @@ TicketRouter = APIRouter(route_class=OperationLogRoute, prefix="/ticket", tags=[
 
 
 @TicketRouter.get("/list", summary="工单列表", response_model=ResponseSchema[PageResultSchema[TicketOutSchema]])
-async def ticket_list(
+async def ticket_list_controller(
     page: Annotated[PaginationQueryParam, Depends()],
     search: Annotated[TicketQueryParam, Depends()],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:ticket:query"]))],
@@ -49,8 +49,8 @@ async def ticket_list(
 
 
 @TicketRouter.get("/detail/{id}", summary="工单详情", response_model=ResponseSchema[TicketOutSchema])
-async def ticket_detail(
-    id: Annotated[int, Path()],
+async def ticket_detail_controller(
+    id: Annotated[int, Path(description="ID")],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:ticket:query"]))],
 ) -> JSONResponse:
     """
@@ -68,7 +68,7 @@ async def ticket_detail(
 
 
 @TicketRouter.post("/create", summary="创建工单", response_model=ResponseSchema[TicketOutSchema])
-async def ticket_create(
+async def ticket_create_controller(
     data: TicketCreateSchema,
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:ticket:create"]))],
 ) -> JSONResponse:
@@ -87,8 +87,8 @@ async def ticket_create(
 
 
 @TicketRouter.put("/update/{id}", summary="更新工单", response_model=ResponseSchema[TicketOutSchema])
-async def ticket_update(
-    id: Annotated[int, Path()],
+async def ticket_update_controller(
+    id: Annotated[int, Path(description="ID")],
     data: TicketUpdateSchema,
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:ticket:update"]))],
 ) -> JSONResponse:
@@ -108,7 +108,7 @@ async def ticket_update(
 
 
 @TicketRouter.put("/batch", summary="批量更新工单", response_model=ResponseSchema)
-async def ticket_batch_update(
+async def ticket_batch_update_controller(
     data: TicketBatchSchema,
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:ticket:update"]))],
 ) -> JSONResponse:
@@ -127,7 +127,7 @@ async def ticket_batch_update(
 
 
 @TicketRouter.delete("/delete", summary="删除工单", response_model=ResponseSchema[None])
-async def ticket_delete(
+async def ticket_delete_controller(
     ids: Annotated[list[int], Body()],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:ticket:delete"]))],
 ) -> JSONResponse:

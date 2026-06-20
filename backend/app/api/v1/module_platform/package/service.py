@@ -3,6 +3,7 @@ from sqlalchemy import func, select
 
 from app.api.v1.module_platform.tenant.model import TenantModel
 from app.core.base_schema import AuthSchema
+from app.core.dependencies import require_superadmin
 from app.core.exceptions import CustomException
 from app.core.logger import logger
 
@@ -19,16 +20,27 @@ from .schema import (
 
 
 class PackageService:
-    """套餐模块服务层"""
+    """
+    套餐管理服务（仅超级管理员可操作）
+    """
 
     @classmethod
+    @require_superadmin
     async def detail_service(cls, auth: AuthSchema, id: int) -> PackageOutSchema:
-        obj = await PackageCRUD(auth).get(id=id)
-        if not obj:
-            raise CustomException(msg="套餐不存在")
-        return PackageOutSchema.model_validate(obj)
+        """
+        套餐详情
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - id (int): 套餐ID
+
+        返回:
+        - PackageOutSchema: 套餐详情
+        """
+        return await PackageCRUD(auth).get_or_404(id=id, out_schema=PackageOutSchema, msg="该数据不存在")
 
     @classmethod
+    @require_superadmin
     async def page_service(
         cls,
         auth: AuthSchema,
@@ -37,16 +49,40 @@ class PackageService:
         search: PackageQueryParam | None = None,
         order_by: list[dict[str, str]] | None = None,
     ) -> dict:
+        """
+        分页查询套餐
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - page_no (int): 页码
+        - page_size (int): 每页数量
+        - search (PackageQueryParam | None): 查询参数
+        - order_by (list[dict[str, str]] | None): 排序参数
+
+        返回:
+        - dict: 分页数据
+        """
         return await PackageCRUD(auth).page(
             offset=(page_no - 1) * page_size,
             limit=page_size,
             order_by=order_by or [{"sort": "asc"}, {"id": "asc"}],
-            search=search.__dict__ if search else {},
+            search=vars(search) if search else None,
             out_schema=PackageOutSchema,
         )
 
     @classmethod
+    @require_superadmin
     async def create_service(cls, auth: AuthSchema, data: PackageCreateSchema) -> PackageOutSchema:
+        """
+        创建套餐
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - data (PackageCreateSchema): 套餐创建模型
+
+        返回:
+        - PackageOutSchema: 套餐详情
+        """
         if await PackageCRUD(auth).get(name=data.name):
             raise CustomException(msg="创建失败，套餐名称已存在")
         if await PackageCRUD(auth).get(code=data.code):
@@ -58,10 +94,20 @@ class PackageService:
         return result
 
     @classmethod
+    @require_superadmin
     async def update_service(cls, auth: AuthSchema, id: int, data: PackageUpdateSchema) -> PackageOutSchema:
-        obj = await PackageCRUD(auth).get(id=id)
-        if not obj:
-            raise CustomException(msg="套餐不存在")
+        """
+        更新套餐
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - id (int): 套餐ID
+        - data (PackageUpdateSchema): 套餐更新模型
+
+        返回:
+        - PackageOutSchema: 套餐详情
+        """
+        obj = await PackageCRUD(auth).get_or_404(id=id)
 
         if data.name is not None:
             exist = await PackageCRUD(auth).get(name=data.name)
@@ -81,7 +127,18 @@ class PackageService:
         return PackageOutSchema.model_validate(updated)
 
     @classmethod
+    @require_superadmin
     async def delete_service(cls, auth: AuthSchema, ids: list[int]) -> None:
+        """
+        删除套餐
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - ids (list[int]): 套餐ID列表
+
+        返回:
+        - None
+        """
         if not ids:
             raise CustomException(msg="删除失败，删除对象不能为空")
 
@@ -96,7 +153,16 @@ class PackageService:
 
     @classmethod
     async def disable_cascade_service(cls, auth: AuthSchema, package_id: int) -> None:
-        """套餐禁用时日志记录受影响租户"""
+        """
+        套餐禁用时日志记录受影响租户
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - package_id (int): 套餐ID
+
+        返回:
+        - None
+        """
         stmt = select(TenantModel.id, TenantModel.name).where(
             TenantModel.package_id == package_id,
             TenantModel.status == 0,
@@ -109,32 +175,68 @@ class PackageService:
 
     @classmethod
     async def get_menus_service(cls, auth: AuthSchema, package_id: int) -> list[int]:
-        """获取套餐菜单权限（返回 menu_id 列表）"""
+        """
+        获取套餐菜单权限
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - package_id (int): 套餐ID
+
+        返回:
+        - list[int]: menu_id 列表
+        """
         stmt = select(PackageMenuModel.menu_id).where(PackageMenuModel.package_id == package_id)
         result = await auth.db.execute(stmt)
         return [row[0] for row in result.all()]
 
     @classmethod
     async def set_menus_service(cls, auth: AuthSchema, package_id: int, data: PackageMenuSetSchema) -> None:
-        """批量设置套餐菜单权限（先清空再写入）"""
+        """
+        批量设置套餐菜单权限（先清空再写入）
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - package_id (int): 套餐ID
+        - data (PackageMenuSetSchema): 菜单ID列表
+
+        返回:
+        - None
+        """
         await auth.db.execute(sa.delete(PackageMenuModel).where(PackageMenuModel.package_id == package_id))
         for menu_id in data.menu_ids:
             auth.db.add(PackageMenuModel(package_id=package_id, menu_id=menu_id))
         await auth.db.flush()
         logger.info(f"套餐[{package_id}]菜单权限已设置, count={len(data.menu_ids)}")
 
-    @staticmethod
-    async def get_package_menu_ids(auth: AuthSchema, package_id: int) -> list[int]:
-        """获取套餐包含的菜单ID列表"""
+    @classmethod
+    async def get_package_menu_ids(cls, auth: AuthSchema, package_id: int) -> list[int]:
+        """
+        获取套餐包含的菜单ID列表
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - package_id (int): 套餐ID
+
+        返回:
+        - list[int]: menu_id 列表
+        """
         stmt = select(PackageMenuModel.menu_id).where(PackageMenuModel.package_id == package_id)
         result = await auth.db.execute(stmt)
         return [row[0] for row in result.all()]
 
-    @staticmethod
-    async def get_tenant_available_menu_ids(auth: AuthSchema, tenant_id: int) -> list[int]:
-        """获取租户的完整可用菜单ID列表（仅从套餐菜单获取）
+    @classmethod
+    async def get_tenant_available_menu_ids(cls, auth: AuthSchema, tenant_id: int) -> list[int]:
+        """
+        获取租户的完整可用菜单ID列表（仅从套餐菜单获取）
 
         平台租户 (id=1) 返回全部启用菜单，不受套餐限制。
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - tenant_id (int): 租户ID
+
+        返回:
+        - list[int]: menu_id 列表
         """
         from app.api.v1.module_platform.menu.model import MenuModel
         from app.api.v1.module_platform.tenant.model import TenantModel
@@ -163,9 +265,18 @@ class PackageService:
         result = await auth.db.execute(menu_stmt)
         return [row[0] for row in result.all()]
 
-    @staticmethod
-    async def get_tenant_available_plugin_ids(auth: AuthSchema, tenant_id: int) -> list[int]:
-        """获取租户套餐可用的插件ID列表"""
+    @classmethod
+    async def get_tenant_available_plugin_ids(cls, auth: AuthSchema, tenant_id: int) -> list[int]:
+        """
+        获取租户套餐可用的插件ID列表
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - tenant_id (int): 租户ID
+
+        返回:
+        - list[int]: plugin_id 列表
+        """
         from app.api.v1.module_platform.tenant.model import TenantModel
 
         stmt = select(TenantModel).where(TenantModel.id == tenant_id).limit(1)
@@ -180,22 +291,40 @@ class PackageService:
         if pkg_status != 0:
             return []
 
-        plugin_stmt = select(PackagePluginModel.plugin_id).where(PackagePluginModel.package_id == tenant.package_id)
+        plugin_stmt = select(PackagePluginModel.plugin_id).where(PackagePluginModel.plugin_id == tenant.package_id)
         result = await auth.db.execute(plugin_stmt)
         return [row[0] for row in result.all()]
 
     @classmethod
     async def get_plugins_service(cls, auth: AuthSchema, package_id: int) -> list[int]:
-        """获取套餐插件权限（返回 plugin_id 列表）"""
-        stmt = select(PackagePluginModel.plugin_id).where(PackagePluginModel.package_id == package_id)
+        """
+        获取套餐插件权限
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - package_id (int): 套餐ID
+
+        返回:
+        - list[int]: plugin_id 列表
+        """
+        stmt = select(PackagePluginModel.plugin_id).where(PackagePluginModel.plugin_id == package_id)
         result = await auth.db.execute(stmt)
         return [row[0] for row in result.all()]
 
     @classmethod
     async def set_plugins_service(cls, auth: AuthSchema, package_id: int, data: PackagePluginSetSchema) -> None:
-        """批量设置套餐插件（先清空再写入）"""
+        """
+        批量设置套餐插件（先清空再写入）
+
+        参数:
+        - auth (AuthSchema): 认证信息模型
+        - package_id (int): 套餐ID
+        - data (PackagePluginSetSchema): 插件ID列表
+
+        返回:
+        - None
+        """
         await auth.db.execute(sa.delete(PackagePluginModel).where(PackagePluginModel.package_id == package_id))
         for plugin_id in data.plugin_ids:
             auth.db.add(PackagePluginModel(package_id=package_id, plugin_id=plugin_id))
         await auth.db.flush()
-        logger.info(f"套餐[{package_id}]插件已设置, count={len(data.plugin_ids)}")

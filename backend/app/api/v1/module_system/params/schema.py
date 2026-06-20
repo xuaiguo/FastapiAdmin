@@ -1,3 +1,6 @@
+import re
+from dataclasses import dataclass
+
 from fastapi import Query
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -7,21 +10,22 @@ from app.core.base_schema import BaseSchema, TenantBySchema, UserBySchema
 
 
 class ParamsCreateSchema(BaseModel):
-    """配置创建模型"""
+    """
+    参数创建模型
+    """
 
     config_name: str = Field(..., min_length=1, max_length=64, description="参数名称")
-    config_key: str = Field(..., min_length=1, max_length=500, description="参数键名")
+    config_key: str = Field(..., min_length=1, max_length=500, description="参数键名（小写字母开头，仅允许字母数字_.-）")
     config_value: str | None = Field(default=None, max_length=500, description="参数键值")
-    config_type: bool = Field(default=False, description="是否系统内置")
+    config_type: bool = Field(default=False, description="是否系统内置(True:是 False:否)")
     status: int = Field(default=0, ge=0, le=1, description="状态(0:正常 1:停用)")
-    description: str | None = Field(default=None, max_length=500, description="描述")
+    description: str | None = Field(default=None, max_length=500, description="参数描述")
 
     @field_validator("config_key")
     @classmethod
     def _validate_config_key(cls, v: str) -> str:
+        """校验参数键名：小写字母开头，仅含字母/数字/_ . -"""
         v = v.strip().lower()
-        import re
-
         if not re.match(r"^[a-z][a-z0-9_.-]*$", v):
             raise ValueError("参数键名必须以小写字母开头，仅允许小写字母、数字、_ . -")
         return v
@@ -29,33 +33,50 @@ class ParamsCreateSchema(BaseModel):
     @field_validator("status")
     @classmethod
     def _validate_status(cls, v: int) -> int:
+        """校验状态：仅支持 0(正常) 或 1(停用)"""
         if v not in {0, 1}:
             raise ValueError("状态仅支持 0(正常) 或 1(停用)")
         return v
 
 
 class ParamsUpdateSchema(ParamsCreateSchema):
-    """配置更新模型"""
+    """
+    参数更新模型
+    """
 
 
 class ParamsOutSchema(ParamsCreateSchema, BaseSchema, UserBySchema, TenantBySchema):
-    """配置响应模型"""
+    """
+    参数响应模型
+    """
 
     model_config = ConfigDict(from_attributes=True)
 
 
+@dataclass
 class ParamsQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
-    """配置管理查询参数"""
+    """
+    参数管理查询参数
+
+    支持：
+    - 时间范围（BaseQueryParam）
+    - 创建人/更新人筛选（UserByQueryParam）
+    - 租户筛选（TenantByQueryParam）
+    - 业务字段：参数名称、参数键名、是否系统内置
+    """
 
     def __init__(
         self,
-        config_name: str | None = Query(None, description="配置名称"),
-        config_key: str | None = Query(None, description="配置键名"),
-        config_type: bool | None = Query(None, description="系统内置((True:是 False:否))"),
+        config_name: str | None = Query(None, description="参数名称"),
+        config_key: str | None = Query(None, description="参数键名"),
+        config_type: bool | None = Query(None, description="是否系统内置(True:是 False:否)"),
         *args,
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.config_name = (QueueEnum.like.value, config_name)
-        self.config_key = (QueueEnum.like.value, config_key)
-        self.config_type = (QueueEnum.eq.value, config_type)
+        if config_name:
+            self.config_name = (QueueEnum.like.value, config_name)
+        if config_key:
+            self.config_key = (QueueEnum.like.value, config_key)
+        if config_type is not None:
+            self.config_type = (QueueEnum.eq.value, config_type)

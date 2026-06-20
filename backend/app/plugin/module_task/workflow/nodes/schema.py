@@ -1,4 +1,5 @@
 import re
+from dataclasses import dataclass
 
 from fastapi import Query
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -64,6 +65,7 @@ class WorkflowNodeTypeOutSchema(WorkflowNodeTypeCreateSchema, BaseSchema, UserBy
     model_config = ConfigDict(from_attributes=True)
 
 
+@dataclass
 class WorkflowNodeTypeQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
     """查询"""
 
@@ -77,7 +79,7 @@ class WorkflowNodeTypeQueryParam(BaseQueryParam, UserByQueryParam, TenantByQuery
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.name = (QueueEnum.like.value, name)
-        self.code = (QueueEnum.like.value, code)
-        self.category = (QueueEnum.eq.value, category)
-        self.is_active = (QueueEnum.eq.value, is_active)
+        self.name = (QueueEnum.like.value, name) if name else None
+        self.code = (QueueEnum.like.value, code) if code else None
+        self.category = (QueueEnum.eq.value, category) if category else None
+        self.is_active = (QueueEnum.eq.value, is_active) if is_active is not None else None

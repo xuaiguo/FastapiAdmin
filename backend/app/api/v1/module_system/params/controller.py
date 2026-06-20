@@ -22,7 +22,7 @@ ParamsRouter = APIRouter(route_class=OperationLogRoute, prefix="/param", tags=["
     summary="获取参数详情",
     response_model=ResponseSchema[ParamsOutSchema],
 )
-async def get_type_detail_controller(
+async def get_param_detail_controller(
     id: Annotated[int, Path(description="参数ID")],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:param:detail"]))],
 ) -> JSONResponse:
@@ -36,7 +36,7 @@ async def get_type_detail_controller(
     返回:
     - JSONResponse: 包含参数详情的 JSON 响应
     """
-    result_dict = await ParamsService.get_obj_detail_service(id=id, auth=auth)
+    result_dict = await ParamsService.detail_service(id=id, auth=auth)
     return SuccessResponse(data=result_dict, msg="获取参数详情成功")
 
 
@@ -45,7 +45,7 @@ async def get_type_detail_controller(
     summary="根据配置键获取参数详情",
     response_model=ResponseSchema[ParamsOutSchema],
 )
-async def get_obj_by_key_controller(
+async def get_param_by_key_controller(
     config_key: Annotated[str, Path(description="配置键")],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:param:query"]))],
 ) -> JSONResponse:
@@ -59,7 +59,7 @@ async def get_obj_by_key_controller(
     返回:
     - JSONResponse: 包含参数详情的 JSON 响应
     """
-    result_dict = await ParamsService.get_obj_by_key_service(config_key=config_key, auth=auth)
+    result_dict = await ParamsService.get_by_key_service(config_key=config_key, auth=auth)
     return SuccessResponse(data=result_dict, msg="根据配置键获取参数详情成功")
 
 
@@ -91,7 +91,7 @@ async def get_config_value_by_key_controller(
     summary="获取参数列表",
     response_model=ResponseSchema[PageResultSchema[ParamsOutSchema]],
 )
-async def get_obj_list_controller(
+async def get_param_list_controller(
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:param:query"]))],
     page: Annotated[PaginationQueryParam, Depends()],
     search: Annotated[ParamsQueryParam, Depends()],
@@ -107,7 +107,7 @@ async def get_obj_list_controller(
     返回:
     - JSONResponse: 包含参数列表的 JSON 响应
     """
-    result_dict = await ParamsService.get_obj_page_service(
+    result_dict = await ParamsService.page_service(
         auth=auth,
         page_no=page.page_no,
         page_size=page.page_size,
@@ -122,7 +122,7 @@ async def get_obj_list_controller(
     summary="创建参数",
     response_model=ResponseSchema[ParamsOutSchema],
 )
-async def create_obj_controller(
+async def create_param_controller(
     data: ParamsCreateSchema,
     redis: Annotated[Redis, Depends(redis_getter)],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:param:create"]))],
@@ -138,7 +138,7 @@ async def create_obj_controller(
     返回:
     - JSONResponse: 包含创建参数结果的 JSON 响应
     """
-    result_dict = await ParamsService.create_obj_service(auth=auth, redis=redis, data=data)
+    result_dict = await ParamsService.create_service(auth=auth, redis=redis, data=data)
     return SuccessResponse(data=result_dict, msg="创建参数成功")
 
 
@@ -147,7 +147,7 @@ async def create_obj_controller(
     summary="修改参数",
     response_model=ResponseSchema[ParamsOutSchema],
 )
-async def update_objs_controller(
+async def update_param_controller(
     data: ParamsUpdateSchema,
     id: Annotated[int, Path(description="参数ID")],
     redis: Annotated[Redis, Depends(redis_getter)],
@@ -165,7 +165,7 @@ async def update_objs_controller(
     返回:
     - JSONResponse: 包含修改参数结果的 JSON 响应
     """
-    result_dict = await ParamsService.update_obj_service(auth=auth, redis=redis, id=id, data=data)
+    result_dict = await ParamsService.update_service(auth=auth, redis=redis, id=id, data=data)
     return SuccessResponse(data=result_dict, msg="更新参数成功")
 
 
@@ -174,7 +174,7 @@ async def update_objs_controller(
     summary="删除参数",
     response_model=ResponseSchema[ParamsOutSchema],
 )
-async def delete_obj_controller(
+async def delete_param_controller(
     redis: Annotated[Redis, Depends(redis_getter)],
     ids: Annotated[list[int], Body(description="ID列表")],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:param:delete"]))],
@@ -190,7 +190,7 @@ async def delete_obj_controller(
     返回:
     - JSONResponse: 包含删除参数结果的 JSON 响应
     """
-    await ParamsService.delete_obj_service(auth=auth, redis=redis, ids=ids)
+    await ParamsService.delete_service(auth=auth, redis=redis, ids=ids)
     return SuccessResponse(msg="删除参数成功")
 
 
@@ -224,7 +224,7 @@ async def batch_set_status_controller(
     summary="导出参数",
     response_model=ResponseSchema[None],
 )
-async def export_obj_list_controller(
+async def export_param_list_controller(
     search: Annotated[ParamsQueryParam, Depends()],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:param:export"]))],
 ) -> StreamingResponse:
@@ -238,9 +238,9 @@ async def export_obj_list_controller(
     返回:
     - StreamingResponse: 包含导出参数的 Excel 文件流响应
     """
-    result_dict_list = await ParamsService.get_obj_list_service(search=search, auth=auth)
+    result_dict_list = await ParamsService.list_service(search=search, auth=auth)
     export_data = [item.model_dump() for item in result_dict_list]
-    export_result = await ParamsService.export_obj_service(data_list=export_data)
+    export_result = await ParamsService.export_service(data_list=export_data)
 
     return StreamResponse(
         data=bytes2file_response(export_result),
@@ -254,7 +254,7 @@ async def export_obj_list_controller(
     summary="获取初始化缓存参数",
     response_model=ResponseSchema[list[ParamsOutSchema]],
 )
-async def get_init_obj_controller(
+async def get_init_config_controller(
     redis: Annotated[Redis, Depends(redis_getter)],
 ) -> JSONResponse:
     """
@@ -266,5 +266,5 @@ async def get_init_obj_controller(
     返回:
     - JSONResponse: 获取初始化缓存参数的 JSON 响应
     """
-    result_dict = await ParamsService.get_init_config_service(redis=redis, tenant_id=1)
+    result_dict = await ParamsService.get_init_cache_service(redis=redis, tenant_id=1)
     return SuccessResponse(data=result_dict, msg="获取初始化缓存参数成功")

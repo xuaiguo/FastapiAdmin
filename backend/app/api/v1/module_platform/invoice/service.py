@@ -39,8 +39,8 @@ def _generate_invoice_no() -> str:
 class InvoiceTenantService:
     """租户端发票服务"""
 
-    @staticmethod
-    async def apply(auth: AuthSchema, data: InvoiceApplySchema, tenant_id: int) -> InvoiceOutSchema:
+    @classmethod
+    async def apply(cls, auth: AuthSchema, data: InvoiceApplySchema, tenant_id: int) -> InvoiceOutSchema:
         """
         租户申请开票
 
@@ -97,8 +97,8 @@ class InvoiceTenantService:
         logger.info(f"发票申请成功: invoice_no={invoice.invoice_no}, order_id={data.order_id}")
         return InvoiceOutSchema.model_validate(invoice)
 
-    @staticmethod
-    async def list_my(auth: AuthSchema, tenant_id: int, params: InvoiceQueryParam) -> dict:
+    @classmethod
+    async def list_my(cls, auth: AuthSchema, tenant_id: int, params: InvoiceQueryParam) -> dict:
         """
         租户查询自己的发票列表
 
@@ -127,8 +127,8 @@ class InvoiceTenantService:
 class InvoicePlatformService:
     """平台端发票服务"""
 
-    @staticmethod
-    async def list_all(auth: AuthSchema, params: InvoiceQueryParam) -> dict:
+    @classmethod
+    async def list_all(cls, auth: AuthSchema, params: InvoiceQueryParam) -> dict:
         """
         平台查询全部发票列表
 
@@ -154,8 +154,8 @@ class InvoicePlatformService:
             out_schema=InvoiceOutSchema,
         )
 
-    @staticmethod
-    async def issue(auth: AuthSchema, invoice_id: int, pdf_url: str, api_response: str) -> InvoiceOutSchema:
+    @classmethod
+    async def issue(cls, auth: AuthSchema, invoice_id: int, pdf_url: str, api_response: str) -> InvoiceOutSchema:
         """
         平台开具发票
 
@@ -211,8 +211,8 @@ class InvoicePlatformService:
         logger.info(f"发票开具成功: invoice_no={invoice.invoice_no}")
         return InvoiceOutSchema.model_validate(invoice)
 
-    @staticmethod
-    async def void(auth: AuthSchema, invoice_id: int, data: InvoiceVoidSchema) -> InvoiceOutSchema:
+    @classmethod
+    async def void(cls, auth: AuthSchema, invoice_id: int, data: InvoiceVoidSchema) -> InvoiceOutSchema:
         """
         平台作废发票
 

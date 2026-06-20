@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 from urllib.parse import urlparse
 
@@ -187,6 +188,7 @@ class ResourceCreateDirSchema(BaseModel):
         return value.strip()
 
 
+@dataclass
 class ResourceSearchQueryParam:
     """资源搜索查询参数"""
 

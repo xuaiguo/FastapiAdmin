@@ -94,7 +94,8 @@ class DemoQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.name = (QueueEnum.like.value, name)
+        if name:
+            self.name = (QueueEnum.like.value, name)
         if description:
             self.description = (QueueEnum.like.value, description)
         if status:

@@ -11,6 +11,7 @@ class JobModel(ModelMixin, TenantMixin):
 
     __tablename__: str = "task_job"
     __table_args__: dict[str, str] = {"comment": "任务执行日志表"}
+    __loader_options__: list[str] = ["tenant_by"]
 
     job_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True, comment="任务ID")
     job_name: Mapped[str | None] = mapped_column(String(128), nullable=True, comment="任务名称")

@@ -29,7 +29,7 @@ LogRouter = APIRouter(route_class=OperationLogRoute, prefix="/log", tags=["日�
     summary="获取登录日志详情",
     response_model=ResponseSchema[LoginLogDetailOutSchema],
 )
-async def get_obj_detail_controller(
+async def get_log_detail_controller(
     id: Annotated[int, Path(description="登录日志ID")],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:login_log:query"]))],
 ) -> JSONResponse:
@@ -52,7 +52,7 @@ async def get_obj_detail_controller(
     summary="查询登录日志列表",
     response_model=ResponseSchema[PageResultSchema[LoginLogOutSchema]],
 )
-async def get_obj_list_controller(
+async def get_log_list_controller(
     page: Annotated[PaginationQueryParam, Depends()],
     search: Annotated[LoginLogQueryParam, Depends()],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:login_log:query"]))],
@@ -83,7 +83,7 @@ async def get_obj_list_controller(
     summary="创建登录日志",
     response_model=ResponseSchema[LoginLogDetailOutSchema],
 )
-async def create_obj_controller(
+async def create_log_controller(
     data: LoginLogCreateSchema,
     auth: Annotated[AuthSchema, Depends(get_current_user)],
 ) -> JSONResponse:
@@ -106,7 +106,7 @@ async def create_obj_controller(
     summary="删除登录日志",
     response_model=ResponseSchema,
 )
-async def delete_obj_controller(
+async def delete_log_controller(
     ids: Annotated[list[int], Body(description="ID列表")],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:login_log:delete"]))],
 ) -> JSONResponse:
@@ -130,7 +130,7 @@ async def delete_obj_controller(
     response_model=ResponseSchema[OperationLogDetailOutSchema],
     dependencies=[Depends(AuthPermission(["module_system:log:query"]))],
 )
-async def detail(
+async def get_operation_log_detail_controller(
     *,
     id: Annotated[int, Path(gt=0)],
     auth: Annotated[AuthSchema, Depends(get_current_user)],
@@ -145,7 +145,7 @@ async def detail(
     返回:
     - JSONResponse: 包含操作日志详情的 JSON 响应。
     """
-    result_dict = await OperationLogService.detail_service(auth, id)
+    result_dict = await OperationLogService.detail_service(auth=auth, id=id)
     return SuccessResponse(data=result_dict, msg="获取操作日志详情成功")
 
 
@@ -187,7 +187,7 @@ async def list(
     summary="创建操作日志",
     response_model=ResponseSchema[OperationLogDetailOutSchema],
 )
-async def create(
+async def create_operation_log_controller(
     *,
     data: OperationLogCreateSchema,
     auth: Annotated[AuthSchema, Depends(get_current_user)],
@@ -202,7 +202,7 @@ async def create(
     返回:
     - JSONResponse: 包含创建后的操作日志详情的 JSON 响应。
     """
-    result_dict = await OperationLogService.create_service(auth, data)
+    result_dict = await OperationLogService.create_service(auth=auth, data=data)
     return SuccessResponse(data=result_dict, msg="创建操作日志成功")
 
 
@@ -227,5 +227,5 @@ async def delete(
     返回:
     - JSONResponse: 删除结果。
     """
-    await OperationLogService.delete_service(auth, data.ids)
+    await OperationLogService.delete_service(auth=auth, ids=data.ids)
     return SuccessResponse(msg="删除操作日志成功")

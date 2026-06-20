@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, ForeignKey, Integer, String
+from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy.sql import expression
 
@@ -14,7 +14,7 @@ class GenTableModel(ModelMixin, TenantMixin, UserMixin):
 
     __tablename__: str = "gen_table"
     __table_args__: dict[str, str] = {"comment": "代码生成表"}
-    __loader_options__: list[str] = ["columns", "created_by", "updated_by", "deleted_by"]
+    __loader_options__: list[str] = ["columns", "created_by", "updated_by", "deleted_by", "tenant_by"]
 
     table_name: Mapped[str] = mapped_column(String(200), nullable=False, default="", comment="表名称")
     table_comment: Mapped[str | None] = mapped_column(String(500), nullable=True, comment="表描述")
@@ -50,7 +50,7 @@ class GenTableColumnModel(ModelMixin, TenantMixin, UserMixin):
 
     __tablename__: str = "gen_table_column"
     __table_args__: dict[str, str] = {"comment": "代码生成表字段"}
-    __loader_options__: list[str] = ["created_by", "updated_by", "deleted_by"]
+    __loader_options__: list[str] = ["created_by", "updated_by", "deleted_by", "tenant_by"]
 
     column_name: Mapped[str] = mapped_column(String(200), nullable=False, comment="列名称")
     column_comment: Mapped[str | None] = mapped_column(String(500), nullable=True, comment="列描述")

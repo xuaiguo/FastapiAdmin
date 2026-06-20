@@ -26,62 +26,61 @@ _mid_config_cache: dict = {"ts": 0.0, "data": None}
 
 class ParamsService:
     """
-    配置管理模块服务层
+    参数管理服务
+
+    提供参数 CRUD、Redis 缓存同步、初始化配置、批量启/禁用、Excel 导出等业务能力。
     """
 
     @classmethod
-    async def get_obj_detail_service(cls, auth: AuthSchema, id: int) -> ParamsOutSchema:
+    async def detail_service(cls, auth: AuthSchema, id: int) -> ParamsOutSchema:
         """
-        获取配置详情
+        获取参数详情
 
         参数:
         - auth (AuthSchema): 认证信息模型
-        - id (int): 配置管理型ID
+        - id (int): 参数ID
 
         返回:
-        - dict: 配置管理型模型实例字典表示
+        - ParamsOutSchema: 参数响应模型
         """
-        obj = await ParamsCRUD(auth).get(id=id)
-        if not obj:
-            raise CustomException(msg="参数不存在")
-        return ParamsOutSchema.model_validate(obj)
+        return await ParamsCRUD(auth).get_or_404(id=id, out_schema=ParamsOutSchema)
 
     @classmethod
-    async def get_obj_by_key_service(cls, auth: AuthSchema, config_key: str) -> ParamsOutSchema:
+    async def get_by_key_service(cls, auth: AuthSchema, config_key: str) -> ParamsOutSchema:
         """
-        根据配置键获取配置详情
+        根据配置键获取参数详情
 
         参数:
         - auth (AuthSchema): 认证信息模型
-        - config_key (str): 配置管理型key
+        - config_key (str): 参数键名
 
         返回:
-        - Dict: 配置管理型模型实例字典表示
+        - ParamsOutSchema: 参数响应模型
         """
         obj = await ParamsCRUD(auth).get(config_key=config_key)
         if not obj:
-            raise CustomException(msg=f"配置键 {config_key} 不存在")
+            raise CustomException(msg="该数据不存在")
         return ParamsOutSchema.model_validate(obj)
 
     @classmethod
     async def get_config_value_by_key_service(cls, auth: AuthSchema, config_key: str) -> str | None:
         """
-        根据配置键获取配置值
+        根据配置键获取参数值
 
         参数:
         - auth (AuthSchema): 认证信息模型
-        - config_key (str): 配置管理型key
+        - config_key (str): 参数键名
 
         返回:
-        - str | None: 配置值字符串或None
+        - str | None: 参数键值字符串或 None
         """
         obj = await ParamsCRUD(auth).get(config_key=config_key)
         if not obj:
-            raise CustomException(msg=f"配置键 {config_key} 不存在")
+            raise CustomException(msg="该数据不存在")
         return obj.config_value
 
     @classmethod
-    async def get_obj_list_service(
+    async def list_service(
         cls,
         auth: AuthSchema,
         search: ParamsQueryParam | None = None,
@@ -96,13 +95,13 @@ class ParamsService:
         - order_by (list[dict] | None): 排序参数列表
 
         返回:
-        - list[ParamsOutSchema]: 配置管理型模型实例
+        - list[ParamsOutSchema]: 参数响应模型列表
         """
-        obj_list = await ParamsCRUD(auth).list(search=search.__dict__ if search else {}, order_by=order_by)
+        obj_list = await ParamsCRUD(auth).list(search=vars(search) if search else None, order_by=order_by)
         return [ParamsOutSchema.model_validate(obj) for obj in obj_list]
 
     @classmethod
-    async def get_obj_page_service(
+    async def page_service(
         cls,
         auth: AuthSchema,
         page_no: int,
@@ -128,12 +127,12 @@ class ParamsService:
             offset=offset,
             limit=page_size,
             order_by=order_by or [{"id": "asc"}],
-            search=search.__dict__ if search else {},
+            search=vars(search) if search else None,
             out_schema=ParamsOutSchema,
         )
 
     @classmethod
-    async def create_obj_service(cls, auth: AuthSchema, redis: Redis, data: ParamsCreateSchema) -> ParamsOutSchema:
+    async def create_service(cls, auth: AuthSchema, redis: Redis, data: ParamsCreateSchema) -> ParamsOutSchema:
         """
         创建配置管理型
 
@@ -143,11 +142,11 @@ class ParamsService:
         - data (ParamsCreateSchema): 配置管理型创建模型
 
         返回:
-        - dict: 新创建的配置管理型模型实例字典表示
+        - ParamsOutSchema: 新创建的参数响应模型
         """
         exist_obj = await ParamsCRUD(auth).get(config_key=data.config_key)
         if exist_obj:
-            raise CustomException(msg="创建失败，该配置key已存在")
+            raise CustomException(msg="创建失败，该数据已存在")
         obj = await ParamsCRUD(auth).create(data=data)
 
         out = ParamsOutSchema.model_validate(obj)
@@ -167,27 +166,25 @@ class ParamsService:
                 raise CustomException(msg="同步配置到缓存失败")
         except Exception as e:
             logger.error(f"创建字典类型失败: {e}")
-            raise CustomException(msg=f"创建字典类型失败 {e}")
+            raise CustomException(msg="同步配置到缓存失败") from e
 
         return out
 
     @classmethod
-    async def update_obj_service(cls, auth: AuthSchema, redis: Redis, id: int, data: ParamsUpdateSchema) -> ParamsOutSchema:
+    async def update_service(cls, auth: AuthSchema, redis: Redis, id: int, data: ParamsUpdateSchema) -> ParamsOutSchema:
         """
-        更新配置管理型
+        更新参数
 
         参数:
         - auth (AuthSchema): 认证信息模型
         - redis (Redis): Redis 客户端实例
-        - id (int): 配置管理型ID
-        - data (ParamsUpdateSchema): 配置管理型更新模型
+        - id (int): 参数ID
+        - data (ParamsUpdateSchema): 参数更新模型
 
         返回:
-        - Dict: 更新后的配置管理型模型实例字典表示
+        - ParamsOutSchema: 更新后的参数响应模型
         """
-        exist_obj = await ParamsCRUD(auth).get(id=id)
-        if not exist_obj:
-            raise CustomException(msg="更新失败，该数系统配置不存在")
+        exist_obj = await ParamsCRUD(auth).get_or_404(id=id, msg="更新失败，该数据不存在")
         if exist_obj.config_key != data.config_key:
             raise CustomException(msg="更新失败，系统配置key不允许修改")
 
@@ -211,12 +208,12 @@ class ParamsService:
                 raise CustomException(msg="同步配置到缓存失败")
         except Exception as e:
             logger.error(f"更新系统配置失败: {e}")
-            raise CustomException(msg="更新系统配置失败")
+            raise CustomException(msg="同步配置到缓存失败") from e
 
         return out
 
     @classmethod
-    async def delete_obj_service(cls, auth: AuthSchema, redis: Redis, ids: list[int]) -> None:
+    async def delete_service(cls, auth: AuthSchema, redis: Redis, ids: list[int]) -> None:
         """
         删除配置管理型
 
@@ -236,7 +233,7 @@ class ParamsService:
         for pid in ids:
             obj = obj_map.get(pid)
             if not obj:
-                raise CustomException(msg="删除失败，该数据字典类型不存在")
+                raise CustomException(msg="删除失败，该数据不存在")
             if obj.config_type:
                 raise CustomException(msg=f"{obj.config_name} 删除失败，系统初始化配置不可以删除")
 
@@ -249,7 +246,7 @@ class ParamsService:
                 await RedisCURD(redis).delete(redis_key)
             except Exception as e:
                 logger.error(f"删除系统配置失败: {e}")
-                raise CustomException(msg="删除字典类型失败")
+                raise CustomException(msg="同步删除缓存失败") from e
 
     @classmethod
     async def batch_set_status_service(cls, auth: AuthSchema, ids: list[int], status: str) -> None:
@@ -270,15 +267,15 @@ class ParamsService:
         await ParamsCRUD(auth).set(ids=ids, status=status)
 
     @classmethod
-    async def export_obj_service(cls, data_list: list[dict]) -> bytes:
+    async def export_service(cls, data_list: list[dict]) -> bytes:
         """
-        导出系统配置列表
+        导出参数列表
 
         参数:
-        - data_list (list[dict]): 系统配置模型实例字典列表表示
+        - data_list (list[dict]): 参数字典列表
 
         返回:
-        - bytes: Excel文件二进制数据
+        - bytes: Excel 文件字节流
         """
         mapping_dict = {
             "id": "编号",
@@ -302,7 +299,7 @@ class ParamsService:
         return ExcelUtil.export_list2excel(list_data=data, mapping_dict=mapping_dict)
 
     @classmethod
-    async def init_config_service(cls, redis: Redis) -> None:
+    async def init_cache_service(cls, redis: Redis) -> None:
         """
         初始化系统配置并按租户缓存。
 
@@ -317,7 +314,7 @@ class ParamsService:
                 auth = AuthSchema(db=session, check_data_scope=False)
                 config_obj = await ParamsCRUD(auth).list()
                 if not config_obj:
-                    raise CustomException(msg="系统配置不存在")
+                    raise CustomException(msg="该数据不存在")
                 try:
                     for config in config_obj:
                         tenant_id = config.tenant_id
@@ -335,10 +332,10 @@ class ParamsService:
                             raise CustomException(msg="初始化系统配置失败")
                 except Exception as e:
                     logger.error(f"❌️ 初始化系统配置失败: {e}")
-                    raise CustomException(msg="初始化系统配置失败")
+                    raise CustomException(msg="初始化系统配置失败") from e
 
     @classmethod
-    async def get_init_config_service(cls, redis: Redis, tenant_id: int = 1) -> list[dict]:
+    async def get_init_cache_service(cls, redis: Redis, tenant_id: int = 1) -> list[dict]:
         """
         获取系统配置
 
@@ -347,7 +344,7 @@ class ParamsService:
         - tenant_id (int): 租户ID
 
         返回:
-        - list[dict]: 系统配置模型实例字典列表表示
+        - list[dict]: 系统配置字典列表
         """
         redis_keys = await RedisCURD(redis).get_keys(f"{RedisInitKeyConfig.SYSTEM_CONFIG.key}:{tenant_id}:*")
         redis_configs = await RedisCURD(redis).mget(redis_keys)

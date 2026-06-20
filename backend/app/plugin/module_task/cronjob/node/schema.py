@@ -1,4 +1,5 @@
 import re
+from dataclasses import dataclass
 
 from fastapi import Query
 from pydantic import (
@@ -72,6 +73,7 @@ class NodeOutSchema(NodeCreateSchema, BaseSchema, UserBySchema, TenantBySchema):
     model_config = ConfigDict(from_attributes=True)
 
 
+@dataclass
 class NodeQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
     """节点查询参数"""
 
@@ -82,7 +84,7 @@ class NodeQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.name = (QueueEnum.like.value, name)
+        self.name = (QueueEnum.like.value, name) if name else None
 
 
 class NodeExecuteSchema(BaseModel):

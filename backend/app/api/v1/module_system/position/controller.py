@@ -50,7 +50,7 @@ async def get_obj_list_controller(
     order_by = [{"order": "asc"}]
     if page.order_by:
         order_by = page.order_by
-    result_dict = await PositionService.get_position_page_service(
+    result_dict = await PositionService.page_service(
         auth=auth,
         page_no=page.page_no,
         page_size=page.page_size,
@@ -79,7 +79,7 @@ async def get_obj_detail_controller(
     返回:
     - JSONResponse: 岗位详情对象
     """
-    result_dict = await PositionService.get_position_detail_service(id=id, auth=auth)
+    result_dict = await PositionService.detail_service(id=id, auth=auth)
     return SuccessResponse(data=result_dict, msg="获取岗位详情成功")
 
 
@@ -102,7 +102,7 @@ async def create_obj_controller(
     返回:
     - JSONResponse: 岗位详情对象
     """
-    result_dict = await PositionService.create_position_service(data=data, auth=auth)
+    result_dict = await PositionService.create_service(data=data, auth=auth)
     await FastAPICache.clear(namespace=_POS_NS)
     return SuccessResponse(data=result_dict, msg="创建岗位成功")
 
@@ -128,7 +128,7 @@ async def update_obj_controller(
     返回:
     - JSONResponse: 岗位详情对象
     """
-    result_dict = await PositionService.update_position_service(id=id, data=data, auth=auth)
+    result_dict = await PositionService.update_service(id=id, data=data, auth=auth)
     await FastAPICache.clear(namespace=_POS_NS)
     return SuccessResponse(data=result_dict, msg="修改岗位成功")
 
@@ -152,7 +152,7 @@ async def delete_obj_controller(
     返回:
     - JSONResponse: 成功消息
     """
-    await PositionService.delete_position_service(ids=ids, auth=auth)
+    await PositionService.delete_service(ids=ids, auth=auth)
     await FastAPICache.clear(namespace=_POS_NS)
     return SuccessResponse(msg="删除岗位成功")
 
@@ -176,7 +176,7 @@ async def batch_set_available_obj_controller(
     返回:
     - JSONResponse: 成功消息
     """
-    await PositionService.set_position_available_service(data=data, auth=auth)
+    await PositionService.set_available_service(data=data, auth=auth)
     await FastAPICache.clear(namespace=_POS_NS)
     return SuccessResponse(msg="批量修改岗位状态成功")
 
@@ -200,8 +200,8 @@ async def export_obj_list_controller(
     返回:
     - StreamingResponse: 岗位Excel文件流
     """
-    position_query_result = await PositionService.get_position_list_service(search=search, auth=auth)
-    position_export_result = await PositionService.export_position_list_service(position_list=position_query_result)
+    position_query_result = await PositionService.list_service(search=search, auth=auth)
+    position_export_result = await PositionService.export_list_service(position_list=position_query_result)
 
     return StreamResponse(
         data=bytes2file_response(position_export_result),

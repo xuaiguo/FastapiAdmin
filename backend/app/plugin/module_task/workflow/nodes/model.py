@@ -14,7 +14,7 @@ class WorkflowNodeTypeModel(ModelMixin, TenantMixin, UserMixin):
         UniqueConstraint("tenant_id", "code"),
         {"comment": "工作流编排节点类型（非定时任务节点）"},
     )
-    __loader_options__: list[str] = ["created_by", "updated_by", "deleted_by"]
+    __loader_options__: list[str] = ["created_by", "updated_by", "deleted_by", "tenant_by"]
 
     name: Mapped[str] = mapped_column(String(128), nullable=False, comment="显示名称")
     code: Mapped[str] = mapped_column(String(64), nullable=False, comment="节点编码，对应画布 node.type")

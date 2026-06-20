@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+from fastapi import Query
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.common.enums import QueueEnum
@@ -10,7 +13,6 @@ class PluginCreateSchema(BaseModel):
 
     name: str = Field(..., min_length=1, max_length=100, description="插件名称")
     code: str = Field(..., min_length=1, max_length=50, description="插件编码（如 module_xxx）")
-    description: str | None = Field(default=None, max_length=255, description="插件描述")
     version: str = Field(default="1.0.0", max_length=20, description="版本号")
     author: str | None = Field(default=None, max_length=100, description="作者")
     icon: str | None = Field(default=None, max_length=500, description="图标URL")
@@ -21,6 +23,7 @@ class PluginCreateSchema(BaseModel):
     dependencies: str | None = Field(default=None, description="依赖插件编码(JSON数组)")
     sort: int = Field(default=0, ge=0, description="排序")
     status: int = Field(default=0, ge=0, le=1, description="状态(0:启动 1:停用)")
+    description: str | None = Field(default=None, max_length=255, description="插件描述")
 
     @field_validator("category")
     @classmethod
@@ -79,13 +82,14 @@ class PluginInstallSchema(BaseModel):
     plugin_id: int = Field(..., description="插件ID")
 
 
+@dataclass
 class PluginQueryParam(BaseQueryParam):
     """插件查询参数"""
 
     def __init__(
         self,
-        name: str | None = None,
-        category: str | None = None,
+        name: str | None = Query(None, description="插件名称"),
+        category: str | None = Query(None, description="插件分类(tool/ai/monitor/business)"),
         *args,
         **kwargs,
     ) -> None:

@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import ForeignKey, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.base_model import ModelMixin, TenantMixin, UserMixin
+
+if TYPE_CHECKING:
+    from app.api.v1.module_platform.order.model import OrderModel
 
 
 class InvoiceModel(ModelMixin, TenantMixin, UserMixin):
@@ -28,3 +33,6 @@ class InvoiceModel(ModelMixin, TenantMixin, UserMixin):
     api_response: Mapped[str | None] = mapped_column(Text, nullable=True, comment="第三方API响应")
     status: Mapped[int] = mapped_column(Integer, default=0, nullable=False, comment="状态(0:待开票 1:已开票 2:开票失败 3:已作废)", index=True)
     description: Mapped[str | None] = mapped_column(Text, default=None, nullable=True, comment="备注")
+
+    # 关联关系
+    order: Mapped["OrderModel"] = relationship("OrderModel", lazy="selectin")

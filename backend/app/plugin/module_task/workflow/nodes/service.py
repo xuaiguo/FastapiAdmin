@@ -82,7 +82,7 @@ class WorkflowNodeTypeService:
         if order_by is None:
             order_by = [{"sort_order": "asc"}, {"id": "asc"}]
         obj_list = await WorkflowNodeTypeCRUD(auth).get_obj_list_crud(
-            search=search.__dict__ if search else None,
+            search=vars(search) if search else None,
             order_by=order_by,
         )
         return [cls._out(o) for o in obj_list]
@@ -115,7 +115,7 @@ class WorkflowNodeTypeService:
             offset=offset,
             limit=page_size,
             order_by=order,
-            search=search.__dict__ if search else {},
+            search=vars(search) if search else None,
             out_schema=WorkflowNodeTypeOutSchema,
         )
         result.items = [WorkflowNodeTypeOutSchema.model_validate(item).model_dump(mode="json") for item in result.items]

@@ -399,3 +399,27 @@ class AuthPermission:
             raise CustomException(msg="无权限操作", code=10403, status_code=403)
 
         return auth
+
+
+def require_superadmin(func):
+    """
+    装饰器：仅超级管理员可调用 Service 方法。
+
+    自动校验 auth 参数的 is_superuser 属性，非超管直接抛出 403。
+    适用于 classmethod Service 方法，auth 必须是第二个参数（cls 之后）。
+
+    用法:
+        @classmethod
+        @require_superadmin
+        async def create_service(cls, auth: AuthSchema, ...) -> ...:
+            ...
+    """
+    from functools import wraps
+
+    @wraps(func)
+    async def wrapper(cls, auth: AuthSchema, *args, **kwargs):
+        if not auth.user or not auth.user.is_superuser:
+            raise CustomException(msg="仅平台管理员可操作")
+        return await func(cls, auth, *args, **kwargs)
+
+    return wrapper

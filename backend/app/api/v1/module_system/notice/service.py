@@ -17,11 +17,13 @@ from .schema import (
 
 class NoticeService:
     """
-    公告管理模块服务层
+    公告管理服务
+
+    提供公告 CRUD、状态切换、已启用公告分页查询、消息面板、Excel 导出等业务能力。
     """
 
     @classmethod
-    async def get_notice_detail_service(cls, auth: AuthSchema, id: int) -> NoticeOutSchema:
+    async def detail_service(cls, auth: AuthSchema, id: int) -> NoticeOutSchema:
         """
         获取公告详情。
 
@@ -30,15 +32,12 @@ class NoticeService:
         - id (int): 公告ID。
 
         返回:
-        - Dict: 公告详情字典。
+        - NoticeOutSchema: 公告响应模型。
         """
-        notice_obj = await NoticeCRUD(auth).get(id=id)
-        if not notice_obj:
-            raise CustomException(msg="公告不存在")
-        return NoticeOutSchema.model_validate(notice_obj)
+        return await NoticeCRUD(auth).get_or_404(id=id, out_schema=NoticeOutSchema)
 
     @classmethod
-    async def get_notice_list_service(
+    async def list_service(
         cls,
         auth: AuthSchema,
         search: NoticeQueryParam | None = None,
@@ -53,13 +52,13 @@ class NoticeService:
         - order_by (list[dict] | None): 排序参数列表。
 
         返回:
-        - list[dict]: 公告详情字典列表。
+        - list[NoticeOutSchema]: 公告响应模型列表。
         """
-        notice_obj_list = await NoticeCRUD(auth).list(search=search.__dict__ if search else {}, order_by=order_by)
+        notice_obj_list = await NoticeCRUD(auth).list(search=vars(search) if search else None, order_by=order_by)
         return [NoticeOutSchema.model_validate(notice_obj) for notice_obj in notice_obj_list]
 
     @classmethod
-    async def get_notice_page_service(
+    async def page_service(
         cls,
         auth: AuthSchema,
         page_no: int,
@@ -85,12 +84,12 @@ class NoticeService:
             offset=offset,
             limit=page_size,
             order_by=order_by or [{"id": "asc"}],
-            search=search.__dict__ if search else {},
+            search=vars(search) if search else None,
             out_schema=NoticeOutSchema,
         )
 
     @classmethod
-    async def get_notice_available_page_service(cls, auth: AuthSchema) -> dict:
+    async def available_page_service(cls, auth: AuthSchema) -> dict:
         """
         已启用公告分页（与历史行为一致：固定第 1 页、每页 10 条）。
 
@@ -109,7 +108,7 @@ class NoticeService:
         )
 
     @classmethod
-    async def create_notice_service(cls, auth: AuthSchema, data: NoticeCreateSchema) -> NoticeOutSchema:
+    async def create_service(cls, auth: AuthSchema, data: NoticeCreateSchema) -> NoticeOutSchema:
         """
         创建公告。
 
@@ -118,19 +117,19 @@ class NoticeService:
         - data (NoticeCreateSchema): 创建公告负载模型。
 
         返回:
-        - dict: 创建的公告详情字典。
+        - NoticeOutSchema: 创建的公告响应模型。
 
         异常:
         - CustomException: 创建失败，该公告通知已存在。
         """
         notice = await NoticeCRUD(auth).get(notice_title=data.notice_title)
         if notice:
-            raise CustomException(msg="创建失败，该公告通知已存在")
+            raise CustomException(msg="创建失败，该数据已存在")
         notice_obj = await NoticeCRUD(auth).create(data=data)
         return NoticeOutSchema.model_validate(notice_obj)
 
     @classmethod
-    async def update_notice_service(cls, auth: AuthSchema, id: int, data: NoticeUpdateSchema) -> NoticeOutSchema:
+    async def update_service(cls, auth: AuthSchema, id: int, data: NoticeUpdateSchema) -> NoticeOutSchema:
         """
         更新公告。
 
@@ -140,22 +139,20 @@ class NoticeService:
         - data (NoticeUpdateSchema): 更新公告负载模型。
 
         返回:
-        - dict: 更新的公告详情字典。
+        - NoticeOutSchema: 更新的公告响应模型。
 
         异常:
         - CustomException: 更新失败，该公告通知不存在或公告通知标题重复。
         """
-        notice = await NoticeCRUD(auth).get(id=id)
-        if not notice:
-            raise CustomException(msg="更新失败，该公告通知不存在")
+        _ = await NoticeCRUD(auth).get_or_404(id=id, msg="更新失败，该数据不存在")
         exist_notice = await NoticeCRUD(auth).get(notice_title=data.notice_title)
         if exist_notice and exist_notice.id != id:
-            raise CustomException(msg="更新失败，公告通知标题重复")
+            raise CustomException(msg="更新失败，标题已存在")
         notice_obj = await NoticeCRUD(auth).update(id=id, data=data)
         return NoticeOutSchema.model_validate(notice_obj)
 
     @classmethod
-    async def delete_notice_service(cls, auth: AuthSchema, ids: list[int]) -> None:
+    async def delete_service(cls, auth: AuthSchema, ids: list[int]) -> None:
         """
         删除公告。
 
@@ -175,11 +172,11 @@ class NoticeService:
         notice_map = {n.id: n for n in notices}
         for nid in ids:
             if nid not in notice_map:
-                raise CustomException(msg="删除失败，该公告通知不存在")
+                raise CustomException(msg="删除失败，该数据不存在")
         await NoticeCRUD(auth).delete(ids=ids)
 
     @classmethod
-    async def set_notice_available_service(cls, auth: AuthSchema, data: BatchSetAvailable) -> None:
+    async def set_available_service(cls, auth: AuthSchema, data: BatchSetAvailable) -> None:
         """
         批量设置公告状态。
 
@@ -196,7 +193,7 @@ class NoticeService:
         await NoticeCRUD(auth).set(ids=data.ids, status=data.status)
 
     @classmethod
-    async def export_notice_service(cls, notice_list: list[dict]) -> bytes:
+    async def export_service(cls, notice_list: list[dict]) -> bytes:
         """
         导出公告列表。
 
@@ -230,7 +227,7 @@ class NoticeService:
         return ExcelUtil.export_list2excel(list_data=data, mapping_dict=mapping_dict)
 
     @classmethod
-    async def get_latest_notices_service(cls, auth: AuthSchema, limit: int = 5) -> list[NoticeOutSchema]:
+    async def latest_service(cls, auth: AuthSchema, limit: int = 5) -> list[NoticeOutSchema]:
         """获取最新 N 条已启用公告"""
         from sqlalchemy import desc, select
 
@@ -322,12 +319,12 @@ class NoticeService:
         return max(0, total_count - read_count)
 
     @classmethod
-    async def get_panel_data_service(cls, auth: AuthSchema) -> PanelDataOut:
+    async def panel_data_service(cls, auth: AuthSchema) -> PanelDataOut:
         """聚合通知面板数据：通知 + 消息 + 待办"""
         from sqlalchemy import desc, select
 
         # 1. 通知：最新 5 条已启用公告
-        notices = await cls.get_latest_notices_service(auth, limit=5)
+        notices = await cls.latest_service(auth, limit=5)
 
         # 2. 消息：最近的操作日志（作为系统消息）
         messages = []

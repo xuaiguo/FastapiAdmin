@@ -425,7 +425,7 @@ async def tenant_register_controller(
     返回:
     - TenantRegisterOutSchema: 注册结果，含 tenant_id/user_id/试用到期日
     """
-    result = await TenantRegisterService.register(
+    result = await TenantRegisterService.register_service(
         db=db,
         username=data.username,
         password=data.password,

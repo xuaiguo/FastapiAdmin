@@ -32,7 +32,7 @@ _ROLE_NS = "role"
     response_model=ResponseSchema[PageResultSchema[RoleOutSchema]],
 )
 @cache(expire=300, namespace=_ROLE_NS)
-async def get_obj_list_controller(
+async def get_role_list_controller(
     page: Annotated[PaginationQueryParam, Depends()],
     search: Annotated[RoleQueryParam, Depends()],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:role:query"]))],
@@ -51,7 +51,7 @@ async def get_obj_list_controller(
     order_by = [{"order": "asc"}]
     if page.order_by:
         order_by = page.order_by
-    result_dict = await RoleService.get_role_page_service(
+    result_dict = await RoleService.page_service(
         auth=auth,
         page_no=page.page_no,
         page_size=page.page_size,
@@ -66,7 +66,7 @@ async def get_obj_list_controller(
     summary="查询角色详情",
     response_model=ResponseSchema[RoleOutSchema],
 )
-async def get_obj_detail_controller(
+async def get_role_detail_controller(
     id: Annotated[int, Path(description="角色ID")],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:role:detail"]))],
 ) -> JSONResponse:
@@ -80,7 +80,7 @@ async def get_obj_detail_controller(
     返回:
     - JSONResponse: 角色详情JSON响应
     """
-    result_dict = await RoleService.get_role_detail_service(id=id, auth=auth)
+    result_dict = await RoleService.detail_service(id=id, auth=auth)
     return SuccessResponse(data=result_dict, msg="获取角色详情成功")
 
 
@@ -89,7 +89,7 @@ async def get_obj_detail_controller(
     summary="创建角色",
     response_model=ResponseSchema[RoleOutSchema],
 )
-async def create_obj_controller(
+async def create_role_controller(
     data: RoleCreateSchema,
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:role:create"]))],
 ) -> JSONResponse:
@@ -103,7 +103,7 @@ async def create_obj_controller(
     返回:
     - JSONResponse: 创建角色JSON响应
     """
-    result_dict = await RoleService.create_role_service(data=data, auth=auth)
+    result_dict = await RoleService.create_service(data=data, auth=auth)
     await FastAPICache.clear(namespace=_ROLE_NS)
     return SuccessResponse(data=result_dict, msg="创建角色成功")
 
@@ -113,7 +113,7 @@ async def create_obj_controller(
     summary="修改角色",
     response_model=ResponseSchema[RoleOutSchema],
 )
-async def update_obj_controller(
+async def update_role_controller(
     data: RoleUpdateSchema,
     id: Annotated[int, Path(description="角色ID")],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:role:update"]))],
@@ -129,7 +129,7 @@ async def update_obj_controller(
     返回:
     - JSONResponse: 修改角色JSON响应
     """
-    result_dict = await RoleService.update_role_service(id=id, data=data, auth=auth)
+    result_dict = await RoleService.update_service(id=id, data=data, auth=auth)
     await FastAPICache.clear(namespace=_ROLE_NS)
     return SuccessResponse(data=result_dict, msg="修改角色成功")
 
@@ -139,7 +139,7 @@ async def update_obj_controller(
     summary="删除角色",
     response_model=ResponseSchema[None],
 )
-async def delete_obj_controller(
+async def delete_role_controller(
     ids: Annotated[list[int], Body(description="ID列表")],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:role:delete"]))],
 ) -> JSONResponse:
@@ -153,7 +153,7 @@ async def delete_obj_controller(
     返回:
     - JSONResponse: 删除角色JSON响应
     """
-    await RoleService.delete_role_service(ids=ids, auth=auth)
+    await RoleService.delete_service(ids=ids, auth=auth)
     await FastAPICache.clear(namespace=_ROLE_NS)
     return SuccessResponse(msg="删除角色成功")
 
@@ -163,7 +163,7 @@ async def delete_obj_controller(
     summary="批量修改角色状态",
     response_model=ResponseSchema[None],
 )
-async def batch_set_available_obj_controller(
+async def batch_set_available_role_controller(
     data: BatchSetAvailable,
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:role:patch"]))],
 ) -> JSONResponse:
@@ -177,7 +177,7 @@ async def batch_set_available_obj_controller(
     返回:
     - JSONResponse: 批量修改角色状态JSON响应
     """
-    await RoleService.set_role_available_service(data=data, auth=auth)
+    await RoleService.set_available_service(data=data, auth=auth)
     await FastAPICache.clear(namespace=_ROLE_NS)
     return SuccessResponse(msg="批量修改角色状态成功")
 
@@ -201,7 +201,7 @@ async def set_role_permission_controller(
     返回:
     - JSONResponse: 角色授权JSON响应
     """
-    await RoleService.set_role_permission_service(data=data, auth=auth)
+    await RoleService.set_permission_service(data=data, auth=auth)
     await FastAPICache.clear(namespace=_ROLE_NS)
     return SuccessResponse(msg="授权角色成功")
 
@@ -211,7 +211,7 @@ async def set_role_permission_controller(
     summary="导出角色",
     response_model=ResponseSchema[None],
 )
-async def export_obj_list_controller(
+async def export_role_list_controller(
     search: Annotated[RoleQueryParam, Depends()],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["module_system:role:export"]))],
 ) -> StreamingResponse:
@@ -225,8 +225,8 @@ async def export_obj_list_controller(
     返回:
     - StreamingResponse: 导出角色流响应
     """
-    role_query_result = await RoleService.get_role_list_service(search=search, auth=auth)
-    role_export_result = await RoleService.export_role_list_service(role_list=role_query_result)
+    role_query_result = await RoleService.list_service(search=search, auth=auth)
+    role_export_result = await RoleService.export_list_service(role_list=role_query_result)
 
     return StreamResponse(
         data=bytes2file_response(role_export_result),

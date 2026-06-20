@@ -323,7 +323,7 @@ async def ensure_oauth_user(
         role_ids=list(settings.OAUTH_DEFAULT_ROLE_IDS),
     )
     try:
-        await UserService.register_user_service(auth=auth, data=reg)
+        await UserService.register_service(auth=auth, data=reg)
     except Exception:
         # 并发创建可能触发唯一约束冲突，回退到再次查询
         existing = await UserCRUD(auth).get(username=username)

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.base_model import MappedBase, ModelMixin, TenantMixin, UserMixin
@@ -87,10 +87,14 @@ class UserModel(ModelMixin, TenantMixin, UserMixin):
     description: Mapped[str | None] = mapped_column(Text, default=None, nullable=True, comment="备注")
 
     dept_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("sys_dept.id", ondelete="SET NULL", onupdate="CASCADE"), nullable=True, index=True, comment="部门ID")
-    tenant: Mapped["TenantModel | None"] = relationship("TenantModel", foreign_keys="UserModel.tenant_id", lazy="selectin", viewonly=True,)
+    tenant: Mapped["TenantModel | None"] = relationship(
+        "TenantModel",
+        foreign_keys="UserModel.tenant_id",
+        lazy="selectin",
+        viewonly=True,
+    )
     dept: Mapped["DeptModel | None"] = relationship(back_populates="users", foreign_keys=[dept_id], lazy="selectin")
     roles: Mapped[list["RoleModel"]] = relationship(secondary="sys_user_roles", back_populates="users", lazy="selectin")
     positions: Mapped[list["PositionModel"]] = relationship(secondary="sys_user_positions", back_populates="users", lazy="selectin")
     created_by: Mapped["UserModel | None"] = relationship("UserModel", foreign_keys="UserModel.created_id", remote_side="UserModel.id", lazy="selectin", uselist=False, viewonly=True)
     updated_by: Mapped["UserModel | None"] = relationship("UserModel", foreign_keys="UserModel.updated_id", remote_side="UserModel.id", lazy="selectin", uselist=False, viewonly=True)
-

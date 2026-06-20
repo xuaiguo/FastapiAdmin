@@ -1,5 +1,6 @@
 from typing import Any
 
+from app.api.v1.module_platform.tenant.service import TenantService
 from app.core.base_schema import AuthSchema, BatchSetAvailable
 from app.core.exceptions import CustomException
 from app.utils.excel_util import ExcelUtil
@@ -15,10 +16,14 @@ from .schema import (
 
 
 class RoleService:
-    """角色模块服务层"""
+    """
+    角色管理服务
+
+    提供角色 CRUD、权限配置、数据权限范围设置、批量启/禁用、Excel 导出等业务能力。
+    """
 
     @classmethod
-    async def get_role_detail_service(cls, auth: AuthSchema, id: int) -> RoleOutSchema:
+    async def detail_service(cls, auth: AuthSchema, id: int) -> RoleOutSchema:
         """
         获取角色详情
 
@@ -27,15 +32,12 @@ class RoleService:
         - id (int): 角色ID
 
         返回:
-        - dict: 角色详情字典
+        - RoleOutSchema: 角色详情响应模型
         """
-        role = await RoleCRUD(auth).get(id=id)
-        if not role:
-            raise CustomException(msg="角色不存在")
-        return RoleOutSchema.model_validate(role)
+        return await RoleCRUD(auth).get_or_404(id=id, out_schema=RoleOutSchema)
 
     @classmethod
-    async def get_role_list_service(
+    async def list_service(
         cls,
         auth: AuthSchema,
         search: RoleQueryParam | None = None,
@@ -50,13 +52,13 @@ class RoleService:
         - order_by (list[dict[str, str]] | None): 排序参数列表
 
         返回:
-        - list[RoleOutSchema]: 角色详情字典列表
+        - list[RoleOutSchema]: 角色响应模型列表
         """
-        role_list = await RoleCRUD(auth).list(search=search.__dict__ if search else {}, order_by=order_by)
+        role_list = await RoleCRUD(auth).list(search=vars(search) if search else None, order_by=order_by)
         return [RoleOutSchema.model_validate(role) for role in role_list]
 
     @classmethod
-    async def get_role_page_service(
+    async def page_service(
         cls,
         auth: AuthSchema,
         page_no: int,
@@ -82,12 +84,12 @@ class RoleService:
             offset=offset,
             limit=page_size,
             order_by=order_by or [{"id": "asc"}],
-            search=search.__dict__ if search else {},
+            search=vars(search) if search else None,
             out_schema=RoleOutSchema,
         )
 
     @classmethod
-    async def create_role_service(cls, auth: AuthSchema, data: RoleCreateSchema) -> RoleOutSchema:
+    async def create_service(cls, auth: AuthSchema, data: RoleCreateSchema) -> RoleOutSchema:
         """
         创建角色
 
@@ -96,25 +98,23 @@ class RoleService:
         - data (RoleCreateSchema): 创建角色模型
 
         返回:
-        - dict: 新创建的角色详情字典
+        - RoleOutSchema: 新创建的角色响应模型
         """
         role = await RoleCRUD(auth).get(name=data.name)
         if role:
-            raise CustomException(msg="创建失败，该角色已存在")
+            raise CustomException(msg="创建失败，该数据已存在")
         obj = await RoleCRUD(auth).get(code=data.code)
         if obj:
             raise CustomException(msg="创建失败，编码已存在")
 
         # 检查租户配额
-        from app.api.v1.module_platform.tenant.service import TenantService
-
         await TenantService.check_quota_service(auth, auth.tenant_id, "role")
 
         new_role = await RoleCRUD(auth).create(data=data)
         return RoleOutSchema.model_validate(new_role)
 
     @classmethod
-    async def update_role_service(cls, auth: AuthSchema, id: int, data: RoleUpdateSchema) -> RoleOutSchema:
+    async def update_service(cls, auth: AuthSchema, id: int, data: RoleUpdateSchema) -> RoleOutSchema:
         """
         更新角色
 
@@ -124,14 +124,12 @@ class RoleService:
         - data (RoleUpdateSchema): 更新角色模型
 
         返回:
-        - dict: 更新后的角色详情字典
+        - RoleOutSchema: 更新后的角色响应模型
         """
-        role = await RoleCRUD(auth).get(id=id)
-        if not role:
-            raise CustomException(msg="更新失败，该角色不存在")
+        _ = await RoleCRUD(auth).get_or_404(id=id, msg="更新失败，该数据不存在")
         exist_role = await RoleCRUD(auth).get(name=data.name)
         if exist_role and exist_role.id != id:
-            raise CustomException(msg="更新失败，角色名称重复")
+            raise CustomException(msg="更新失败，名称已存在")
         exist_code = await RoleCRUD(auth).get(code=data.code)
         if exist_code and exist_code.id != id:
             raise CustomException(msg="更新失败，角色编码已存在")
@@ -139,7 +137,7 @@ class RoleService:
         return RoleOutSchema.model_validate(updated_role)
 
     @classmethod
-    async def delete_role_service(cls, auth: AuthSchema, ids: list[int]) -> None:
+    async def delete_service(cls, auth: AuthSchema, ids: list[int]) -> None:
         """
         删除角色
 
@@ -156,14 +154,12 @@ class RoleService:
         # 批量校验角色存在性
         roles = await RoleCRUD(auth).list(search={"id": ("in", ids)})
         if len(roles) != len(ids):
-            found = {r.id for r in roles}
-            missing = [rid for rid in ids if rid not in found]
-            raise CustomException(msg=f"角色 ID {missing} 不存在")
+            raise CustomException(msg="删除失败，部分ID不存在")
 
         await RoleCRUD(auth).delete(ids=ids)
 
     @classmethod
-    async def set_role_permission_service(cls, auth: AuthSchema, data: RolePermissionSettingSchema) -> None:
+    async def set_permission_service(cls, auth: AuthSchema, data: RolePermissionSettingSchema) -> None:
         """
         设置角色权限
 
@@ -187,7 +183,7 @@ class RoleService:
             await RoleCRUD(auth).set_role_depts_crud(role_ids=data.role_ids, dept_ids=[])
 
     @classmethod
-    async def set_role_available_service(cls, auth: AuthSchema, data: BatchSetAvailable) -> None:
+    async def set_available_service(cls, auth: AuthSchema, data: BatchSetAvailable) -> None:
         """
         设置角色可用状态
 
@@ -202,11 +198,11 @@ class RoleService:
         role_map = {r.id: r for r in roles}
         for rid in data.ids:
             if rid not in role_map:
-                raise CustomException(msg=f"角色ID {rid} 不存在")
+                raise CustomException(msg="该数据不存在")
         await RoleCRUD(auth).set(ids=data.ids, status=data.status)
 
     @classmethod
-    async def export_role_list_service(cls, role_list: list[dict[str, Any]]) -> bytes:
+    async def export_list_service(cls, role_list: list[dict[str, Any]]) -> bytes:
         """
         导出角色列表
 

@@ -23,7 +23,7 @@ TenantInvoiceRouter = APIRouter(prefix="/tenant/invoice", route_class=OperationL
 
 
 @TenantInvoiceRouter.post("/apply", summary="申请开票", response_model=ResponseSchema[InvoiceOutSchema])
-async def invoice_apply(
+async def invoice_apply_controller(
     data: Annotated[InvoiceApplySchema, Body()],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["*:*:*"]))],
 ) -> JSONResponse:
@@ -41,7 +41,7 @@ async def invoice_apply(
 
 
 @TenantInvoiceRouter.get("/list", summary="我的发票列表", response_model=ResponseSchema[PageResultSchema[InvoiceOutSchema]])
-async def invoice_list_my(
+async def invoice_list_my_controller(
     auth: Annotated[AuthSchema, Depends(AuthPermission(["*:*:*"]))],
     invoice_type: Annotated[str | None, Query()] = None,
     status: Annotated[int | None, Query()] = None,
@@ -69,7 +69,7 @@ async def invoice_list_my(
 
 
 @TenantInvoiceRouter.get("/{id}/download", summary="下载发票PDF", response_model=ResponseSchema[dict])
-async def invoice_download(
+async def invoice_download_controller(
     id: Annotated[int, Path(ge=1)],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["*:*:*"]))],
 ) -> JSONResponse:
@@ -83,9 +83,7 @@ async def invoice_download(
     - JSONResponse: 包含 PDF 下载地址的 JSON 响应。
     """
     crud = InvoiceCRUD(auth)
-    invoice = await crud.get(id=id)
-    if not invoice:
-        raise CustomException(msg="发票不存在")
+    invoice = await crud.get_or_404(id=id, msg="发票不存在")
     if hasattr(invoice, "tenant_id") and invoice.tenant_id != auth.tenant_id:
         raise CustomException(msg="发票不存在")
     if invoice.status != 1 or not invoice.pdf_url:
@@ -100,7 +98,7 @@ PlatformInvoiceRouter = APIRouter(prefix="/invoice", route_class=OperationLogRou
 
 
 @PlatformInvoiceRouter.get("/list", summary="全部发票列表", response_model=ResponseSchema[PageResultSchema[InvoiceOutSchema]])
-async def invoice_list_all(
+async def invoice_list_all_controller(
     auth: Annotated[AuthSchema, Depends(AuthPermission(["*:*:*"]))],
     invoice_type: Annotated[str | None, Query()] = None,
     status: Annotated[int | None, Query()] = None,
@@ -129,7 +127,7 @@ async def invoice_list_all(
 
 
 @PlatformInvoiceRouter.put("/issue/{id}", summary="开具发票", response_model=ResponseSchema[InvoiceOutSchema])
-async def invoice_issue(
+async def invoice_issue_controller(
     id: Annotated[int, Path(ge=1)],
     data: Annotated[InvoiceIssueSchema, Body()],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["*:*:*"]))],
@@ -154,7 +152,7 @@ async def invoice_issue(
 
 
 @PlatformInvoiceRouter.put("/void/{id}", summary="作废发票", response_model=ResponseSchema[InvoiceOutSchema])
-async def invoice_void(
+async def invoice_void_controller(
     id: Annotated[int, Path(ge=1)],
     auth: Annotated[AuthSchema, Depends(AuthPermission(["*:*:*"]))],
     data: Annotated[InvoiceVoidSchema, Body()] = InvoiceVoidSchema(),

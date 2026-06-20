@@ -38,7 +38,7 @@ async def get_menu_tree_controller(
     - JSONResponse: 包含菜单树的 JSON 响应。
     """
     order_by = [{"order": "asc"}]
-    result_dict_list = await MenuService.get_menu_tree_service(search=search, auth=auth, order_by=order_by)
+    result_dict_list = await MenuService.tree_service(search=search, auth=auth, order_by=order_by)
     return SuccessResponse(data=result_dict_list, msg="查询菜单树成功")
 
 
@@ -60,7 +60,7 @@ async def get_obj_detail_controller(
     返回:
     - JSONResponse: 包含菜单详情的 JSON 响应。
     """
-    result_dict = await MenuService.get_menu_detail_service(id=id, auth=auth)
+    result_dict = await MenuService.detail_service(id=id, auth=auth)
     return SuccessResponse(data=result_dict, msg="查询菜单详情成功")
 
 
@@ -82,7 +82,7 @@ async def create_obj_controller(
     返回:
     - JSONResponse: 包含创建菜单的 JSON 响应。
     """
-    result_dict = await MenuService.create_menu_service(data=data, auth=auth)
+    result_dict = await MenuService.create_service(data=data, auth=auth)
     await FastAPICache.clear(namespace=_MENU_NS)
     return SuccessResponse(data=result_dict, msg="创建菜单成功")
 
@@ -107,7 +107,7 @@ async def update_obj_controller(
     返回:
     - JSONResponse: 包含修改菜单的 JSON 响应。
     """
-    result_dict = await MenuService.update_menu_service(id=id, data=data, auth=auth)
+    result_dict = await MenuService.update_service(id=id, data=data, auth=auth)
     await FastAPICache.clear(namespace=_MENU_NS)
     return SuccessResponse(data=result_dict, msg="修改菜单成功")
 
@@ -130,7 +130,7 @@ async def delete_obj_controller(
     返回:
     - JSONResponse: 包含删除菜单的 JSON 响应。
     """
-    await MenuService.delete_menu_service(ids=ids, auth=auth)
+    await MenuService.delete_service(ids=ids, auth=auth)
     await FastAPICache.clear(namespace=_MENU_NS)
     return SuccessResponse(msg="删除菜单成功")
 
@@ -153,6 +153,6 @@ async def batch_set_available_obj_controller(
     返回:
     - JSONResponse: 批量修改菜单状态的 JSON 响应。
     """
-    await MenuService.set_menu_available_service(data=data, auth=auth)
+    await MenuService.set_available_service(data=data, auth=auth)
     await FastAPICache.clear(namespace=_MENU_NS)
     return SuccessResponse(msg="批量修改菜单状态成功")

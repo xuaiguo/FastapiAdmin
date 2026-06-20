@@ -1,10 +1,14 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, ForeignKey, Integer, SmallInteger, String, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, validates
+from sqlalchemy import DateTime, ForeignKey, Integer, SmallInteger, String, Text, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from app.common.enums import PermissionFilterStrategy
 from app.core.base_model import MappedBase, ModelMixin
+
+if TYPE_CHECKING:
+    from app.api.v1.module_platform.package.model import PackageModel
 
 
 class TenantModel(ModelMixin):
@@ -43,6 +47,9 @@ class TenantModel(ModelMixin):
     git_code: Mapped[str | None] = mapped_column(String(500), nullable=True, default=None, comment="源码地址")
     status: Mapped[int] = mapped_column(Integer, default=0, nullable=False, comment="状态(0:启动 1:停用)", index=True)
     description: Mapped[str | None] = mapped_column(Text, default=None, nullable=True, comment="备注")
+
+    # 关联关系
+    package: Mapped["PackageModel | None"] = relationship("PackageModel", lazy="selectin")
 
     @validates("name")
     def validate_name(self, key: str, name: str) -> str:

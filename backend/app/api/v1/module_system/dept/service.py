@@ -10,7 +10,7 @@ from app.utils.common_util import (
 from .crud import DeptCRUD
 from .schema import (
     DeptCreateSchema,
-    DeptDetailOutSchema,
+    DeptOutSchema,
     DeptQueryParam,
     DeptTreeOutSchema,
     DeptUpdateSchema,
@@ -19,25 +19,25 @@ from .schema import (
 
 class DeptService:
     """
-    部门管理模块服务层
+    部门管理服务
+
+    提供部门 CRUD、树形结构查询、级联启/禁用、租户配额检查等业务能力。
     """
 
     @classmethod
-    async def get_dept_detail_service(cls, auth: AuthSchema, id: int) -> DeptDetailOutSchema:
+    async def detail_service(cls, auth: AuthSchema, id: int) -> DeptOutSchema:
         """
-        获取部门详情。
+        获取部门详情
 
         参数:
-        - auth (AuthSchema): 认证对象。
-        - id (int): 部门 ID。
+        - auth (AuthSchema): 认证信息模型
+        - id (int): 部门 ID
 
         返回:
-        - DeptDetailOutSchema: 部门详情对象。
+        - DeptOutSchema: 部门详情响应模型
         """
-        dept = await DeptCRUD(auth).get(id=id)
-        if not dept:
-            raise CustomException(msg="部门不存在")
-        dept_out = DeptDetailOutSchema.model_validate(dept)
+        dept = await DeptCRUD(auth).get_or_404(id=id)
+        dept_out = DeptOutSchema.model_validate(dept)
         if dept.parent_id:
             parent = await DeptCRUD(auth).get(id=dept.parent_id)
             if parent:
@@ -45,7 +45,7 @@ class DeptService:
         return dept_out
 
     @classmethod
-    async def get_dept_tree_service(
+    async def tree_service(
         cls,
         auth: AuthSchema,
         search: DeptQueryParam | None = None,
@@ -63,14 +63,14 @@ class DeptService:
         - list[dict]: 部门树形列表对象。
         """
         # 使用树形结构查询，预加载children关系
-        dept_list = await DeptCRUD(auth).get_tree_list(search=search.__dict__ if search else {}, order_by=order_by)
+        dept_list = await DeptCRUD(auth).tree_list(search=vars(search) if search else None, order_by=order_by)
         # 转换为字典列表（使用树形 Schema），tree_list 已通过 selectin 预加载 children
         dept_dict_list = [DeptTreeOutSchema.model_validate(dept).model_dump() for dept in dept_list]
         # 仅保留根节点，子树已在 model_dump 中递归序列化
         return [d for d in dept_dict_list if d.get("parent_id") is None]
 
     @classmethod
-    async def create_dept_service(cls, auth: AuthSchema, data: DeptCreateSchema) -> DeptDetailOutSchema:
+    async def create_service(cls, auth: AuthSchema, data: DeptCreateSchema) -> DeptOutSchema:
         """
         创建部门。
 
@@ -79,14 +79,14 @@ class DeptService:
         - data (DeptCreateSchema): 部门创建对象。
 
         返回:
-        - DeptDetailOutSchema: 新创建的部门对象。
+        - DeptOutSchema: 新创建的部门对象。
 
         异常:
         - CustomException: 当部门已存在时抛出。
         """
         dept = await DeptCRUD(auth).get(name=data.name)
         if dept:
-            raise CustomException(msg="创建失败，该部门已存在")
+            raise CustomException(msg="创建失败，该数据已存在")
         obj = await DeptCRUD(auth).get(code=data.code)
         if obj:
             raise CustomException(msg="创建失败，编码已存在")
@@ -97,10 +97,10 @@ class DeptService:
         await TenantService.check_quota_service(auth, auth.tenant_id, "dept")
 
         dept = await DeptCRUD(auth).create(data=data)
-        return DeptDetailOutSchema.model_validate(dept)
+        return DeptOutSchema.model_validate(dept)
 
     @classmethod
-    async def update_dept_service(cls, auth: AuthSchema, id: int, data: DeptUpdateSchema) -> DeptDetailOutSchema:
+    async def update_service(cls, auth: AuthSchema, id: int, data: DeptUpdateSchema) -> DeptOutSchema:
         """
         更新部门。
 
@@ -110,23 +110,21 @@ class DeptService:
         - data (DeptUpdateSchema): 部门更新对象。
 
         返回:
-        - DeptDetailOutSchema: 更新后的部门对象。
+        - DeptOutSchema: 更新后的部门对象。
 
         异常:
         - CustomException: 当部门不存在或名称重复时抛出。
         """
-        dept = await DeptCRUD(auth).get(id=id)
-        if not dept:
-            raise CustomException(msg="更新失败，该部门不存在")
+        dept = await DeptCRUD(auth).get_or_404(id=id, msg="更新失败，该数据不存在")
         exist_dept = await DeptCRUD(auth).get(name=data.name)
         if exist_dept and exist_dept.id != id:
-            raise CustomException(msg="更新失败，部门名称重复")
+            raise CustomException(msg="更新失败，名称已存在")
         exist_code = await DeptCRUD(auth).get(code=data.code)
         if exist_code and exist_code.id != id:
-            raise CustomException(msg="更新失败，部门编码已存在")
+            raise CustomException(msg="更新失败，编码已存在")
 
         dept = await DeptCRUD(auth).update(id=id, data=data)
-        dept_out = DeptDetailOutSchema.model_validate(dept)
+        dept_out = DeptOutSchema.model_validate(dept)
         if dept_out.parent_id:
             parent = await DeptCRUD(auth).get(id=dept_out.parent_id)
             if parent:
@@ -134,7 +132,7 @@ class DeptService:
         return dept_out
 
     @classmethod
-    async def delete_dept_service(cls, auth: AuthSchema, ids: list[int]) -> None:
+    async def delete_service(cls, auth: AuthSchema, ids: list[int]) -> None:
         """
         删除部门。
 

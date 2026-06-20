@@ -66,10 +66,10 @@ async def _format_session_data(session: TeamSession, auth: AuthSchema | None = N
         try:
             team_id = session_dict.get("team_id")
             if isinstance(team_id, str):
-                dept_name = await DeptService.get_dept_detail_service(auth=auth, id=int(team_id))
+                dept_name = await DeptService.detail_service(auth=auth, id=int(team_id))
                 result["team_name"] = dept_name.get("name")
             elif isinstance(team_id, int):
-                dept_name = await DeptService.get_dept_detail_service(auth=auth, id=team_id)
+                dept_name = await DeptService.detail_service(auth=auth, id=team_id)
                 result["team_name"] = dept_name.get("name")
             else:
                 result["team_name"] = None

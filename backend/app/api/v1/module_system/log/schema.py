@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from fastapi import Query
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -47,6 +49,7 @@ class LoginLogDetailOutSchema(LoginLogOutSchema):
     """登录日志详情响应"""
 
 
+@dataclass
 class LoginLogQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
     """登录日志查询参数"""
 
@@ -61,33 +64,45 @@ class LoginLogQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
             self.username = (QueueEnum.like.value, username)
 
 
-class OperationLogQueryParam(BaseModel):
-    request_path: str | None = Field(None, max_length=255, description="请求路径")
-    request_method: str | None = Field(None, description="请求方式")
-    username: str | None = Field(None, max_length=64, description="用户名")
+@dataclass
+class OperationLogQueryParam(BaseQueryParam, UserByQueryParam, TenantByQueryParam):
+    """操作日志查询参数"""
 
-    @field_validator("request_method")
-    @classmethod
-    def validate_request_method(cls, value: str | None) -> str | None:
-        if value and value.upper() not in ALLOWED_REQUEST_METHODS:
-            raise ValueError(f"请求方式必须是: {', '.join(ALLOWED_REQUEST_METHODS)}")
-        return value.upper() if value else None
+    def __init__(
+        self,
+        request_path: str | None = Query(None, description="请求路径"),
+        request_method: str | None = Query(None, description="请求方式"),
+        username: str | None = Query(None, description="用户名"),
+        *args,
+        **kwargs,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        if request_path:
+            self.request_path = (QueueEnum.like.value, request_path)
+        if request_method:
+            self.request_method = (QueueEnum.eq.value, request_method)
+        if username:
+            self.username = (QueueEnum.like.value, username)
 
 
-class OperationLogOutSchema(BaseSchema):
+class OperationLogOutSchema(BaseSchema, UserBySchema, TenantBySchema):
+    """操作日志响应模型"""
+
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
-    tenant_id: int
-    request_path: str
-    request_method: str
-    response_code: int
-    process_time: str | None = None
+    status: int | None = Field(default=None, description="状态(0:启动 1:停用)")
+    description: str | None = Field(default=None, description="描述")
+    request_path: str = Field(..., description="请求路径")
+    request_method: str = Field(..., description="请求方式")
+    response_code: int = Field(..., description="响应状态码")
+    process_time: str | None = Field(default=None, description="处理时间")
 
 
 class OperationLogDetailOutSchema(OperationLogOutSchema):
-    request_payload: str | None = None
-    response_json: str | None = None
+    """操作日志详情响应模型"""
+
+    request_payload: str | None = Field(default=None, description="请求体")
+    response_json: str | None = Field(default=None, description="响应体")
 
 
 class OperationLogCreateSchema(BaseModel):
@@ -97,6 +112,9 @@ class OperationLogCreateSchema(BaseModel):
     response_code: int = Field(200, ge=100, le=599, description="响应状态码")
     response_json: str | None = Field(None, description="响应体")
     process_time: str | None = Field(None, max_length=20, description="处理时间")
+    created_id: int | None = Field(None, description="创建人ID")
+    updated_id: int | None = Field(None, description="更新人ID")
+    description: str | None = Field(None, description="备注")
 
     @field_validator("request_method")
     @classmethod

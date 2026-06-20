@@ -52,7 +52,7 @@ async def get_type_detail_controller(
     异常:
     - CustomException: 获取字典类型详情失败时抛出异常。
     """
-    result_dict = await DictTypeService.get_obj_detail_service(id=id, auth=auth)
+    result_dict = await DictTypeService.detail_service(id=id, auth=auth)
     return SuccessResponse(data=result_dict, msg="获取字典类型详情成功")
 
 
@@ -80,7 +80,7 @@ async def get_type_list_controller(
     异常:
     - CustomException: 查询字典类型失败时抛出异常。
     """
-    result_dict = await DictTypeService.get_obj_page_service(
+    result_dict = await DictTypeService.page_service(
         auth=auth,
         page_no=page.page_no,
         page_size=page.page_size,
@@ -111,7 +111,7 @@ async def get_type_optionselect_controller(
     异常:
     - CustomException: 获取字典类型列表失败时抛出异常。
     """
-    result_dict_list = await DictTypeService.get_obj_list_service(auth=auth)
+    result_dict_list = await DictTypeService.list_service(auth=auth)
     return SuccessResponse(data=result_dict_list, msg="获取字典类型列表成功")
 
 
@@ -139,7 +139,7 @@ async def create_type_controller(
     异常:
     - CustomException: 创建字典类型失败时抛出异常。
     """
-    result_dict = await DictTypeService.create_obj_service(auth=auth, redis=redis, data=data)
+    result_dict = await DictTypeService.create_service(auth=auth, redis=redis, data=data)
     await FastAPICache.clear(namespace=_DICT_TYPE_NS)
     return SuccessResponse(data=result_dict, msg="创建字典类型成功")
 
@@ -170,7 +170,7 @@ async def update_type_controller(
     异常:
     - CustomException: 修改字典类型失败时抛出异常。
     """
-    result_dict = await DictTypeService.update_obj_service(auth=auth, redis=redis, id=id, data=data)
+    result_dict = await DictTypeService.update_service(auth=auth, redis=redis, id=id, data=data)
     await FastAPICache.clear(namespace=_DICT_TYPE_NS)
     return SuccessResponse(data=result_dict, msg="修改字典类型成功")
 
@@ -199,7 +199,7 @@ async def delete_type_controller(
     异常:
     - CustomException: 删除字典类型失败时抛出异常。
     """
-    await DictTypeService.delete_obj_service(auth=auth, redis=redis, ids=ids)
+    await DictTypeService.delete_service(auth=auth, redis=redis, ids=ids)
     await FastAPICache.clear(namespace=_DICT_TYPE_NS)
     return SuccessResponse(msg="删除字典类型成功")
 
@@ -226,7 +226,7 @@ async def batch_set_available_dict_type_controller(
     异常:
     - CustomException: 批量修改字典类型状态失败时抛出异常。
     """
-    await DictTypeService.set_obj_available_service(auth=auth, data=data)
+    await DictTypeService.set_available_service(auth=auth, data=data)
     await FastAPICache.clear(namespace=_DICT_TYPE_NS)
     return SuccessResponse(msg="批量修改字典类型状态成功")
 
@@ -254,9 +254,9 @@ async def export_type_list_controller(
     - CustomException: 导出字典类型失败时抛出异常。
     """
     # 获取全量数据并转为dict列表
-    result_dict_list = await DictTypeService.get_obj_list_service(search=search, auth=auth)
+    result_dict_list = await DictTypeService.list_service(search=search, auth=auth)
     export_data = [item.model_dump() for item in result_dict_list]
-    export_result = await DictTypeService.export_obj_service(data_list=export_data)
+    export_result = await DictTypeService.export_service(data_list=export_data)
 
     return StreamResponse(
         data=bytes2file_response(export_result),
@@ -287,7 +287,7 @@ async def get_data_detail_controller(
     异常:
     - CustomException: 获取字典数据详情失败时抛出异常。
     """
-    result_dict = await DictDataService.get_obj_detail_service(id=id, auth=auth)
+    result_dict = await DictDataService.detail_service(id=id, auth=auth)
     return SuccessResponse(data=result_dict, msg="获取字典数据详情成功")
 
 
@@ -318,7 +318,7 @@ async def get_data_list_controller(
     order_by = [{"order": "asc"}]
     if page.order_by:
         order_by = page.order_by
-    result_dict = await DictDataService.get_obj_page_service(
+    result_dict = await DictDataService.page_service(
         auth=auth,
         page_no=page.page_no,
         page_size=page.page_size,
@@ -352,7 +352,7 @@ async def create_data_controller(
     异常:
     - CustomException: 创建字典数据失败时抛出异常。
     """
-    result_dict = await DictDataService.create_obj_service(auth=auth, redis=redis, data=data)
+    result_dict = await DictDataService.create_service(auth=auth, redis=redis, data=data)
     return SuccessResponse(data=result_dict, msg="创建字典数据成功")
 
 
@@ -382,7 +382,7 @@ async def update_data_controller(
     异常:
     - CustomException: 修改字典数据失败时抛出异常。
     """
-    result_dict = await DictDataService.update_obj_service(auth=auth, redis=redis, id=id, data=data)
+    result_dict = await DictDataService.update_service(auth=auth, redis=redis, id=id, data=data)
     return SuccessResponse(data=result_dict, msg="修改字典数据成功")
 
 
@@ -410,7 +410,7 @@ async def delete_data_controller(
     异常:
     - CustomException: 删除字典数据失败时抛出异常。
     """
-    await DictDataService.delete_obj_service(auth=auth, redis=redis, ids=ids)
+    await DictDataService.delete_service(auth=auth, redis=redis, ids=ids)
     return SuccessResponse(msg="删除字典数据成功")
 
 
@@ -436,7 +436,7 @@ async def batch_set_available_dict_data_controller(
     异常:
     - CustomException: 批量修改字典数据状态失败时抛出异常。
     """
-    await DictDataService.set_obj_available_service(auth=auth, data=data)
+    await DictDataService.set_available_service(auth=auth, data=data)
     return SuccessResponse(msg="批量修改字典数据状态成功")
 
 
@@ -464,9 +464,9 @@ async def export_data_list_controller(
     异常:
     - CustomException: 导出字典数据失败时抛出异常。
     """
-    result_dict_list = await DictDataService.get_obj_list_service(auth=auth, search=search, order_by=page.order_by)
+    result_dict_list = await DictDataService.list_service(auth=auth, search=search, order_by=page.order_by)
     export_data = [item.model_dump() for item in result_dict_list]
-    export_result = await DictDataService.export_obj_service(data_list=export_data)
+    export_result = await DictDataService.export_service(data_list=export_data)
 
     return StreamResponse(
         data=bytes2file_response(export_result),
@@ -494,6 +494,6 @@ async def get_init_dict_data_controller(dict_type: str, redis: Annotated[Redis, 
     异常:
     - CustomException: 根据字典类型获取数据失败时抛出异常。
     """
-    dict_data_query_result = await DictDataService.get_init_dict_service(redis=redis, dict_type=dict_type, tenant_id=1)
+    dict_data_query_result = await DictDataService.get_init_cache_service(redis=redis, dict_type=dict_type, tenant_id=1)
 
     return SuccessResponse(data=dict_data_query_result, msg="获取初始化字典数据成功")
