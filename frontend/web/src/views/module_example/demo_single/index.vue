@@ -1,11 +1,10 @@
-<!-- 示例 CRUD：与角色页同一套 Fa 布局；弹窗与 Crud 一致（FaDialog + crud-embed-dialog） -->
 <template>
   <div class="fa-full-height">
-    <FaSearchBar
+    <FaSearchBarWithAudit
       v-show="showSearchBar"
       ref="searchBarRef"
       v-model="searchForm"
-      :items="demoBusinessSearchItems"
+      :items="businessSearchItems"
       :rules="searchBarRules"
       :is-expand="false"
       :show-expand="true"
@@ -13,7 +12,6 @@
       :show-search="true"
       :disabled-search="false"
       :default-expanded="false"
-      include-audit
       @search="handleSearch"
       @reset="onResetSearch"
     />
@@ -32,11 +30,11 @@
         <template #left>
           <FaTableHeaderLeft
             :remove-ids="selectedIds"
-            :perm-create="['module_example:demo:create']"
-            :perm-import="['module_example:demo:import']"
-            :perm-export="['module_example:demo:export']"
-            :perm-delete="['module_example:demo:delete']"
-            :perm-patch="['module_example:demo:patch']"
+            :perm-create="['module_example:demo_single:create']"
+            :perm-import="['module_example:demo_single:import']"
+            :perm-export="['module_example:demo_single:export']"
+            :perm-delete="['module_example:demo_single:delete']"
+            :perm-patch="['module_example:demo_single:patch']"
             :delete-loading="batchDeleting"
             :create-loading="createLoading"
             @add="handleAdd"
@@ -72,25 +70,16 @@
       @confirm="dialogVisible.type === 'detail' ? handleCloseDialog() : handleSubmit()"
     >
       <template v-if="dialogVisible.type === 'detail'">
-        <FaDescriptions
-          :column="4"
-          :data="detailFormData"
-          :items="demoDetailItems"
-          max-height="70vh"
-        >
-          <template #json_val="{ row }">
-            <FaJsonPretty v-if="row?.json_val != null" :value="row?.json_val" height="140px" />
-          </template>
-        </FaDescriptions>
+        <FaDescriptions :column="4" :data="detailFormData" :items="detailItems" max-height="70vh" />
       </template>
       <template v-else>
         <FaForm
-          :key="demoFormRenderKey"
+          :key="formRenderKey"
           scrollbar
           max-height="70vh"
           ref="dataFormRef"
           v-model="formData"
-          :items="demoDialogFormItems"
+          :items="dialogFormItems"
           :rules="rules"
           label-suffix=":"
           :label-width="100"
@@ -100,53 +89,30 @@
           :show-reset="false"
           :show-submit="false"
           class="crud-dialog-art-form"
-        >
-          <template #json_val>
-            <div class="flex flex-col gap-2">
-              <div
-                v-for="(item, index) in metadataList"
-                :key="index"
-                class="flex items-center gap-2"
-              >
-                <ElInput v-model="item.key" placeholder="键" />
-                <ElInput v-model="item.value" placeholder="值" />
-                <ElButton
-                  type="primary"
-                  icon="Plus"
-                  circle
-                  @click="metadataList.push({ key: '', value: '' })"
-                />
-                <ElButton
-                  type="danger"
-                  icon="Delete"
-                  circle
-                  @click="metadataList.splice(index, 1)"
-                />
-              </div>
-              <ElButton
-                v-if="metadataList.length === 0"
-                type="primary"
-                icon="Plus"
-                @click="metadataList.push({ key: '', value: '' })"
-              >
-                添加元数据
-              </ElButton>
-            </div>
-          </template>
-        </FaForm>
+        />
+      </template>
+
+      <template #footer>
+        <div class="dialog-footer" style="padding-right: var(--el-dialog-padding-primary)">
+          <ElButton @click="handleCloseDialog">取消</ElButton>
+          <ElButton v-if="dialogVisible.type !== 'detail'" type="primary" @click="handleSubmit">
+            确定
+          </ElButton>
+          <ElButton v-else type="primary" @click="handleCloseDialog">确定</ElButton>
+        </div>
       </template>
     </FaDialog>
 
     <FaImportDialog
       v-model="importVisible"
-      :content-config="demoImportContentConfig"
-      default-template-file-name="demo_import_template.xlsx"
+      :content-config="importContentConfig"
+      default-template-file-name="demo_single_import_template.xlsx"
       @upload="handleCrudImportUpload"
     />
 
     <FaExportDialog
       v-model="exportVisible"
-      :content-config="demoExportContentConfig"
+      :content-config="exportContentConfig"
       :query-params="exportQueryParams"
       :page-data="data"
       :selection-data="selectedRows"
@@ -155,6 +121,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, onMounted } from "vue";
 import { useAuth } from "@/hooks/core/useAuth";
 import { renderTableOperationCell, type TableOperationAction } from "@/utils/table";
 import { useTable } from "@/hooks/core/useTable";
@@ -166,18 +133,17 @@ import { stripPaginationParams } from "@/utils/query";
 import type { IContentConfig, IObject } from "@/components/modal/types";
 import type { AuditSearchFormParams } from "@/components/forms/fa-search-bar/auditSearchFormItems";
 import type { FormItem } from "@/components/forms/fa-form/index.vue";
-import FaJsonPretty from "@/components/others/fa-json-pretty/index.vue";
 import type { ColumnOption } from "@/types/component";
-import DemoAPI, {
-  type DemoForm,
-  type DemoPageQuery,
-  type DemoTable,
-} from "@/api/module_example/demo";
+import GenDemoSingleAPI, {
+  type GenDemoSingleForm,
+  type GenDemoSinglePageQuery,
+  type GenDemoSingleTable,
+} from "@/api/module_example/demo_single";
 import { ResultEnum } from "@/enums/api/result.enum";
 import { ElMessage } from "element-plus";
 
 defineOptions({
-  name: "Demo",
+  name: "GenDemoSingle",
   inheritAttrs: false,
 });
 
@@ -189,32 +155,20 @@ const STATUS_OPTIONS = [
   { label: "停用", value: 1 },
 ] as const;
 
-const createInitialFormData = (): DemoForm => ({
-  id: undefined,
-  name: "",
-  status: 0,
+const createInitialFormData = (): GenDemoSingleForm => ({
+  name: undefined,
+  status: "0",
   description: undefined,
-  int_val: undefined,
-  bigint_val: undefined,
-  float_val: undefined,
-  bool_val: true,
-  date_val: undefined,
-  time_val: undefined,
-  datetime_val: undefined,
-  text_val: undefined,
-  json_val: undefined,
 });
 
-type DemoSearchFormParams = {
+type GenDemoSingleSearchFormParams = {
   name?: string;
-  status?: number;
-  tenant_id?: number;
+  status?: string;
 } & AuditSearchFormParams;
 
-const searchForm = ref<DemoSearchFormParams>({
+const searchForm = ref<GenDemoSingleSearchFormParams>({
   name: undefined,
   status: undefined,
-  tenant_id: undefined,
   created_id: undefined,
   updated_id: undefined,
   created_time: [],
@@ -227,8 +181,8 @@ const showSearchBar = ref(true);
 const searchBarRef = ref<{ validate: () => Promise<boolean> } | null>(null);
 const searchBarRules: Record<string, unknown> = {};
 
-/** 名称、状态；创建人/更新人/时间由 FaSearchBar 的 includeAudit 属性追加 */
-const demoBusinessSearchItems = computed(() => [
+/** 业务搜索项（审计四字段由 FaSearchBarWithAudit 自动追加） */
+const businessSearchItems = computed(() => [
   {
     label: "名称",
     key: "name",
@@ -252,9 +206,11 @@ const demoBusinessSearchItems = computed(() => [
 
 const faTableRef = ref<{ elTableRef?: { clearSelection: () => void } } | null>(null);
 const { selectedRows, selectedIds, batchDeleting, onTableSelectionChange } =
-  useTableSelection<DemoTable>();
+  useTableSelection<GenDemoSingleTable>();
 
 const createLoading = ref(false);
+
+const PK = "id" as const;
 
 const {
   columns,
@@ -274,12 +230,12 @@ const {
   refreshRemove,
 } = useTable({
   core: {
-    apiFn: DemoAPI.getDemoList,
+    apiFn: GenDemoSingleAPI.getGenDemoSingleList,
     apiParams: {
       page_no: 1,
       page_size: 10,
     },
-    columnsFactory: (): ColumnOption<DemoTable>[] => [
+    columnsFactory: (): ColumnOption<GenDemoSingleTable>[] => [
       { type: "globalIndex", width: 56, label: "序号" },
       { type: "selection", width: 48, fixed: "left" },
       { prop: "name", label: "名称", minWidth: 120, showOverflowTooltip: true },
@@ -292,36 +248,20 @@ const {
           1: { type: "info", text: "停用" },
         },
       },
-      { prop: "int_val", label: "整数", minWidth: 88, showOverflowTooltip: true },
-      { prop: "bigint_val", label: "大整数", minWidth: 100, showOverflowTooltip: true },
-      { prop: "float_val", label: "浮点数", minWidth: 88, showOverflowTooltip: true },
-      {
-        prop: "bool_val",
-        label: "布尔",
-        width: 80,
-        status: {
-          true: { type: "success", text: "是" },
-          false: { type: "danger", text: "否" },
-        },
-      },
-      { prop: "date_val", label: "日期", minWidth: 112, showOverflowTooltip: true },
-      { prop: "time_val", label: "时间", minWidth: 96, showOverflowTooltip: true },
-      { prop: "datetime_val", label: "日期时间", minWidth: 168, showOverflowTooltip: true },
-      { prop: "text_val", label: "长文本", minWidth: 120, showOverflowTooltip: true },
-      { prop: "description", label: "描述", minWidth: 120, showOverflowTooltip: true },
+      { prop: "description", label: "备注/描述", minWidth: 120, showOverflowTooltip: true },
       { prop: "created_time", label: "创建时间", width: 168, showOverflowTooltip: true },
       { prop: "updated_time", label: "更新时间", width: 168, showOverflowTooltip: true },
       {
         prop: "created_by",
         label: "创建人",
         minWidth: 100,
-        formatter: (row: DemoTable) => row.created_by?.name ?? "—",
+        formatter: (row: GenDemoSingleTable) => row.created_by?.name ?? "—",
       },
       {
         prop: "updated_by",
         label: "更新人",
         minWidth: 100,
-        formatter: (row: DemoTable) => row.updated_by?.name ?? "—",
+        formatter: (row: GenDemoSingleTable) => row.updated_by?.name ?? "—",
       },
       {
         prop: "operation",
@@ -329,15 +269,14 @@ const {
         width: 220,
         fixed: "right",
         align: "right",
-        formatter: (row: DemoTable) => formatDemoOperationCell(row),
+        formatter: (row: GenDemoSingleTable) => formatOperationCell(row),
       },
     ],
   },
 });
 
-/** 供 CrudImportModal / CrudExportModal 的列配置（与 CrudContent.cols 结构一致） */
-const demoCrudCols = computed(() =>
-  columns.value.map((c: ColumnOption<DemoTable>) => {
+const crudCols = computed(() =>
+  columns.value.map((c: ColumnOption<GenDemoSingleTable>) => {
     const t = (c as { type?: string }).type;
     return {
       prop: c.prop,
@@ -352,71 +291,54 @@ const exportQueryParams = computed(() => {
   return stripPaginationParams(searchParams as Record<string, unknown>);
 });
 
-const demoImportContentConfig = computed<IContentConfig>(() => ({
-  permPrefix: "module_example:demo",
-  cols: demoCrudCols.value,
+const importContentConfig = computed<IContentConfig>(() => ({
+  permPrefix: "module_example:demo_single",
+  cols: crudCols.value,
   indexAction: async () => ({}),
-  importTemplate: () => DemoAPI.downloadTemplateDemo(),
+  importTemplate: () => GenDemoSingleAPI.downloadTemplateGenDemoSingle(),
 }));
 
-const demoExportContentConfig = computed(() => ({
-  permPrefix: "module_example:demo",
-  cols: demoCrudCols.value,
+const exportContentConfig = computed(() => ({
+  permPrefix: "module_example:demo_single",
+  cols: crudCols.value,
   exportsBlobAction: async (params: IObject) => {
     const merged = {
       ...(exportQueryParams.value as unknown as Record<string, unknown>),
       ...params,
-    } as unknown as DemoPageQuery;
-    const res = await DemoAPI.exportDemo(merged);
+    } as unknown as GenDemoSinglePageQuery;
+    const res = await GenDemoSingleAPI.exportGenDemoSingle(merged);
     return res.data as Blob;
   },
 }));
 
 const { dialogVisible } = useCrudDialog();
 
-const detailFormData = ref<DemoTable>({});
+const detailFormData = ref<GenDemoSingleTable>({});
 
-const demoDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] =
-  [
-    { label: "名称", prop: "name" },
-    { label: "UUID", prop: "uuid" },
-    {
-      label: "状态",
-      prop: "status",
-      tag: {
-        map: { "0": { type: "success", text: "启用" }, "1": { type: "danger", text: "停用" } },
-      },
-    },
-    { label: "整数", prop: "int_val" },
-    { label: "大整数", prop: "bigint_val" },
-    { label: "浮点数", prop: "float_val" },
-    {
-      label: "布尔值",
-      prop: "bool_val",
-      tag: {
-        map: { true: { type: "success", text: "是" }, false: { type: "danger", text: "否" } },
-      },
-    },
-    { label: "日期", prop: "date_val" },
-    { label: "时间", prop: "time_val" },
-    { label: "日期时间", prop: "datetime_val" },
-    { label: "长文本", prop: "text_val" },
-    { label: "元数据", prop: "json_val", slot: "json_val" },
-    { label: "描述", prop: "description" },
-    { label: "创建人", prop: "created_by.name" },
-    { label: "更新人", prop: "updated_by.name" },
-    { label: "创建时间", prop: "created_time" },
-    { label: "更新时间", prop: "updated_time" },
-  ];
-
-// 示例页新增/编辑表单 —— 元数据字段用具名插槽渲染
-const demoDialogFormItems: FormItem[] = [
+const detailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] = [
+  { label: "名称", prop: "name" },
   {
-    key: "name",
-    label: "名称",
-    type: "input",
-    props: { placeholder: "请输入名称", maxlength: 50 },
+    label: "状态",
+    prop: "status",
+    tag: { map: { "0": { type: "success", text: "启用" }, "1": { type: "danger", text: "停用" } } },
   },
+  { label: "备注/描述", prop: "description" },
+  { label: "创建时间", prop: "created_time" },
+  { label: "更新时间", prop: "updated_time" },
+  { label: "创建人", prop: "created_by.name" },
+  { label: "更新人", prop: "updated_by.name" },
+];
+
+const formData = ref<GenDemoSingleForm>(createInitialFormData());
+
+const rules = reactive({
+  name: [{ required: false, message: "请填写名称", trigger: "blur" }],
+  status: [{ required: true, message: "请填写是否启用(0:启用 1:禁用)", trigger: "blur" }],
+  description: [{ required: false, message: "请填写备注/描述", trigger: "blur" }],
+});
+
+const dialogFormItems: FormItem[] = [
+  { key: "name", label: "名称", type: "input", props: { placeholder: "请输入名称" } },
   {
     key: "status",
     label: "状态",
@@ -427,43 +349,6 @@ const demoDialogFormItems: FormItem[] = [
         { label: "停用", value: 1 },
       ],
     },
-  },
-  { key: "int_val", label: "整数", type: "number", props: { placeholder: "请输入整数" } },
-  { key: "bigint_val", label: "大整数", type: "number", props: { placeholder: "请输入大整数" } },
-  {
-    key: "float_val",
-    label: "浮点数",
-    type: "number",
-    props: { placeholder: "请输入浮点数", step: 0.01, precision: 2 },
-  },
-  { key: "bool_val", label: "布尔值", type: "switch" },
-  {
-    key: "date_val",
-    label: "日期",
-    type: "date",
-    props: { placeholder: "请选择日期", valueFormat: "YYYY-MM-DD", style: "width: 100%" },
-  },
-  {
-    key: "time_val",
-    label: "时间",
-    type: "timepicker",
-    props: { placeholder: "请选择时间", valueFormat: "HH:mm:ss", style: "width: 100%" },
-  },
-  {
-    key: "datetime_val",
-    label: "日期时间",
-    type: "datetime",
-    props: {
-      placeholder: "请选择日期时间",
-      valueFormat: "YYYY-MM-DD HH:mm:ss",
-      style: "width: 100%",
-    },
-  },
-  {
-    key: "text_val",
-    label: "长文本",
-    type: "input",
-    props: { type: "textarea", rows: 4, placeholder: "请输入长文本" },
   },
   {
     key: "description",
@@ -477,15 +362,7 @@ const demoDialogFormItems: FormItem[] = [
       placeholder: "请输入描述",
     },
   },
-  { key: "json_val", label: "元数据", type: "input" /* 由 #json_val 插槽接管 */ },
 ];
-
-const formData = ref<DemoForm>(createInitialFormData());
-
-const rules = reactive({
-  name: [{ required: true, message: "请输入名称", trigger: "blur" }],
-  status: [{ required: true, message: "请选择状态", trigger: "blur" }],
-});
 
 const dataFormRef = ref<{
   resetFields: () => void;
@@ -493,17 +370,15 @@ const dataFormRef = ref<{
   validate: (cb: (valid: boolean) => void) => void;
 } | null>(null);
 const submitLoading = ref(false);
-const demoFormRenderKey = ref(0);
-const metadataList = ref<{ key: string; value: string }[]>([]);
+const formRenderKey = ref(0);
 
 const { importVisible, exportVisible, openImport, openExport } = useImportExport();
 
-const handleSearch = async (params: DemoSearchFormParams) => {
+const handleSearch = async (params: GenDemoSingleSearchFormParams) => {
   await searchBarRef.value?.validate();
   replaceSearchParams({
     name: params.name,
     status: params.status,
-    tenant_id: params.tenant_id,
     created_id: params.created_id ?? undefined,
     updated_id: params.updated_id ?? undefined,
     created_time:
@@ -522,7 +397,6 @@ const onResetSearch = async () => {
   searchForm.value = {
     name: undefined,
     status: undefined,
-    tenant_id: undefined,
     created_id: undefined,
     updated_id: undefined,
     created_time: [],
@@ -531,13 +405,13 @@ const onResetSearch = async () => {
   await resetSearchParams();
 };
 
-function buildDemoRowActions(row: DemoTable): TableOperationAction[] {
+function buildRowActions(row: GenDemoSingleTable): TableOperationAction[] {
   const all: TableOperationAction[] = [
     {
       key: "detail",
       label: "详情",
       artType: "view",
-      perm: "module_example:demo:detail",
+      perm: "module_example:demo_single:detail",
       run: () => void openDetailDialog(row),
     },
     {
@@ -545,7 +419,7 @@ function buildDemoRowActions(row: DemoTable): TableOperationAction[] {
       label: "编辑",
       artType: "edit",
       icon: "ri:edit-2-line",
-      perm: "module_example:demo:update",
+      perm: "module_example:demo_single:update",
       run: () => void openEditDialog("edit", row),
     },
     {
@@ -553,22 +427,22 @@ function buildDemoRowActions(row: DemoTable): TableOperationAction[] {
       label: "删除",
       artType: "delete",
       icon: "ri:delete-bin-4-line",
-      perm: "module_example:demo:delete",
-      run: () => deleteDemoRow(row),
+      perm: "module_example:demo_single:delete",
+      run: () => deleteRow(row),
     },
   ];
   return all.filter((a) => a.perm != null && hasAuth(a.perm));
 }
 
-function formatDemoOperationCell(row: DemoTable) {
-  return renderTableOperationCell(buildDemoRowActions(row), {
-    wrapperClass: "inline-flex flex-wrap items-center justify-end gap-1 demo-table-actions",
+function formatOperationCell(row: GenDemoSingleTable) {
+  return renderTableOperationCell(buildRowActions(row), {
+    wrapperClass: "inline-flex flex-wrap items-center justify-end gap-1",
   });
 }
 
-async function openDetailDialog(row: DemoTable) {
-  if (!row.id) return;
-  const response = await DemoAPI.getDemoDetail(row.id);
+async function openDetailDialog(row: GenDemoSingleTable) {
+  if (!row[PK]) return;
+  const response = await GenDemoSingleAPI.getGenDemoSingleDetail(row[PK] as number);
   dialogVisible.type = "detail";
   dialogVisible.title = "详情";
   detailFormData.value = response.data.data ?? { ...row };
@@ -584,27 +458,18 @@ async function handleAdd() {
   }
 }
 
-async function openEditDialog(type: "add" | "edit", row?: DemoTable) {
+async function openEditDialog(type: "add" | "edit", row?: GenDemoSingleTable) {
   dialogVisible.type = type === "add" ? "create" : "update";
   if (type === "add") {
     dialogVisible.title = "新增";
     Object.assign(formData.value, createInitialFormData());
-    formData.value.id = undefined;
-    metadataList.value = [];
-    demoFormRenderKey.value += 1;
-  } else if (row?.id) {
+    formData.value[PK] = undefined;
+    formRenderKey.value += 1;
+  } else if (row?.[PK]) {
     dialogVisible.title = "修改";
-    demoFormRenderKey.value += 1;
-    const response = await DemoAPI.getDemoDetail(row.id);
+    formRenderKey.value += 1;
+    const response = await GenDemoSingleAPI.getGenDemoSingleDetail(row[PK] as number);
     Object.assign(formData.value, response.data.data);
-    if (formData.value.json_val && typeof formData.value.json_val === "object") {
-      metadataList.value = Object.entries(formData.value.json_val).map(([key, value]) => ({
-        key,
-        value: String(value),
-      }));
-    } else {
-      metadataList.value = [];
-    }
   }
   dialogVisible.visible = true;
 }
@@ -615,7 +480,6 @@ async function resetForm() {
     dataFormRef.value.clearValidate();
   }
   Object.assign(formData.value, createInitialFormData());
-  metadataList.value = [];
 }
 
 async function handleCloseDialog() {
@@ -627,24 +491,13 @@ async function handleSubmit() {
   dataFormRef.value?.validate(async (valid: boolean) => {
     if (!valid) return;
     const submitData = { ...formData.value };
-    if (metadataList.value.length > 0) {
-      const metadataObj: Record<string, string> = {};
-      metadataList.value.forEach((item) => {
-        if (item.key.trim()) {
-          metadataObj[item.key.trim()] = item.value;
-        }
-      });
-      submitData.json_val = Object.keys(metadataObj).length > 0 ? metadataObj : undefined;
-    } else {
-      submitData.json_val = undefined;
-    }
-    const id = formData.value.id;
+    const id = formData.value[PK] as number | undefined;
     try {
       if (id) {
-        await DemoAPI.updateDemo(id, { id, ...submitData });
+        await GenDemoSingleAPI.updateGenDemoSingle(id, { [PK]: id, ...submitData });
         await refreshUpdate();
       } else {
-        await DemoAPI.createDemo(submitData);
+        await GenDemoSingleAPI.createGenDemoSingle(submitData);
         await refreshCreate();
       }
       dialogVisible.visible = false;
@@ -655,11 +508,11 @@ async function handleSubmit() {
   });
 }
 
-const deleteDemoRow = async (row: DemoTable) => {
-  if (!row.id) return;
+const deleteRow = async (row: GenDemoSingleTable) => {
+  if (!row[PK]) return;
   try {
-    await confirmDelete(`确定删除「${row.name ?? row.id}」吗？此操作不可恢复！`);
-    await DemoAPI.deleteDemo([row.id!]);
+    await confirmDelete("确定删除该数据吗？此操作不可恢复！");
+    await GenDemoSingleAPI.deleteGenDemoSingle([row[PK] as number]);
     faTableRef.value?.elTableRef?.clearSelection();
     await refreshRemove();
   } catch {
@@ -673,7 +526,7 @@ async function handleBatchDelete() {
   try {
     await confirmBatchDelete(ids.length);
     batchDeleting.value = true;
-    await DemoAPI.deleteDemo(ids);
+    await GenDemoSingleAPI.deleteGenDemoSingle(ids);
     faTableRef.value?.elTableRef?.clearSelection();
     await refreshRemove();
   } catch {
@@ -694,8 +547,7 @@ async function runBatchStatus(status: number) {
       `确认对选中的 ${ids.length} 条数据${status === 0 ? "启用" : "停用"}？`,
       "批量设置"
     );
-    await DemoAPI.batchDemo({ ids, status });
-    // 成功 / 失败提示由 axios 拦截器统一处理
+    await GenDemoSingleAPI.batchGenDemoSingle({ ids, status });
     faTableRef.value?.elTableRef?.clearSelection();
     await refreshData();
   } catch {
@@ -705,16 +557,20 @@ async function runBatchStatus(status: number) {
 
 async function handleCrudImportUpload(formData: FormData) {
   try {
-    const res = await DemoAPI.importDemo(formData);
+    const res = await GenDemoSingleAPI.importGenDemoSingle(formData);
     if (res.data.code === ResultEnum.SUCCESS) {
       ElMessage.success(res.data.msg || "导入成功");
       importVisible.value = false;
       await refreshData();
     }
-    // 非 SUCCESS 分支提示由 axios 拦截器统一处理
   } catch (error) {
     console.error("[Import]", error);
-    /* 接口错误已由拦截器提示 */
   }
 }
+
+onMounted(() => {
+  getData();
+});
 </script>
+
+<style lang="scss" scoped></style>
