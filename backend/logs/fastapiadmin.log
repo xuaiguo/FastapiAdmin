@@ -1,0 +1,139 @@
+2026-07-27 10:31:26.059 | DEBUG    | logging:callHandlers:1762 - Looking up time zone info from registry
+2026-07-27 10:31:27.287 | INFO     | app.core.discover:_build:38 - 🚀 开始动态路由发现与注册
+2026-07-27 10:31:27.576 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `DemoRouter` ← app.plugin.module_example.demo.controller
+2026-07-27 10:31:27.593 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /example (子路由数: 1)
+2026-07-27 10:31:27.593 | INFO     | app.core.discover:_build:97 - ✅ 动态路由发现完成: 共 1 个容器前缀
+2026-07-27 10:31:27.611 | INFO     | logging:callHandlers:1762 - Started server process [37724]
+2026-07-27 10:31:27.612 | INFO     | logging:callHandlers:1762 - Waiting for application startup.
+2026-07-27 10:31:27.755 | INFO     | app.core.database:check_db:96 - ✅ 数据库连接正常
+2026-07-27 10:31:27.759 | DEBUG    | logging:callHandlers:1762 - caching sha2: succeeded by fast path.
+2026-07-27 10:31:34.123 | INFO     | app.scripts.initialize:__init_data:89 - ✅️ 已向 sys_menu 写入初始化数据
+2026-07-27 10:31:34.137 | INFO     | app.scripts.initialize:__init_data:89 - ✅️ 已向 sys_dept 写入初始化数据
+2026-07-27 10:31:34.167 | INFO     | app.scripts.initialize:__init_data:89 - ✅️ 已向 sys_param 写入初始化数据
+2026-07-27 10:31:34.186 | INFO     | app.scripts.initialize:__init_data:89 - ✅️ 已向 sys_role 写入初始化数据
+2026-07-27 10:31:34.210 | INFO     | app.scripts.initialize:__init_data:89 - ✅️ 已向 sys_dict_type 写入初始化数据
+2026-07-27 10:31:34.249 | INFO     | app.scripts.initialize:__init_data:89 - ✅️ 已向 sys_dict_data 写入初始化数据
+2026-07-27 10:31:34.299 | INFO     | app.scripts.initialize:__init_data:89 - ✅️ 已向 sys_user 写入初始化数据
+2026-07-27 10:31:34.315 | INFO     | app.scripts.initialize:__init_data:89 - ✅️ 已向 sys_user_roles 写入初始化数据
+2026-07-27 10:31:34.345 | INFO     | app.scripts.initialize:__init_data:89 - ✅️ 已向 sys_version 写入初始化数据
+2026-07-27 10:31:34.352 | INFO     | app.init_app:lifespan:27 - ✅ mysql数据库初始化完成
+2026-07-27 10:31:34.359 | INFO     | app.init_app:lifespan:29 - ✅ Redis 连接初始化完成
+2026-07-27 10:31:34.466 | INFO     | app.init_app:lifespan:31 - ✅ Redis系统参数初始化完成
+2026-07-27 10:31:34.504 | INFO     | app.init_app:lifespan:33 - ✅ Redis数据字典初始化完成
+2026-07-27 10:31:34.560 | INFO     | app.core.ap_scheduler:_dispatch_job_event:126 - 任务 system_cleanup_operation_log 已添加
+2026-07-27 10:31:34.560 | INFO     | app.core.ap_scheduler:init_scheduler:151 - ✅ 1 个系统周期任务已注册（操作日志清理）
+2026-07-27 10:31:34.561 | INFO     | app.init_app:lifespan:35 - ✅ 定时任务调度器初始化完成
+2026-07-27 10:31:34.656 | INFO     | logging:callHandlers:1762 - Application startup complete.
+2026-07-27 10:40:51.771 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64599 - "GET /api/v1/system/param/info HTTP/1.1" 200
+2026-07-27 10:40:51.888 | ERROR    | app.core.exceptions:custom_exception_handler:64 - [自定义异常] GET /api/v1/system/user/current/info | code=10401 | msg=无效认证,请重新登录 | data=None | cid=61e87083
+2026-07-27 10:40:51.889 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64600 - "GET /api/v1/system/user/current/info HTTP/1.1" 401
+2026-07-27 10:40:51.905 | ERROR    | app.core.exceptions:validation_exception_handler:93 - [参数验证异常] POST /api/v1/system/auth/token/refresh | errors=[{'type': 'string_type', 'loc': ('body',), 'msg': 'Input should be a valid string', 'input': {'refresh_token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwZTdmNmQ2Yi0xMzJjLTRkYzMtYTg1Zi1hYWY1MjM2YWE5NmQiLCJpc19yZWZyZXNoIjp0cnVlLCJleHAiOjE3ODQ5MTc0NDl9.2loWN0gKzKf1mM9acbR7hevm2JbunwNdtBWc0EyZtEM'}}] | cid=fbefb27e
+2026-07-27 10:40:51.906 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64601 - "POST /api/v1/system/auth/token/refresh HTTP/1.1" 422
+2026-07-27 10:40:53.641 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64605 - "GET /api/v1/system/auth/captcha/get HTTP/1.1" 200
+2026-07-27 10:40:59.140 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64618 - "GET /api/v1/system/param/info HTTP/1.1" 200
+2026-07-27 10:40:59.188 | ERROR    | app.core.exceptions:custom_exception_handler:64 - [自定义异常] GET /api/v1/system/user/current/info | code=10401 | msg=无效认证,请重新登录 | data=None | cid=00602e2e
+2026-07-27 10:40:59.189 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64619 - "GET /api/v1/system/user/current/info HTTP/1.1" 401
+2026-07-27 10:40:59.203 | ERROR    | app.core.exceptions:validation_exception_handler:93 - [参数验证异常] POST /api/v1/system/auth/token/refresh | errors=[{'type': 'string_type', 'loc': ('body',), 'msg': 'Input should be a valid string', 'input': {'refresh_token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzhkNWY1My01NjJiLTQxZDMtOWViYi0xNjViNzJmYTJiYTIiLCJpc19yZWZyZXNoIjp0cnVlLCJleHAiOjE3ODQ3MzQyMDh9.eNnXjuz0Gzf3zBlpyiHEGqFWSeVrxxLBbYZoK0mP4N0'}}] | cid=ebbeba1c
+2026-07-27 10:40:59.205 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64620 - "POST /api/v1/system/auth/token/refresh HTTP/1.1" 422
+2026-07-27 10:41:02.496 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64621 - "GET /api/v1/system/auth/captcha/get HTTP/1.1" 200
+2026-07-27 10:41:22.901 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64652 - "GET /api/v1/system/param/info HTTP/1.1" 200
+2026-07-27 10:41:22.927 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64653 - "GET /api/v1/system/auth/captcha/get HTTP/1.1" 200
+2026-07-27 10:41:27.021 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64659 - "GET /api/v1/system/param/info HTTP/1.1" 200
+2026-07-27 10:41:27.058 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64660 - "GET /api/v1/system/auth/captcha/get HTTP/1.1" 200
+2026-07-27 10:41:36.279 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64675 - "GET /api/v1/system/param/info HTTP/1.1" 200
+2026-07-27 10:41:36.550 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64676 - "GET /api/v1/system/auth/captcha/get HTTP/1.1" 200
+2026-07-27 10:41:47.805 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64683 - "POST /api/v1/system/auth/captcha/slider/complete HTTP/1.1" 200
+2026-07-27 10:41:50.785 | DEBUG    | logging:callHandlers:1762 - caching sha2: succeeded by fast path. | cid=856f8400
+2026-07-27 10:41:50.838 | INFO     | app.api.v1.module_system.auth.controller:login_for_access_token_controller:73 - 用户admin登录成功 | cid=856f8400
+2026-07-27 10:41:50.841 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64693 - "POST /api/v1/system/auth/login HTTP/1.1" 200
+2026-07-27 10:41:50.867 | DEBUG    | logging:callHandlers:1762 - caching sha2: succeeded by fast path. | cid=51240172
+2026-07-27 10:41:51.096 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64698 - "GET /api/v1/system/user/current/info HTTP/1.1" 200
+2026-07-27 10:41:51.130 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64703 - "GET /api/v1/system/param/info HTTP/1.1" 200
+2026-07-27 10:42:11.415 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64741 - "GET /api/v1/system/user/current/info HTTP/1.1" 200
+2026-07-27 10:42:13.429 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64749 - "GET /api/v1/system/param/info HTTP/1.1" 200
+2026-07-27 10:42:13.775 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64750 - "GET /api/v1/system/auth/captcha/get HTTP/1.1" 200
+2026-07-27 10:42:28.600 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64768 - "POST /api/v1/system/auth/captcha/slider/complete HTTP/1.1" 200
+2026-07-27 10:42:30.956 | INFO     | app.api.v1.module_system.auth.controller:login_for_access_token_controller:73 - 用户admin登录成功 | cid=0f6f248f
+2026-07-27 10:42:30.962 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64770 - "POST /api/v1/system/auth/login HTTP/1.1" 200
+2026-07-27 10:42:31.746 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64772 - "GET /api/v1/system/user/current/info HTTP/1.1" 200
+2026-07-27 10:42:31.841 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64775 - "GET /api/v1/system/param/info HTTP/1.1" 200
+2026-07-27 10:42:51.992 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64813 - "GET /api/v1/system/user/current/info HTTP/1.1" 200
+2026-07-27 10:43:17.251 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64860 - "GET /api/v1/system/user/current/info HTTP/1.1" 200
+2026-07-27 10:43:21.194 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64877 - "GET /api/v1/system/notice/available HTTP/1.1" 200
+2026-07-27 10:43:21.230 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64878 - "GET /api/v1/system/notice/available HTTP/1.1" 200
+2026-07-27 10:43:21.263 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64879 - "GET /api/v1/monitor/online/stats HTTP/1.1" 200
+2026-07-27 10:43:32.063 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64894 - "GET /api/v1/system/notice/available HTTP/1.1" 200
+2026-07-27 10:43:32.152 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64895 - "GET /api/v1/monitor/online/stats HTTP/1.1" 200
+2026-07-27 10:43:32.241 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64900 - "GET /api/v1/system/notice/available HTTP/1.1" 200
+2026-07-27 10:43:53.338 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64917 - "GET /api/v1/example/demo/list?page_no=1&page_size=10 HTTP/1.1" 200
+2026-07-27 10:43:54.926 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64920 - "GET /api/v1/example/demo/list?page_no=1&page_size=10 HTTP/1.1" 200
+2026-07-27 10:44:22.532 | INFO     | app.api.v1.module_system.auth.service:logout:433 - 用户退出登录成功,会话编号:7d156b17-3456-4ba2-9401-4615f869cb84 | cid=fe5d4d8b
+2026-07-27 10:44:22.534 | INFO     | app.api.v1.module_system.auth.controller:logout_controller:113 - 退出成功 | cid=fe5d4d8b
+2026-07-27 10:44:22.540 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64939 - "POST /api/v1/system/auth/logout HTTP/1.1" 200
+2026-07-27 10:44:22.848 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64941 - "GET /api/v1/system/param/info HTTP/1.1" 200
+2026-07-27 10:44:22.931 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64943 - "GET /api/v1/system/auth/captcha/get HTTP/1.1" 200
+2026-07-27 10:44:33.579 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64950 - "POST /api/v1/system/auth/captcha/slider/complete HTTP/1.1" 200
+2026-07-27 10:44:35.916 | INFO     | app.api.v1.module_system.auth.controller:login_for_access_token_controller:73 - 用户admin登录成功 | cid=56922f83
+2026-07-27 10:44:35.918 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64954 - "POST /api/v1/system/auth/login HTTP/1.1" 200
+2026-07-27 10:44:36.065 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64957 - "GET /api/v1/system/user/current/info HTTP/1.1" 200
+2026-07-27 10:44:36.137 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64960 - "GET /api/v1/system/param/info HTTP/1.1" 200
+2026-07-27 10:44:36.602 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64963 - "GET /api/v1/example/demo/list?page_no=1&page_size=10 HTTP/1.1" 200
+2026-07-27 10:44:36.677 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64961 - "GET /api/v1/system/notice/available HTTP/1.1" 200
+2026-07-27 10:44:40.595 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64965 - "GET /api/v1/monitor/online/stats HTTP/1.1" 200
+2026-07-27 10:44:47.018 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64975 - "GET /api/v1/system/menu/tree?scope=web HTTP/1.1" 200
+2026-07-27 10:44:56.593 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64984 - "GET /api/v1/system/role/list?page_no=1&page_size=10 HTTP/1.1" 200
+2026-07-27 10:45:00.571 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64992 - "GET /api/v1/system/menu/tree HTTP/1.1" 200
+2026-07-27 10:45:00.786 | INFO     | logging:callHandlers:1762 - 127.0.0.1:64994 - "GET /api/v1/system/role/detail/2 HTTP/1.1" 200
+2026-07-27 10:55:31.919 | INFO     | logging:callHandlers:1762 - Shutting down
+2026-07-27 10:55:32.027 | INFO     | logging:callHandlers:1762 - Waiting for application shutdown.
+2026-07-27 10:55:32.028 | INFO     | app.init_app:lifespan:50 - ✅ 定时任务调度器已关闭
+2026-07-27 10:55:32.034 | INFO     | app.core.database:redis_connect:164 - ✅️ Redis连接已关闭
+2026-07-27 10:55:32.039 | INFO     | app.init_app:lifespan:52 - ✅ Redis 连接已关闭
+2026-07-27 10:55:32.042 | INFO     | app.init_app:lifespan:54 - ✅ 数据库引擎连接池已释放
+2026-07-27 10:55:32.062 | INFO     | logging:callHandlers:1762 - Application shutdown complete.
+2026-07-27 10:55:32.063 | INFO     | logging:callHandlers:1762 - Finished server process [37724]
+2026-07-27 10:55:57.278 | DEBUG    | logging:callHandlers:1762 - Looking up time zone info from registry
+2026-07-27 10:55:58.155 | INFO     | app.core.discover:_build:38 - 🚀 开始动态路由发现与注册
+2026-07-27 10:55:58.235 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `DemoRouter` ← app.plugin.module_example.demo.controller
+2026-07-27 10:55:58.263 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /example (子路由数: 1)
+2026-07-27 10:55:58.264 | INFO     | app.core.discover:_build:97 - ✅ 动态路由发现完成: 共 1 个容器前缀
+2026-07-27 10:55:58.292 | INFO     | logging:callHandlers:1762 - Started server process [5864]
+2026-07-27 10:55:58.293 | INFO     | logging:callHandlers:1762 - Waiting for application startup.
+2026-07-27 10:55:58.464 | INFO     | app.core.database:check_db:96 - ✅ 数据库连接正常
+2026-07-27 10:55:58.491 | DEBUG    | logging:callHandlers:1762 - caching sha2: succeeded by fast path.
+2026-07-27 10:55:58.940 | INFO     | app.scripts.initialize:__init_data:62 - ⏭️  跳过 sys_menu 表数据初始化（表已有数据）
+2026-07-27 10:55:58.959 | INFO     | app.scripts.initialize:__init_data:62 - ⏭️  跳过 sys_dept 表数据初始化（表已有数据）
+2026-07-27 10:55:58.975 | INFO     | app.scripts.initialize:__init_data:62 - ⏭️  跳过 sys_param 表数据初始化（表已有数据）
+2026-07-27 10:55:58.992 | INFO     | app.scripts.initialize:__init_data:62 - ⏭️  跳过 sys_role 表数据初始化（表已有数据）
+2026-07-27 10:55:59.008 | INFO     | app.scripts.initialize:__init_data:62 - ⏭️  跳过 sys_dict_type 表数据初始化（表已有数据）
+2026-07-27 10:55:59.025 | INFO     | app.scripts.initialize:__init_data:62 - ⏭️  跳过 sys_dict_data 表数据初始化（表已有数据）
+2026-07-27 10:55:59.044 | INFO     | app.scripts.initialize:__init_data:62 - ⏭️  跳过 sys_user 表数据初始化（表已有数据）
+2026-07-27 10:55:59.060 | INFO     | app.scripts.initialize:__init_data:62 - ⏭️  跳过 sys_user_roles 表数据初始化（表已有数据）
+2026-07-27 10:55:59.078 | INFO     | app.scripts.initialize:__init_data:62 - ⏭️  跳过 sys_version 表数据初始化（表已有数据）
+2026-07-27 10:55:59.101 | INFO     | app.init_app:lifespan:27 - ✅ mysql数据库初始化完成
+2026-07-27 10:55:59.112 | INFO     | app.init_app:lifespan:29 - ✅ Redis 连接初始化完成
+2026-07-27 10:55:59.544 | INFO     | app.init_app:lifespan:31 - ✅ Redis系统参数初始化完成
+2026-07-27 10:55:59.729 | INFO     | app.init_app:lifespan:33 - ✅ Redis数据字典初始化完成
+2026-07-27 10:55:59.766 | INFO     | app.core.ap_scheduler:_dispatch_job_event:126 - 任务 system_cleanup_operation_log 已添加
+2026-07-27 10:55:59.766 | INFO     | app.core.ap_scheduler:init_scheduler:151 - ✅ 1 个系统周期任务已注册（操作日志清理）
+2026-07-27 10:55:59.769 | INFO     | app.init_app:lifespan:35 - ✅ 定时任务调度器初始化完成
+2026-07-27 10:55:59.868 | INFO     | logging:callHandlers:1762 - Application startup complete.
+2026-07-27 11:01:52.467 | INFO     | app.api.v1.module_system.auth.service:logout:433 - 用户退出登录成功,会话编号:d2f4e9a8-7cbd-42b2-86e3-50877059299b | cid=40ec87cb
+2026-07-27 11:01:52.469 | INFO     | app.api.v1.module_system.auth.controller:logout_controller:113 - 退出成功 | cid=40ec87cb
+2026-07-27 11:01:52.478 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49346 - "POST /api/v1/system/auth/logout HTTP/1.1" 200
+2026-07-27 11:01:52.497 | DEBUG    | logging:callHandlers:1762 - caching sha2: succeeded by fast path. | cid=40ec87cb
+2026-07-27 11:01:52.793 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49349 - "GET /api/v1/system/param/info HTTP/1.1" 200
+2026-07-27 11:01:52.822 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49351 - "GET /api/v1/system/auth/captcha/get HTTP/1.1" 200
+2026-07-27 11:02:01.316 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49360 - "POST /api/v1/system/auth/captcha/slider/complete HTTP/1.1" 200
+2026-07-27 11:02:03.481 | INFO     | app.api.v1.module_system.auth.controller:login_for_access_token_controller:73 - 用户admin登录成功 | cid=9445d0e7
+2026-07-27 11:02:03.483 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49362 - "POST /api/v1/system/auth/login HTTP/1.1" 200
+2026-07-27 11:02:03.681 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49364 - "GET /api/v1/system/user/current/info HTTP/1.1" 200
+2026-07-27 11:02:03.722 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49367 - "GET /api/v1/system/param/info HTTP/1.1" 200
+2026-07-27 11:02:04.217 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49369 - "GET /api/v1/system/notice/available HTTP/1.1" 200
+2026-07-27 11:02:04.245 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49370 - "GET /api/v1/system/role/list?page_no=1&page_size=10 HTTP/1.1" 200
+2026-07-27 11:02:30.489 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49394 - "GET /api/v1/system/dept/tree HTTP/1.1" 200
+2026-07-27 11:02:30.538 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49393 - "GET /api/v1/system/user/list?page_no=1&page_size=20 HTTP/1.1" 200
+2026-07-27 11:02:33.936 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49397 - "GET /api/v1/system/log/operation/list?page_no=1&page_size=10 HTTP/1.1" 200
+2026-07-27 11:02:37.999 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49399 - "GET /api/v1/system/role/list?page_no=1&page_size=10 HTTP/1.1" 200
+2026-07-27 11:02:56.790 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49408 - "GET /api/v1/example/demo/list?page_no=1&page_size=10 HTTP/1.1" 200
+2026-07-27 11:03:01.858 | INFO     | logging:callHandlers:1762 - 127.0.0.1:49413 - "GET /api/v1/system/menu/tree?scope=web HTTP/1.1" 200
