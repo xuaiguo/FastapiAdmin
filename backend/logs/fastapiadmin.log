@@ -840,3 +840,221 @@ asyncio.exceptions.CancelledError
 2026-07-28 12:54:28.246 | INFO     | app.init_app:lifespan:64 - ✅ OceanBase 连接池已释放
 2026-07-28 12:54:28.287 | INFO     | logging:callHandlers:1762 - Application shutdown complete.
 2026-07-28 12:54:28.313 | INFO     | logging:callHandlers:1762 - Finished server process [27068]
+2026-07-28 13:07:53.245 | INFO     | app.core.ob_oracle.database:<module>:26 - ✅ cx_Oracle 客户端已初始化: lib_dir=C:\obclient\lib
+2026-07-28 13:07:55.123 | DEBUG    | logging:callHandlers:1762 - Looking up time zone info from registry
+2026-07-28 13:07:56.011 | INFO     | app.core.discover:_build:38 - 🚀 开始动态路由发现与注册
+2026-07-28 13:07:56.082 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `DemoRouter` ← app.plugin.module_example.demo.controller
+2026-07-28 13:07:56.115 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `MysqlDemoRouter` ← app.plugin.module_mysql_demo.demo.controller
+2026-07-28 13:07:56.156 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObOracleDemoRouter` ← app.plugin.module_ob_oracle_demo.demo.controller
+2026-07-28 13:07:56.191 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObOracleQueryRouter` ← app.plugin.module_ob_oracle_query.query.controller
+2026-07-28 13:07:56.207 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObPartitionTabAnalyzeRouter` ← app.plugin.module_ob_partition_tab_analyze.analyze.controller
+2026-07-28 13:07:56.227 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObProcesslistRouter` ← app.plugin.module_ob_processlist.processlist.controller
+2026-07-28 13:07:56.246 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObSchedulerJobsRouter` ← app.plugin.module_ob_scheduler_jobs.jobs.controller
+2026-07-28 13:07:56.278 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObSqlAuditRouter` ← app.plugin.module_ob_sql_audit.audit.controller
+2026-07-28 13:07:56.306 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObSqlstatCurRouter` ← app.plugin.module_ob_sqlstat_cur.sqlstat.controller
+2026-07-28 13:07:56.338 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObWrSqlstatRouter` ← app.plugin.module_ob_wr_sqlstat.sqlstat.controller
+2026-07-28 13:07:56.381 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `OracleDemoRouter` ← app.plugin.module_oracle_demo.demo.controller
+2026-07-28 13:07:56.409 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `OracleSessionRouter` ← app.plugin.module_oracle_session.demo.controller
+2026-07-28 13:07:56.429 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `OracleTablespaceRouter` ← app.plugin.module_oracle_tablespace.tablespace.controller
+2026-07-28 13:07:56.451 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /example (子路由数: 1)
+2026-07-28 13:07:56.469 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /mysql_demo (子路由数: 1)
+2026-07-28 13:07:56.493 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_oracle_demo (子路由数: 1)
+2026-07-28 13:07:56.505 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_oracle_query (子路由数: 1)
+2026-07-28 13:07:56.509 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_partition_tab_analyze (子路由数: 1)
+2026-07-28 13:07:56.519 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_processlist (子路由数: 1)
+2026-07-28 13:07:56.531 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_scheduler_jobs (子路由数: 1)
+2026-07-28 13:07:56.553 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_sql_audit (子路由数: 1)
+2026-07-28 13:07:56.561 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_sqlstat_cur (子路由数: 1)
+2026-07-28 13:07:56.574 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_wr_sqlstat (子路由数: 1)
+2026-07-28 13:07:56.596 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /oracle_demo (子路由数: 1)
+2026-07-28 13:07:56.618 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /oracle_session (子路由数: 1)
+2026-07-28 13:07:56.643 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /oracle_tablespace (子路由数: 1)
+2026-07-28 13:07:56.644 | INFO     | app.core.discover:_build:97 - ✅ 动态路由发现完成: 共 13 个容器前缀
+2026-07-28 13:07:56.782 | INFO     | logging:callHandlers:1762 - Started server process [28268]
+2026-07-28 13:07:56.808 | INFO     | logging:callHandlers:1762 - Waiting for application startup.
+2026-07-28 13:07:57.065 | INFO     | app.core.database:check_db:96 - ✅ 数据库连接正常
+2026-07-28 13:07:57.070 | DEBUG    | logging:callHandlers:1762 - caching sha2: succeeded by fast path.
+2026-07-28 13:07:57.164 | ERROR    | app.scripts.initialize:__load_json:134 - ❌️ 解析 D:\Dev\mygit\FastapiAdmin_v3\backend\sql\data\sys_menu.json 失败: Expecting property name enclosed in double quotes: line 12 column 1 (char 255)
+2026-07-28 13:07:57.326 | ERROR    | logging:callHandlers:1762 - Traceback (most recent call last):
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\starlette\routing.py", line 694, in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\app\init_app.py", line 26, in lifespan
+    await InitializeData().init_db()
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\app\scripts\initialize.py", line 56, in init_db
+    await self.__init_data(session)
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\app\scripts\initialize.py", line 65, in __init_data
+    data = await self.__load_json(table_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\app\scripts\initialize.py", line 132, in __load_json
+    return json.load(f)
+           ^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\json\__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\json\decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 12 column 1 (char 255)
+
+2026-07-28 13:07:57.410 | ERROR    | logging:callHandlers:1762 - Application startup failed. Exiting.
+2026-07-28 13:19:17.194 | INFO     | app.core.ob_oracle.database:<module>:26 - ✅ cx_Oracle 客户端已初始化: lib_dir=C:\obclient\lib
+2026-07-28 13:19:17.978 | DEBUG    | logging:callHandlers:1762 - Looking up time zone info from registry
+2026-07-28 13:19:18.667 | INFO     | app.core.discover:_build:38 - 🚀 开始动态路由发现与注册
+2026-07-28 13:19:18.733 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `DemoRouter` ← app.plugin.module_example.demo.controller
+2026-07-28 13:19:18.766 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `MysqlDemoRouter` ← app.plugin.module_mysql_demo.demo.controller
+2026-07-28 13:19:18.806 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObOracleDemoRouter` ← app.plugin.module_ob_oracle_demo.demo.controller
+2026-07-28 13:19:18.839 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObOracleQueryRouter` ← app.plugin.module_ob_oracle_query.query.controller
+2026-07-28 13:19:18.982 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObPartitionTabAnalyzeRouter` ← app.plugin.module_ob_partition_tab_analyze.analyze.controller
+2026-07-28 13:19:19.001 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObProcesslistRouter` ← app.plugin.module_ob_processlist.processlist.controller
+2026-07-28 13:19:19.024 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObSchedulerJobsRouter` ← app.plugin.module_ob_scheduler_jobs.jobs.controller
+2026-07-28 13:19:19.054 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObSqlAuditRouter` ← app.plugin.module_ob_sql_audit.audit.controller
+2026-07-28 13:19:19.078 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObSqlstatCurRouter` ← app.plugin.module_ob_sqlstat_cur.sqlstat.controller
+2026-07-28 13:19:19.102 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObWrSqlstatRouter` ← app.plugin.module_ob_wr_sqlstat.sqlstat.controller
+2026-07-28 13:19:19.148 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `OracleDemoRouter` ← app.plugin.module_oracle_demo.demo.controller
+2026-07-28 13:19:19.263 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `OracleSessionRouter` ← app.plugin.module_oracle_session.demo.controller
+2026-07-28 13:19:19.283 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `OracleTablespaceRouter` ← app.plugin.module_oracle_tablespace.tablespace.controller
+2026-07-28 13:19:19.306 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /example (子路由数: 1)
+2026-07-28 13:19:19.322 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /mysql_demo (子路由数: 1)
+2026-07-28 13:19:19.345 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_oracle_demo (子路由数: 1)
+2026-07-28 13:19:19.356 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_oracle_query (子路由数: 1)
+2026-07-28 13:19:19.365 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_partition_tab_analyze (子路由数: 1)
+2026-07-28 13:19:19.373 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_processlist (子路由数: 1)
+2026-07-28 13:19:19.385 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_scheduler_jobs (子路由数: 1)
+2026-07-28 13:19:19.399 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_sql_audit (子路由数: 1)
+2026-07-28 13:19:19.405 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_sqlstat_cur (子路由数: 1)
+2026-07-28 13:19:19.423 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_wr_sqlstat (子路由数: 1)
+2026-07-28 13:19:19.449 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /oracle_demo (子路由数: 1)
+2026-07-28 13:19:19.462 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /oracle_session (子路由数: 1)
+2026-07-28 13:19:19.472 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /oracle_tablespace (子路由数: 1)
+2026-07-28 13:19:19.473 | INFO     | app.core.discover:_build:97 - ✅ 动态路由发现完成: 共 13 个容器前缀
+2026-07-28 13:19:19.601 | INFO     | logging:callHandlers:1762 - Started server process [25516]
+2026-07-28 13:19:19.603 | INFO     | logging:callHandlers:1762 - Waiting for application startup.
+2026-07-28 13:19:19.729 | INFO     | app.core.database:check_db:96 - ✅ 数据库连接正常
+2026-07-28 13:19:19.734 | DEBUG    | logging:callHandlers:1762 - caching sha2: succeeded by fast path.
+2026-07-28 13:19:19.810 | ERROR    | app.scripts.initialize:__load_json:134 - ❌️ 解析 D:\Dev\mygit\FastapiAdmin_v3\backend\sql\data\sys_menu.json 失败: Expecting property name enclosed in double quotes: line 12 column 1 (char 255)
+2026-07-28 13:19:19.817 | ERROR    | logging:callHandlers:1762 - Traceback (most recent call last):
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\starlette\routing.py", line 694, in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\.venv\Lib\site-packages\fastapi\routing.py", line 232, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\app\init_app.py", line 26, in lifespan
+    await InitializeData().init_db()
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\app\scripts\initialize.py", line 56, in init_db
+    await self.__init_data(session)
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\app\scripts\initialize.py", line 65, in __init_data
+    data = await self.__load_json(table_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\mygit\FastapiAdmin_v3\backend\app\scripts\initialize.py", line 132, in __load_json
+    return json.load(f)
+           ^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\json\__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\Python\Python312\Lib\json\decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 12 column 1 (char 255)
+
+2026-07-28 13:19:19.858 | ERROR    | logging:callHandlers:1762 - Application startup failed. Exiting.

@@ -176,13 +176,7 @@ export const IframeView = defineComponent({
 
     onMounted(() => {
       const iframeRoute = IframeRouteManager.getInstance().findByPath(route.path);
-<<<<<<< HEAD
-      if (iframeRoute?.meta) {
-        iframeUrl.value = iframeRoute.meta.link || "";
-      }
-=======
       iframeUrl.value = iframeRoute?.meta?.link || (route.meta.link as string) || "";
->>>>>>> upstream/master
     });
 
     const handleIframeLoad = () => {
