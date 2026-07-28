@@ -213,7 +213,11 @@ export class RouteTransformer {
       };
     }
     return {
+<<<<<<< HEAD
       path: route.path.replace(/^\//, ""),
+=======
+      path: this.routerPath(route.path, depth),
+>>>>>>> upstream/master
       name: route.name,
       component: this.loader.loadIframe(),
       meta: route.meta,
@@ -252,11 +256,14 @@ export class RouteTransformer {
       return this.buildLeafRoute(route, depth);
     }
 
+<<<<<<< HEAD
     const allLeaves = route.children.every((c) => !c.children?.length);
     if (allLeaves && !route.component) {
       return this.buildLeafRoute(route, depth);
     }
 
+=======
+>>>>>>> upstream/master
     // 多级目录：父级占位 + 递归子级
     const children = route.children
       .map((child) => this.transform(child, depth + 1))

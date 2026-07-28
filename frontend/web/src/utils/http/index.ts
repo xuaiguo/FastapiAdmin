@@ -307,6 +307,7 @@ request.interceptors.response.use(
     // ── 鉴权错误（401 / TOKEN_EXPIRED）：静默续期 ──
     const status = error.response.status;
 
+<<<<<<< HEAD
     const hasApiCode =
       data !== undefined &&
       data !== null &&
@@ -315,6 +316,9 @@ request.interceptors.response.use(
       typeof (data as ApiResponse).code === "number";
 
     if ((status === 401 && !hasApiCode) || data?.code === ResultEnum.TOKEN_EXPIRED) {
+=======
+    if (status === 401 || data?.code === ResultEnum.TOKEN_EXPIRED) {
+>>>>>>> upstream/master
       const config = error.config as InternalAxiosRequestConfig | undefined;
 
       // 若 refresh 接口自身返回 401，不在此处跳转登录 ——

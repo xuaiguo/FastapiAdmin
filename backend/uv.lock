@@ -186,7 +186,10 @@ dependencies = [
     { name = "loguru" },
     { name = "openai" },
     { name = "openpyxl" },
+<<<<<<< HEAD
     { name = "oracledb" },
+=======
+>>>>>>> upstream/master
     { name = "psutil" },
     { name = "psycopg", extra = ["binary"] },
     { name = "pydantic", extra = ["email"] },
@@ -246,7 +249,10 @@ requires-dist = [
     { name = "loguru", specifier = "==0.7.3" },
     { name = "openai", specifier = "==2.46.0" },
     { name = "openpyxl", specifier = "==3.1.5" },
+<<<<<<< HEAD
     { name = "oracledb", specifier = ">=2.0.0" },
+=======
+>>>>>>> upstream/master
     { name = "psutil", specifier = "==7.2.2" },
     { name = "psycopg", extras = ["binary"], specifier = "==3.3.2" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.12.5" },
@@ -296,6 +302,7 @@ wheels = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "cffi"
 version = "2.1.0"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
@@ -381,6 +388,8 @@ wheels = [
 ]
 
 [[package]]
+=======
+>>>>>>> upstream/master
 name = "click"
 version = "8.1.7"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
@@ -414,6 +423,7 @@ wheels = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "cryptography"
 version = "49.0.0"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
@@ -464,6 +474,8 @@ wheels = [
 ]
 
 [[package]]
+=======
+>>>>>>> upstream/master
 name = "distro"
 version = "1.9.0"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
@@ -944,6 +956,7 @@ wheels = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "oracledb"
 version = "4.0.2"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
@@ -980,6 +993,8 @@ wheels = [
 ]
 
 [[package]]
+=======
+>>>>>>> upstream/master
 name = "packaging"
 version = "25.0"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
@@ -1084,6 +1099,7 @@ wheels = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "pycparser"
 version = "3.0"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
@@ -1093,6 +1109,8 @@ wheels = [
 ]
 
 [[package]]
+=======
+>>>>>>> upstream/master
 name = "pydantic"
 version = "2.12.5"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
