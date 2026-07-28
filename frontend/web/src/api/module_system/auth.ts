@@ -26,7 +26,7 @@ const AuthAPI = {
     return request<ApiResponse<JWTOut>>({
       url: `${API_PATH}/token/refresh`,
       method: "post",
-      data: { refresh_token: refreshToken },
+      data: refreshToken,
     });
   },
 

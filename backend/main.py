@@ -1,4 +1,19 @@
 import os
+import sys
+
+# 在任何 app 模块导入之前，从命令行参数提取 --env 值并设置环境变量
+# 确保 Settings 类定义时能加载正确的 .env.{environment} 文件
+if "--env=" in str(sys.argv):
+    for _arg in sys.argv:
+        if _arg.startswith("--env="):
+            os.environ["ENVIRONMENT"] = _arg.split("=", 1)[1]
+            break
+elif "--env" in sys.argv:
+    _idx = sys.argv.index("--env")
+    if _idx + 1 < len(sys.argv):
+        os.environ["ENVIRONMENT"] = sys.argv[_idx + 1]
+os.environ.setdefault("ENVIRONMENT", "dev")
+
 from typing import Annotated
 
 import typer

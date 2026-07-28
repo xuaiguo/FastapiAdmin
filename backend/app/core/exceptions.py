@@ -1,3 +1,4 @@
+import traceback
 from functools import wraps
 from typing import Any
 
@@ -58,16 +59,30 @@ class CustomException(Exception):
         return self.msg
 
 
+def _tb_source(exc: Exception) -> str:
+    """从 traceback 提取抛出的 文件名:行号:函数名"""
+    if exc.__traceback__ and (tb := traceback.extract_tb(exc.__traceback__)):
+        f = tb[-1]
+        return f"{f.filename}:{f.lineno}:{f.name}"
+    return "unknown"
+
+
+_VALIDATION_ERROR_MAP: dict[str, str] = {
+    "Field required": "请求失败，缺少必填项！",
+    "value is not a valid list": "类型错误，提交参数应该为列表！",
+    "value is not a valid int": "类型错误，提交参数应该为整数！",
+    "value could not be parsed to a boolean": "类型错误，提交参数应该为布尔值！",
+    "Input should be a valid list": "类型错误，输入应该是一个有效的列表！",
+}
+
+
 def handle_exception(app: FastAPI) -> None:
     @app.exception_handler(CustomException)
     async def custom_exception_handler(request: Request, exc: CustomException) -> JSONResponse:
         logger.error(
-            "[自定义异常] {} {} | code={} | msg={} | data={}",
-            request.method,
-            request.url.path,
-            exc.code,
-            exc.msg,
-            exc.data,
+            "[自定义异常] {} {} | source={} | code={} | msg={} | data={}",
+            request.method, request.url.path,
+            _tb_source(exc), exc.code, exc.msg, exc.data,
         )
         # 生产环境不外泄 data（可能含 SQL 字段、约束名等内部细节）
         expose_data = exc.data if settings.ENVIRONMENT != EnvironmentEnum.PROD else None
@@ -87,16 +102,15 @@ def handle_exception(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
         errors = exc.errors()
-        msg = errors[0].get("msg", str(errors[0])) if errors else "请求参数验证失败"
-        if msg.startswith("Value error"):
+        raw_msg = errors[0].get("msg", str(errors[0])) if errors else "请求参数验证失败"
+        msg = _VALIDATION_ERROR_MAP.get(raw_msg, raw_msg)
+        if isinstance(msg, str) and msg.startswith("Value error"):
             msg = msg[11:].lstrip(" ,")
         logger.error(
-            "[参数验证异常] {} {} | errors={}",
-            request.method,
-            request.url.path,
-            errors,
+            "[参数验证异常] {} {} | msg={} | errors={}",
+            request.method, request.url.path, msg, errors,
         )
-        return ErrorResponse(msg=str(msg), status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, data=errors)
+        return ErrorResponse(msg=str(msg), status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, data=exc.body)
 
     @app.exception_handler(ResponseValidationError)
     async def response_validation_handler(request: Request, exc: ResponseValidationError) -> JSONResponse:

@@ -1,6 +1,6 @@
 <div align="center">
      <p align="center">
-          <img src="frontend/web/public/logo.svg" width="150" height="150" alt="logo" />
+          <img src="./frontend/web/public/logo.png" width="150" height="150" alt="logo" />
      </p>
      <h1>FastApiAdmin <sup style="background-color: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.4em; vertical-align: super; margin-left: 5px;">v3.0.0</sup></h1>
      <h3>🚀 Exceptional Code Quality, Production-Ready Admin Dashboard in 5 Minutes</h3>
@@ -120,7 +120,7 @@ Issues and PRs are welcome! See [Contributing Guide](https://service.fastapiadmi
 
 | WeChat Group | Support |
 | ------------ | ------- |
-| ![Group QR](frontend/web/public/group.jpg) | ![WeChat Pay](frontend/web/public/wechatPay.jpg) |
+| ![Group QR](frontend/web/public/group.png) | ![WeChat Pay](frontend/web/public/wechatPay.jpg) |
 
 ## 👥 Contributors
 

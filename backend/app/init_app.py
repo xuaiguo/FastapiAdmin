@@ -52,6 +52,16 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
         logger.info("✅ Redis 连接已关闭")
         await async_engine.dispose()
         logger.info("✅ 数据库引擎连接池已释放")
+        # 关闭所有外部数据库连接池
+        from app.core.oracle.database import oracle_manager
+        from app.core.mysql.database import mysql_manager
+        from app.core.ob_oracle.database import ob_oracle_manager
+        await oracle_manager.dispose_all()
+        logger.info("✅ Oracle 连接池已释放")
+        await mysql_manager.dispose_all()
+        logger.info("✅ MySQL 连接池已释放")
+        await ob_oracle_manager.dispose_all()
+        logger.info("✅ OceanBase 连接池已释放")
         console_end()
     except Exception as e:
         logger.error("❌ 应用关闭过程中发生错误: {}", e)
