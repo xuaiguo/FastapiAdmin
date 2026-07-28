@@ -1058,3 +1058,61 @@ json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes:
 json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 12 column 1 (char 255)
 
 2026-07-28 13:19:19.858 | ERROR    | logging:callHandlers:1762 - Application startup failed. Exiting.
+2026-07-28 14:17:32.842 | INFO     | app.core.ob_oracle.database:<module>:26 - ✅ cx_Oracle 客户端已初始化: lib_dir=C:\obclient\lib
+2026-07-28 14:17:34.083 | DEBUG    | logging:callHandlers:1762 - Looking up time zone info from registry
+2026-07-28 14:17:34.797 | INFO     | app.core.discover:_build:38 - 🚀 开始动态路由发现与注册
+2026-07-28 14:17:34.865 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `DemoRouter` ← app.plugin.module_example.demo.controller
+2026-07-28 14:17:34.900 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `MysqlDemoRouter` ← app.plugin.module_mysql_demo.demo.controller
+2026-07-28 14:17:34.934 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObOracleDemoRouter` ← app.plugin.module_ob_oracle_demo.demo.controller
+2026-07-28 14:17:34.973 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObOracleQueryRouter` ← app.plugin.module_ob_oracle_query.query.controller
+2026-07-28 14:17:34.989 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObPartitionTabAnalyzeRouter` ← app.plugin.module_ob_partition_tab_analyze.analyze.controller
+2026-07-28 14:17:35.013 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObProcesslistRouter` ← app.plugin.module_ob_processlist.processlist.controller
+2026-07-28 14:17:35.062 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObSchedulerJobsRouter` ← app.plugin.module_ob_scheduler_jobs.jobs.controller
+2026-07-28 14:17:35.087 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObSqlAuditRouter` ← app.plugin.module_ob_sql_audit.audit.controller
+2026-07-28 14:17:35.125 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObSqlstatCurRouter` ← app.plugin.module_ob_sqlstat_cur.sqlstat.controller
+2026-07-28 14:17:35.148 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `ObWrSqlstatRouter` ← app.plugin.module_ob_wr_sqlstat.sqlstat.controller
+2026-07-28 14:17:35.191 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `OracleDemoRouter` ← app.plugin.module_oracle_demo.demo.controller
+2026-07-28 14:17:35.222 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `OracleSessionRouter` ← app.plugin.module_oracle_session.demo.controller
+2026-07-28 14:17:35.244 | INFO     | app.core.discover:_build:78 -   ↳ 注册 APIRouter 变量 `OracleTablespaceRouter` ← app.plugin.module_oracle_tablespace.tablespace.controller
+2026-07-28 14:17:35.263 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /example (子路由数: 1)
+2026-07-28 14:17:35.282 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /mysql_demo (子路由数: 1)
+2026-07-28 14:17:35.297 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_oracle_demo (子路由数: 1)
+2026-07-28 14:17:35.308 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_oracle_query (子路由数: 1)
+2026-07-28 14:17:35.315 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_partition_tab_analyze (子路由数: 1)
+2026-07-28 14:17:35.327 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_processlist (子路由数: 1)
+2026-07-28 14:17:35.331 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_scheduler_jobs (子路由数: 1)
+2026-07-28 14:17:35.344 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_sql_audit (子路由数: 1)
+2026-07-28 14:17:35.350 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_sqlstat_cur (子路由数: 1)
+2026-07-28 14:17:35.360 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /ob_wr_sqlstat (子路由数: 1)
+2026-07-28 14:17:35.402 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /oracle_demo (子路由数: 1)
+2026-07-28 14:17:35.410 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /oracle_session (子路由数: 1)
+2026-07-28 14:17:35.422 | INFO     | app.core.discover:_build:95 - ✅ 注册容器: /oracle_tablespace (子路由数: 1)
+2026-07-28 14:17:35.423 | INFO     | app.core.discover:_build:97 - ✅ 动态路由发现完成: 共 13 个容器前缀
+2026-07-28 14:17:35.534 | INFO     | logging:callHandlers:1762 - Started server process [32452]
+2026-07-28 14:17:35.536 | INFO     | logging:callHandlers:1762 - Waiting for application startup.
+2026-07-28 14:17:35.628 | INFO     | app.core.database:check_db:96 - ✅ 数据库连接正常
+2026-07-28 14:17:35.635 | DEBUG    | logging:callHandlers:1762 - caching sha2: succeeded by fast path.
+2026-07-28 14:17:35.734 | INFO     | app.scripts.initialize:__init_data:73 - ⏭️  跳过 sys_menu 表数据初始化（表已有数据）
+2026-07-28 14:17:35.748 | INFO     | app.scripts.initialize:__init_data:73 - ⏭️  跳过 sys_dept 表数据初始化（表已有数据）
+2026-07-28 14:17:35.768 | INFO     | app.scripts.initialize:__init_data:73 - ⏭️  跳过 sys_param 表数据初始化（表已有数据）
+2026-07-28 14:17:35.786 | INFO     | app.scripts.initialize:__init_data:73 - ⏭️  跳过 sys_role 表数据初始化（表已有数据）
+2026-07-28 14:17:35.805 | INFO     | app.scripts.initialize:__init_data:73 - ⏭️  跳过 sys_dict_type 表数据初始化（表已有数据）
+2026-07-28 14:17:35.826 | INFO     | app.scripts.initialize:__init_data:73 - ⏭️  跳过 sys_dict_data 表数据初始化（表已有数据）
+2026-07-28 14:17:35.848 | INFO     | app.scripts.initialize:__init_data:73 - ⏭️  跳过 sys_user 表数据初始化（表已有数据）
+2026-07-28 14:17:35.867 | INFO     | app.scripts.initialize:__init_data:73 - ⏭️  跳过 sys_user_roles 表数据初始化（表已有数据）
+2026-07-28 14:17:35.889 | INFO     | app.scripts.initialize:__init_data:73 - ⏭️  跳过 sys_version 表数据初始化（表已有数据）
+2026-07-28 14:17:35.917 | INFO     | app.scripts.initialize:__init_data:73 - ⏭️  跳过 sys_oracle_config 表数据初始化（表已有数据）
+2026-07-28 14:17:35.920 | INFO     | app.scripts.initialize:__init_data:67 - ⏭️  跳过 sys_mysql_config 表，无初始化数据
+2026-07-28 14:17:35.928 | INFO     | app.scripts.initialize:__init_data:67 - ⏭️  跳过 sys_ob_oracle_config 表，无初始化数据
+2026-07-28 14:17:35.929 | INFO     | app.scripts.initialize:__init_data:67 - ⏭️  跳过 sys_ob_module_parent_menu 表，无初始化数据
+2026-07-28 14:17:35.930 | INFO     | app.scripts.initialize:__init_data:67 - ⏭️  跳过 sys_ob_module 表，无初始化数据
+2026-07-28 14:17:35.931 | INFO     | app.scripts.initialize:__init_data:67 - ⏭️  跳过 sys_ob_oracle_config_module 表，无初始化数据
+2026-07-28 14:17:35.932 | INFO     | app.scripts.initialize:__init_data:67 - ⏭️  跳过 sys_ob_oracle_config_user 表，无初始化数据
+2026-07-28 14:17:35.934 | INFO     | app.init_app:lifespan:27 - ✅ mysql数据库初始化完成
+2026-07-28 14:17:35.943 | INFO     | app.init_app:lifespan:29 - ✅ Redis 连接初始化完成
+2026-07-28 14:17:36.102 | INFO     | app.init_app:lifespan:31 - ✅ Redis系统参数初始化完成
+2026-07-28 14:17:36.143 | INFO     | app.init_app:lifespan:33 - ✅ Redis数据字典初始化完成
+2026-07-28 14:17:36.157 | INFO     | app.core.ap_scheduler:_dispatch_job_event:126 - 任务 system_cleanup_operation_log 已添加
+2026-07-28 14:17:36.158 | INFO     | app.core.ap_scheduler:init_scheduler:151 - ✅ 1 个系统周期任务已注册（操作日志清理）
+2026-07-28 14:17:36.159 | INFO     | app.init_app:lifespan:35 - ✅ 定时任务调度器初始化完成
+2026-07-28 14:17:36.245 | INFO     | logging:callHandlers:1762 - Application startup complete.
