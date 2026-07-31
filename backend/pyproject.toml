@@ -38,6 +38,8 @@ dependencies = [
     "pymysql==1.2.0",
     "openai==2.46.0",
     "pydantic[email]>=2.12.5",
+    "oracledb>=2.0.0",
+    # cx_Oracle (OceanBase 官方驱动) 需手动安装: uv pip install cx_Oracle
 ]
 
 [project.optional-dependencies]

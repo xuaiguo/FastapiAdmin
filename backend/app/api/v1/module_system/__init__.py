@@ -5,7 +5,11 @@ from app.api.v1.module_system.dept.controller import DeptRouter
 from app.api.v1.module_system.dict.controller import DictRouter
 from app.api.v1.module_system.log import LogRouter
 from app.api.v1.module_system.menu.controller import MenuRouter
+from app.api.v1.module_system.mysql_config.controller import MysqlConfigRouter
 from app.api.v1.module_system.notice.controller import NoticeRouter
+from app.api.v1.module_system.ob_module.controller import ObModuleRouter
+from app.api.v1.module_system.ob_oracle_config.controller import ObOracleConfigRouter
+from app.api.v1.module_system.oracle_config.controller import OracleConfigRouter
 from app.api.v1.module_system.params.controller import ParamsRouter
 from app.api.v1.module_system.position.controller import PositionRouter
 from app.api.v1.module_system.role.controller import RoleRouter
@@ -27,3 +31,7 @@ system_router.include_router(TicketRouter)
 system_router.include_router(UserRouter)
 system_router.include_router(VersionRouter)
 system_router.include_router(MenuRouter)
+system_router.include_router(OracleConfigRouter)
+system_router.include_router(MysqlConfigRouter)
+system_router.include_router(ObOracleConfigRouter)
+system_router.include_router(ObModuleRouter)

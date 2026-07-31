@@ -1,0 +1,26 @@
+[
+  {
+    "name": "SMS01",
+    "host": "10.0.104.225",
+    "port": 1521,
+    "service_name": "MPSMS",
+    "db_type": "PDB",
+    "username": "sms",
+    "password": "FQwARVND",
+    "pool_size": 5,
+    "max_overflow": 10,
+    "status": 0
+  },
+  {
+    "name": "SMS02",
+    "host": "10.0.104.225",
+    "port": 1521,
+    "service_name": "MPSMS",
+    "db_type": "PDB",
+    "username": "sms2",
+    "password": "FQwARVND",
+    "pool_size": 5,
+    "max_overflow": 10,
+    "status": 0
+  }
+]

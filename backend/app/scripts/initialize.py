@@ -7,6 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.v1.module_system.dept.model import DeptModel
 from app.api.v1.module_system.dict.model import DictDataModel, DictTypeModel
 from app.api.v1.module_system.menu.model import MenuModel
+from app.api.v1.module_system.mysql_config.model import MysqlConfigModel
+from app.api.v1.module_system.ob_module.models import ObModule, ObModuleParentMenu, ObOracleConfigModule, ObOracleConfigUser
+from app.api.v1.module_system.ob_oracle_config.model import ObOracleConfigModel
+from app.api.v1.module_system.oracle_config.model import OracleConfigModel
 from app.api.v1.module_system.params.model import ParamsModel
 from app.api.v1.module_system.role.model import RoleModel
 from app.api.v1.module_system.user.model import UserModel, UserRolesModel
@@ -30,6 +34,13 @@ class InitializeData:
         UserModel,
         UserRolesModel,
         VersionModel,
+        OracleConfigModel,
+        MysqlConfigModel,
+        ObOracleConfigModel,
+        ObModuleParentMenu,
+        ObModule,
+        ObOracleConfigModule,
+        ObOracleConfigUser,
     ]
 
     # 树形模型：JSON 含嵌套 children，需递归创建对象
