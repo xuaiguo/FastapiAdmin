@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd /d F:\\\\mygit2\\\\FastapiAdmin\\\\backend && .venv\\\\Scripts\\\\python.exe -m ensurepip --upgrade 2>&1\",\"description\":\"Bootstrap pip into the venv using ensurepip\"}",
-  "error": "Exit code 2\n/usr/bin/bash: line 1: cd: too many arguments",
-  "timestamp": "2026-07-29T00:56:11.043Z",
-  "retry_count": 1
-}

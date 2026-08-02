@@ -82,3 +82,8 @@ AGENTS.md
 .codebuddy
 .agent
 .workbuddy
+
+# oh-my-claudecode & MCP local config
+.omc/
+.mcp.json
+.claude/

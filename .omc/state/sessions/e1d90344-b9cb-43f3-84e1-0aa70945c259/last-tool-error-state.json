@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd \\\"F:\\\\mygit2\\\\FastapiAdmin\\\" && git fetch origin\",\"description\":\"拉取上游最新代码\"}",
-  "error": "Exit code 128\nfatal: unable to access 'https://github.com/xuaiguo/FastapiAdmin.git/': Recv failure: Connection was reset",
-  "timestamp": "2026-07-29T02:06:56.541Z",
-  "retry_count": 2
-}
