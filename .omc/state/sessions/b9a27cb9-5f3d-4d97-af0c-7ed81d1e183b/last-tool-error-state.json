@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cd \\\"D:/Dev/mygit/FastapiAdmin\\\" && tar -czf \\\"D:/Dev/mygit/FastapiAdmin_backup_$(date +%Y%m%d_%H%M%S).tar.gz\\\" backend frontend && echo \\\"备份完成：\\\" && ls -lh \\\"D:/Dev/mygit/FastapiAdmin_bac...",
+  "error": "Exit code 2\ntar (child): Cannot connect to D: resolve failed\ntar: D\\:/Dev/mygit/FastapiAdmin_backup_20260728_152339.tar.gz: Cannot write: Broken pipe\ntar: Child returned status 128\ntar: Error is not recoverable: exiting now",
+  "timestamp": "2026-07-28T07:23:44.403Z",
+  "retry_count": 1
+}

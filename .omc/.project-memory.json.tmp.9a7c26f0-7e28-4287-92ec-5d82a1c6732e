@@ -1,0 +1,402 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1783578933604,
+  "projectRoot": "D:\\Dev\\mygit\\FastapiAdmin",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": {
+      "defaultBranch": "master",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "backend": {
+      "path": "backend",
+      "purpose": null,
+      "fileCount": 9,
+      "lastAccessed": 1783578933588,
+      "keyFiles": [
+        "alembic.ini",
+        "banner.txt",
+        "bash.exe.stackdump",
+        "main.py",
+        "pyproject.toml"
+      ]
+    },
+    "docker": {
+      "path": "docker",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1783578933588,
+      "keyFiles": [
+        "docker-compose-example.yaml",
+        "README.md"
+      ]
+    },
+    "frontend": {
+      "path": "frontend",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1783578933589,
+      "keyFiles": []
+    },
+    "SQL": {
+      "path": "SQL",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1783578933589,
+      "keyFiles": [
+        "oracle_demo.sql"
+      ]
+    },
+    "backend\\app": {
+      "path": "backend\\app",
+      "purpose": "Application code",
+      "fileCount": 2,
+      "lastAccessed": 1783578933590,
+      "keyFiles": [
+        "init_app.py",
+        "__init__.py"
+      ]
+    },
+    "frontend\\app": {
+      "path": "frontend\\app",
+      "purpose": "Application code",
+      "fileCount": 1,
+      "lastAccessed": 1783578933591,
+      "keyFiles": []
+    },
+    "frontend\\docs": {
+      "path": "frontend\\docs",
+      "purpose": "Documentation",
+      "fileCount": 1,
+      "lastAccessed": 1783578933591,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "CLAUDE.md",
+      "accessCount": 3,
+      "lastAccessed": 1782716799330,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\package.json",
+      "accessCount": 2,
+      "lastAccessed": 1782717314880,
+      "type": "file"
+    },
+    {
+      "path": "backend\\main.py",
+      "accessCount": 2,
+      "lastAccessed": 1782782639975,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\init_app.py",
+      "accessCount": 2,
+      "lastAccessed": 1782782650206,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 1,
+      "lastAccessed": 1782716119183,
+      "type": "file"
+    },
+    {
+      "path": "backend",
+      "accessCount": 1,
+      "lastAccessed": 1782716232267,
+      "type": "directory"
+    },
+    {
+      "path": "frontend\\app",
+      "accessCount": 1,
+      "lastAccessed": 1782716235453,
+      "type": "directory"
+    },
+    {
+      "path": "frontend\\web",
+      "accessCount": 1,
+      "lastAccessed": 1782716236279,
+      "type": "directory"
+    },
+    {
+      "path": "frontend\\web\\src\\store",
+      "accessCount": 1,
+      "lastAccessed": 1782716236526,
+      "type": "directory"
+    },
+    {
+      "path": "frontend\\web\\src\\router",
+      "accessCount": 1,
+      "lastAccessed": 1782716240249,
+      "type": "directory"
+    },
+    {
+      "path": "frontend\\docs",
+      "accessCount": 1,
+      "lastAccessed": 1782716240717,
+      "type": "directory"
+    },
+    {
+      "path": "frontend\\web\\.env",
+      "accessCount": 1,
+      "lastAccessed": 1782716344845,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\security.py",
+      "accessCount": 1,
+      "lastAccessed": 1782716359984,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\dependencies.py",
+      "accessCount": 1,
+      "lastAccessed": 1782716363168,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\permission.py",
+      "accessCount": 1,
+      "lastAccessed": 1782716363753,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\utils",
+      "accessCount": 1,
+      "lastAccessed": 1782716405585,
+      "type": "directory"
+    },
+    {
+      "path": "backend\\app\\core\\middlewares.py",
+      "accessCount": 1,
+      "lastAccessed": 1782716406410,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\base_crud.py",
+      "accessCount": 1,
+      "lastAccessed": 1782716406570,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\api\\module_system\\auth.ts",
+      "accessCount": 1,
+      "lastAccessed": 1782716411556,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\user\\controller.py",
+      "accessCount": 1,
+      "lastAccessed": 1782716533475,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\role\\model.py",
+      "accessCount": 1,
+      "lastAccessed": 1782716536882,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\user\\model.py",
+      "accessCount": 1,
+      "lastAccessed": 1782716541756,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\common\\response.py",
+      "accessCount": 1,
+      "lastAccessed": 1782716543713,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\api\\module_monitor\\server.ts",
+      "accessCount": 1,
+      "lastAccessed": 1782716550848,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\store\\modules\\notice.store.ts",
+      "accessCount": 1,
+      "lastAccessed": 1782716560254,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\store\\modules\\table.store.ts",
+      "accessCount": 1,
+      "lastAccessed": 1782716561526,
+      "type": "file"
+    },
+    {
+      "path": "backend\\pyproject.toml",
+      "accessCount": 1,
+      "lastAccessed": 1782717312889,
+      "type": "file"
+    },
+    {
+      "path": "backend\\env\\.env.dev",
+      "accessCount": 1,
+      "lastAccessed": 1782718398907,
+      "type": "file"
+    },
+    {
+      "path": ".idea\\FastapiAdmin.iml",
+      "accessCount": 1,
+      "lastAccessed": 1782726337357,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\config\\setting.py",
+      "accessCount": 1,
+      "lastAccessed": 1782782652414,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\common\\enums.py",
+      "accessCount": 1,
+      "lastAccessed": 1782782654775,
+      "type": "file"
+    },
+    {
+      "path": "backend\\study\\02_uvicorn_server.py",
+      "accessCount": 1,
+      "lastAccessed": 1782782787189,
+      "type": "file"
+    },
+    {
+      "path": "backend\\study\\05_pydantic_settings.py",
+      "accessCount": 1,
+      "lastAccessed": 1782782932656,
+      "type": "file"
+    },
+    {
+      "path": "backend\\study\\01_typer_cli.py",
+      "accessCount": 1,
+      "lastAccessed": 1782783167121,
+      "type": "file"
+    },
+    {
+      "path": "backend\\study\\03_alembic_migration.py",
+      "accessCount": 1,
+      "lastAccessed": 1782783205901,
+      "type": "file"
+    },
+    {
+      "path": "backend\\study\\04_fastapi_app.py",
+      "accessCount": 1,
+      "lastAccessed": 1782783262581,
+      "type": "file"
+    },
+    {
+      "path": "backend\\study\\06_sqlalchemy_async.py",
+      "accessCount": 1,
+      "lastAccessed": 1782783321811,
+      "type": "file"
+    },
+    {
+      "path": "backend\\study\\07_redis_cache.py",
+      "accessCount": 1,
+      "lastAccessed": 1782783368416,
+      "type": "file"
+    },
+    {
+      "path": "backend\\study\\08_fastapi_limiter.py",
+      "accessCount": 1,
+      "lastAccessed": 1782783393295,
+      "type": "file"
+    },
+    {
+      "path": "backend\\study\\09_apscheduler_demo.py",
+      "accessCount": 1,
+      "lastAccessed": 1782783432455,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\scripts\\data",
+      "accessCount": 1,
+      "lastAccessed": 1783418438003,
+      "type": "directory"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\.claude\\plans\\crispy-swinging-lynx.md",
+      "accessCount": 1,
+      "lastAccessed": 1783496882630,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_oracle_demo\\demo\\model.py",
+      "accessCount": 1,
+      "lastAccessed": 1783497087962,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_oracle_session\\__init__.py",
+      "accessCount": 1,
+      "lastAccessed": 1783499708311,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_oracle_session\\demo\\__init__.py",
+      "accessCount": 1,
+      "lastAccessed": 1783499718158,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_oracle_session\\demo\\model.py",
+      "accessCount": 1,
+      "lastAccessed": 1783499726191,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_oracle_session\\demo\\schema.py",
+      "accessCount": 1,
+      "lastAccessed": 1783499735318,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_oracle_session\\demo\\crud.py",
+      "accessCount": 1,
+      "lastAccessed": 1783499742927,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_oracle_session\\demo\\service.py",
+      "accessCount": 1,
+      "lastAccessed": 1783499752084,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_oracle_session\\demo\\controller.py",
+      "accessCount": 1,
+      "lastAccessed": 1783499760460,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

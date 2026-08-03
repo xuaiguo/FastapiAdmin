@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "name": "OB_CLOUD_XAG",
+    "host": "obot7jbnen7v964g-mi.aliyun-cn-hangzhou-internet.oceanbase.cloud",
+    "port": 1521,
+    "service_name": "XAG",
+    "username": "XAG",
+    "password": "PgAUK1BCWlVRWw==",
+    "pool_size": 5,
+    "max_overflow": 10,
+    "status": 0
+  },
+  {
+    "name": "MPMON",
+    "host": "10.0.68.103",
+    "port": 2883,
+    "service_name": "SYS",
+    "username": "SYS@MPMON#mp_cluster",
+    "password": "CxEeGw8oEQADLQ==",
+    "pool_size": 5,
+    "max_overflow": 10,
+    "status": 0
+  }
+]

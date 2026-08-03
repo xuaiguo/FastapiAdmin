@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "entries": {
+    "79a93d4a2f8f50b95f852280616242fee1855dc99a3c75211917f55e72e95fae": {
+      "last_emitted_at_ms": 1784272514946,
+      "message": "Use parallel execution for independent tasks. Use run_in_background for long operations (npm install, builds, tests)."
+    },
+    "445ed27a3872b681d98190bae61ccb84954e1bc4e140df5370be958dee776b3a": {
+      "last_emitted_at_ms": 1784272414505,
+      "message": "Verify changes work after editing. Test functionality before marking complete."
+    },
+    "466399dafa2d20f60587180bad0a07358eb7f2bce724df0ff682f038ad33f5ad": {
+      "last_emitted_at_ms": 1784272393144,
+      "message": "Read multiple files in parallel when possible for faster analysis."
+    },
+    "7373d7bc17ee88de0569b7aa539e386cae9fb981d1b982a89ea178a963eb8c21": {
+      "last_emitted_at_ms": 1784271635149,
+      "message": "Spawning agent: oh-my-claudecode:executor (inherit) | Task: Create MySQL frontend files"
+    },
+    "3682963c6bd759c5d1554751e5d296a0c5be63913ecb67d0454d0964a2f97983": {
+      "last_emitted_at_ms": 1784271572473,
+      "message": "Spawning agent: oh-my-claudecode:executor (inherit) | Task: Create MySQL demo plugin"
+    },
+    "266fb6653646cdb5c144f38350065b693b1fe41e1034e4dc82108fd4f15bed9a": {
+      "last_emitted_at_ms": 1784271518372,
+      "message": "Spawning agent: oh-my-claudecode:executor (inherit) | Task: Create MySQL core + config module"
+    },
+    "459c54e5f35d6a58dcd90d2aecc21fa6d1f35d241bc5b134c506f87dc7b6d67b": {
+      "last_emitted_at_ms": 1784270097870,
+      "message": "Combine searches in parallel when investigating multiple patterns."
+    },
+    "7e675b1e70eea241cb8b00dd9f9b3399e76732d3f292a22bbeec93d125bae395": {
+      "last_emitted_at_ms": 1784270009274,
+      "message": "Spawning agent: Explore (inherit) | Task: Explore MySQL core and Oracle multi-datasource patterns"
+    }
+  },
+  "updated_at": "2026-07-17T07:15:14.946Z"
+}

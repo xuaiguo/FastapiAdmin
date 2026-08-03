@@ -1,0 +1,7 @@
+{
+  "tool_name": "Grep",
+  "tool_input_preview": "{\"pattern\":\"APIRouter|include_router.*plugin\",\"path\":\"D:\\\\Dev\\\\mygit\\\\FastapiAdmin\\\\backend\\\\app\\\\core\",\"output_mode\":\"files_with_matches\"}",
+  "error": "EUNKNOWN: unknown error, uv_spawn",
+  "timestamp": "2026-07-21T04:06:55.633Z",
+  "retry_count": 2
+}

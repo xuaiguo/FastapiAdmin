@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "name": "mysql_test",
+    "host": "10.3.94.10",
+    "port": 3306,
+    "database_name": "mysql_test",
+    "db_model": "local",
+    "charset": "utf8mb4",
+    "username": "root",
+    "password": "AAAAAAAAAAAAAAAAch8WHAU=",
+    "pool_size": 5,
+    "max_overflow": 10,
+    "status": 0
+  },
+  {
+    "name": "OB_TEST",
+    "host": "10.0.68.103",
+    "port": 2883,
+    "database_name": "oceanbase",
+    "db_model": "oceanbase",
+    "charset": "utf8mb4",
+    "username": "root@sys#mp_cluster",
+    "password": "JQ0ZBw0CBVFSX1lP",
+    "pool_size": 5,
+    "max_overflow": 10,
+    "status": 0
+  }
+]

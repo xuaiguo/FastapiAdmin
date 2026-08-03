@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"python -c \\\"\\nimport json, uuid\\nfrom datetime import datetime\\n\\npath = 'D:/Dev/mygit/FastapiAdmin/backend/app/scripts/data/platform_menu.json'\\nwith open(path, 'r', encoding='utf-8') as ...",
+  "error": "Exit code 1\n/usr/bin/bash: -c: line 50: unexpected EOF while looking for matching `\"'\n/usr/bin/bash: -c: line 51: syntax error: unexpected end of file",
+  "timestamp": "2026-07-17T07:16:09.768Z",
+  "retry_count": 1
+}

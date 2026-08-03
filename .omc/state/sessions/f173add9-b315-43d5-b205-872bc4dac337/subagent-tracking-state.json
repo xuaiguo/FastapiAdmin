@@ -1,0 +1,88 @@
+{
+  "agents": [
+    {
+      "agent_id": "a86e87cbfc29319b6",
+      "agent_type": "Explore",
+      "started_at": "2026-07-27T03:19:54.319Z",
+      "parent_mode": "none",
+      "status": "running"
+    },
+    {
+      "agent_id": "a772b43ba396f449a",
+      "agent_type": "Explore",
+      "started_at": "2026-07-27T03:20:07.279Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-07-27T03:43:10.180Z",
+      "duration_ms": 1382901
+    },
+    {
+      "agent_id": "a8d5540e9ce88b014",
+      "agent_type": "Explore",
+      "started_at": "2026-07-27T03:20:22.908Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-07-27T03:33:52.657Z",
+      "duration_ms": 809749
+    },
+    {
+      "agent_id": "a214f9b7b75a1e69d",
+      "agent_type": "Plan",
+      "started_at": "2026-07-27T04:12:15.522Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-07-27T04:26:25.363Z",
+      "duration_ms": 849841
+    },
+    {
+      "agent_id": "aadapt-oracle-config-314884ff52ee8846",
+      "agent_type": "adapt-oracle-config",
+      "started_at": "2026-07-27T06:33:53.057Z",
+      "parent_mode": "none",
+      "status": "running"
+    },
+    {
+      "agent_id": "aadapt-mysql-config-e5ce4830497ae32f",
+      "agent_type": "adapt-mysql-config",
+      "started_at": "2026-07-27T06:34:16.178Z",
+      "parent_mode": "none",
+      "status": "running"
+    },
+    {
+      "agent_id": "aadapt-ob-oracle-config-e1e7bb5e2c95523f",
+      "agent_type": "adapt-ob-oracle-config",
+      "started_at": "2026-07-27T06:34:19.454Z",
+      "parent_mode": "none",
+      "status": "running"
+    },
+    {
+      "agent_id": "aadapt-ob-module-0220b229ce0e357d",
+      "agent_type": "adapt-ob-module",
+      "started_at": "2026-07-27T06:34:21.547Z",
+      "parent_mode": "none",
+      "status": "running"
+    },
+    {
+      "agent_id": "areviewer-2c553ddd38e223b2",
+      "agent_type": "reviewer",
+      "started_at": "2026-07-27T10:40:18.669Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-07-27T10:48:35.772Z",
+      "duration_ms": 497103
+    },
+    {
+      "agent_id": "aanalyzer-34f8843a69998c39",
+      "agent_type": "analyzer",
+      "started_at": "2026-07-28T01:35:46.734Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-07-28T01:44:07.946Z",
+      "duration_ms": 501212
+    }
+  ],
+  "total_spawned": 10,
+  "total_completed": 5,
+  "total_failed": 0,
+  "last_updated": "2026-07-28T01:44:08.055Z"
+}

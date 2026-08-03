@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cd \\\"D:/Dev/mygit/FastapiAdmin_v3\\\" && git add -A && git commit -m \\\"chore: 当前项目状态（上游同步后）\\\" 2>&1 | tail -3\",\"timeout\":60000,\"description\":\"Commit current state before merge\"}",
+  "error": "Exit code 143\nCommand timed out after 1m 0s\nwarning: LF will be replaced by CRLF in backend/app/api/v1/module_system/mysql_config/controller.py.\nThe file will have its original line endings in your working directory\nwarning: LF will be replaced by CRLF in backend/app/api/v1/module_system/mysql_config/schema.py.\nThe file will have its original line endings in your working directory\nwarning: LF will be replaced by CRLF in backend/app/api/v1/module_system/mysql_config/service.py.\nThe file will have...",
+  "timestamp": "2026-07-28T04:51:15.816Z",
+  "retry_count": 1
+}

@@ -1,0 +1,7 @@
+{
+  "tool_name": "Grep",
+  "tool_input_preview": "{\"pattern\":\"&lt;&lt;&lt;&lt;&lt;&lt;&lt;|=======|&gt;&gt;&gt;&gt;&gt;&gt;&gt;\",\"path\":\"D:\\\\Dev\\\\mygit\\\\FastapiAdmin\\\\backend\",\"glob\":\"*.lock\",\"output_mode\":\"content\"}",
+  "error": "EUNKNOWN: unknown error, uv_spawn",
+  "timestamp": "2026-07-28T08:36:02.470Z",
+  "retry_count": 1
+}

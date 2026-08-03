@@ -1,0 +1,345 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1784867817667,
+  "projectRoot": "D:\\Dev\\mygit\\FastapiAdmin",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": "cd D:/Dev/mygit/FastapiAdmin && find . -type f \\\n  -not -path '*/.git/*' \\\n  -not -path '*/__pycache__/*' \\\n  -not -name '*.pyc' \\\n  -not -path '*/.venv/*' \\\n  -not -path '*/.idea/*' \\\n  -not -path '*/.ruff_cache/*' \\\n  -not -path '*/.pytest_cache/*' \\\n  -not -path '*/node_modules/*' \\\n  -not -path '*/.omc/*' \\\n  -not -path '*/.claude/*' \\\n  -not -path '*/dist/*' \\\n  -not -path './frontend/app/*' \\\n  -not -path './frontend/docs/*' \\\n  -not -name '*.lock' \\\n  -not -name 'uv.lock' \\\n  -not -name 'pnpm-lock.yaml' \\\n  -not -name '.DS_Store' \\\n  -not -name '.python-version' \\\n  | while read f; do\n  if [ ! -f \"D:/Dev/mygit/MyFastapiAdmin/$f\" ]; then\n    echo \"$f\"\n  fi\ndone | awk -F/ '{print $2\"/\"$3}' | sort | uniq -c | sort -rn",
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": {
+      "defaultBranch": "master",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [
+    {
+      "timestamp": 1784704294356,
+      "source": "manual",
+      "category": "architecture",
+      "content": "Oracle DBA/V$ 视图返回的字段类型不统一：可能是 str、int、float、timedelta 等。在 Pydantic Schema 中定义全部为 str 字段时，必须添加 field_validator(\"*\", mode=\"before\") 自动转换非字符串类型。timedelta 需特殊处理为 \"HH:MM:SS\" 格式。此问题在 ob_sql_audit(tx_id)、ob_scheduler_jobs(max_run_duration) 等模块中反复出现。"
+    }
+  ],
+  "directoryMap": {
+    "backend": {
+      "path": "backend",
+      "purpose": null,
+      "fileCount": 9,
+      "lastAccessed": 1784867817564,
+      "keyFiles": [
+        "alembic.ini",
+        "banner.txt",
+        "bash.exe.stackdump",
+        "main.py",
+        "pyproject.toml"
+      ]
+    },
+    "docker": {
+      "path": "docker",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1784867817564,
+      "keyFiles": [
+        "docker-compose-example.yaml",
+        "README.md"
+      ]
+    },
+    "frontend": {
+      "path": "frontend",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1784867817565,
+      "keyFiles": []
+    },
+    "SQL": {
+      "path": "SQL",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1784867817565,
+      "keyFiles": [
+        "mysql_demo.sql",
+        "ob_oracle_demo.sql",
+        "oracle_demo.sql"
+      ]
+    },
+    "backend\\app": {
+      "path": "backend\\app",
+      "purpose": "Application code",
+      "fileCount": 2,
+      "lastAccessed": 1784867817566,
+      "keyFiles": [
+        "init_app.py",
+        "__init__.py"
+      ]
+    },
+    "frontend\\app": {
+      "path": "frontend\\app",
+      "purpose": "Application code",
+      "fileCount": 1,
+      "lastAccessed": 1784867817567,
+      "keyFiles": []
+    },
+    "frontend\\docs": {
+      "path": "frontend\\docs",
+      "purpose": "Documentation",
+      "fileCount": 1,
+      "lastAccessed": 1784867817567,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\ob_module\\controller.py",
+      "accessCount": 19,
+      "lastAccessed": 1784889326575,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\.claude\\plans\\ancient-floating-kay.md",
+      "accessCount": 12,
+      "lastAccessed": 1785129111011,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\views\\system\\obModule\\index.vue",
+      "accessCount": 11,
+      "lastAccessed": 1784889445683,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\ob_module\\models.py",
+      "accessCount": 8,
+      "lastAccessed": 1785123095643,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\views\\ob_sql_audit\\obSqlAudit\\index.vue",
+      "accessCount": 2,
+      "lastAccessed": 1784886300352,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\views\\ob_partition_tab_analyze\\obPartitionTabAnalyze\\index.vue",
+      "accessCount": 2,
+      "lastAccessed": 1784886318702,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\ob_oracle_config\\model.py",
+      "accessCount": 2,
+      "lastAccessed": 1785128941053,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\ob_oracle_config\\controller.py",
+      "accessCount": 2,
+      "lastAccessed": 1785128964402,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\database.py",
+      "accessCount": 1,
+      "lastAccessed": 1784868406887,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\dependencies.py",
+      "accessCount": 1,
+      "lastAccessed": 1784868427620,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\base_model.py",
+      "accessCount": 1,
+      "lastAccessed": 1784868562927,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\views\\ob_oracle_query\\obOracleQuery\\index.vue",
+      "accessCount": 1,
+      "lastAccessed": 1784885884921,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\views\\ob_sqlstat_cur\\obSqlstatCur\\index.vue",
+      "accessCount": 1,
+      "lastAccessed": 1784885950963,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\views\\ob_oracle_demo\\obOracleDemo\\index.vue",
+      "accessCount": 1,
+      "lastAccessed": 1784885998754,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\views\\module_system\\obOracleConfig\\index.vue",
+      "accessCount": 1,
+      "lastAccessed": 1784885999804,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\views\\ob_processlist\\obProcesslist\\index.vue",
+      "accessCount": 1,
+      "lastAccessed": 1784886304156,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\.claude\\plans\\ancient-drifting-sky.md",
+      "accessCount": 1,
+      "lastAccessed": 1784886526787,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\api\\ob_sql_audit\\obSqlAudit.ts",
+      "accessCount": 1,
+      "lastAccessed": 1784886687724,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\api\\ob_processlist\\obProcesslist.ts",
+      "accessCount": 1,
+      "lastAccessed": 1784886700407,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\router\\MenuProcessor.ts",
+      "accessCount": 1,
+      "lastAccessed": 1784888807571,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\alembic\\versions\\a3f7c2e1b8d4_add_auth_mode_to_oracle_config.py",
+      "accessCount": 1,
+      "lastAccessed": 1784889172359,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\alembic\\versions\\b4c8d2e1f3a5_drop_component_path_from_ob_module.py",
+      "accessCount": 1,
+      "lastAccessed": 1784889486478,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_ob_partition_tab_analyze\\analyze\\controller.py",
+      "accessCount": 1,
+      "lastAccessed": 1785122831428,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_ob_processlist\\processlist\\controller.py",
+      "accessCount": 1,
+      "lastAccessed": 1785122834646,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_ob_sqlstat_cur\\sqlstat\\controller.py",
+      "accessCount": 1,
+      "lastAccessed": 1785122856435,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_ob_wr_sqlstat\\sqlstat\\controller.py",
+      "accessCount": 1,
+      "lastAccessed": 1785122866327,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\mysql\\base_crud.py",
+      "accessCount": 1,
+      "lastAccessed": 1785122934880,
+      "type": "file"
+    },
+    {
+      "path": "SQL\\upgrade\\add_ob_oracle_menus.sql",
+      "accessCount": 1,
+      "lastAccessed": 1785123046801,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\plugin\\module_ob_oracle_query\\query\\executor.py",
+      "accessCount": 1,
+      "lastAccessed": 1785123105108,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\.claude\\plans\\ancient-floating-kay-agent-a772b43ba396f449a.md",
+      "accessCount": 1,
+      "lastAccessed": 1785123731335,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\oracle\\base_crud.py",
+      "accessCount": 1,
+      "lastAccessed": 1785125656831,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\oracle\\database.py",
+      "accessCount": 1,
+      "lastAccessed": 1785125662652,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\oracle\\base_model.py",
+      "accessCount": 1,
+      "lastAccessed": 1785125668258,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\mysql\\database.py",
+      "accessCount": 1,
+      "lastAccessed": 1785125681155,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\ob_oracle\\database.py",
+      "accessCount": 1,
+      "lastAccessed": 1785125685559,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\ob_oracle\\dependencies.py",
+      "accessCount": 1,
+      "lastAccessed": 1785125694975,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\oracle_config\\model.py",
+      "accessCount": 1,
+      "lastAccessed": 1785128945977,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\mysql_config\\model.py",
+      "accessCount": 1,
+      "lastAccessed": 1785128947352,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\oracle_config\\controller.py",
+      "accessCount": 1,
+      "lastAccessed": 1785128966767,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

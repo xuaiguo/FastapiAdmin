@@ -1,0 +1,7 @@
+{
+  "tool_name": "Glob",
+  "tool_input_preview": "{\"pattern\":\"**/menu/model.py\",\"path\":\"D:\\\\Dev\\\\mygit\\\\FastapiAdmin\\\\backend\\\\app\"}",
+  "error": "EUNKNOWN: unknown error, uv_spawn",
+  "timestamp": "2026-07-24T04:50:52.856Z",
+  "retry_count": 1
+}

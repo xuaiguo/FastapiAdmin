@@ -1,0 +1,69 @@
+{
+  "agents": [
+    {
+      "agent_id": "aexplorer-73dc933771b8b31c",
+      "agent_type": "explorer",
+      "started_at": "2026-07-10T01:35:22.534Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-07-10T01:37:00.976Z",
+      "duration_ms": 98442
+    },
+    {
+      "agent_id": "areviewer-17886e88a21bf536",
+      "agent_type": "reviewer",
+      "started_at": "2026-07-10T01:44:31.062Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-07-10T01:46:34.371Z",
+      "duration_ms": 123309
+    },
+    {
+      "agent_id": "areviewer4-83c0cf9f07503165",
+      "agent_type": "reviewer4",
+      "started_at": "2026-07-10T09:11:33.508Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-07-10T09:17:01.901Z",
+      "duration_ms": 328393
+    },
+    {
+      "agent_id": "aexplorer-mysql-5a136c4c696059e4",
+      "agent_type": "explorer-mysql",
+      "started_at": "2026-07-17T06:33:32.026Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-07-17T06:36:13.760Z",
+      "duration_ms": 161734
+    },
+    {
+      "agent_id": "amysql-core-ad2a6e213625a220",
+      "agent_type": "mysql-core",
+      "started_at": "2026-07-17T06:58:59.966Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-07-17T07:04:04.012Z",
+      "duration_ms": 304046
+    },
+    {
+      "agent_id": "amysql-demo-77665990dcc75f32",
+      "agent_type": "mysql-demo",
+      "started_at": "2026-07-17T06:59:54.972Z",
+      "parent_mode": "none",
+      "status": "running"
+    },
+    {
+      "agent_id": "amysql-frontend-ad79e5b43406fe1b",
+      "agent_type": "mysql-frontend",
+      "started_at": "2026-07-17T07:00:53.610Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-07-17T07:04:52.874Z",
+      "duration_ms": 239264
+    }
+  ],
+  "total_spawned": 8,
+  "total_completed": 7,
+  "total_failed": 0,
+  "last_updated": "2026-07-17T07:04:53.042Z"
+}

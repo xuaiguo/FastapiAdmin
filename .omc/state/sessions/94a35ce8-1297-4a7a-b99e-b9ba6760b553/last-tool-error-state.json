@@ -1,0 +1,7 @@
+{
+  "tool_name": "Glob",
+  "tool_input_preview": "{\"pattern\":\"*\",\"path\":\"D:\\\\Dev\\\\mygit\\\\FastapiAdmin\"}",
+  "error": "Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.",
+  "timestamp": "2026-06-29T05:45:19.550Z",
+  "retry_count": 1
+}

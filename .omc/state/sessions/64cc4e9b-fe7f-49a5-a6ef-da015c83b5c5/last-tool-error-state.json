@@ -1,0 +1,7 @@
+{
+  "tool_name": "Glob",
+  "tool_input_preview": "{\"pattern\":\"**/obModule/**\",\"path\":\"D:\\\\Dev\\\\mygit\\\\FastapiAdmin\"}",
+  "error": "EUNKNOWN: unknown error, uv_spawn",
+  "timestamp": "2026-07-24T10:24:45.859Z",
+  "retry_count": 2
+}

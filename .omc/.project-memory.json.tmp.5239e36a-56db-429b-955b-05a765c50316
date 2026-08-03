@@ -1,0 +1,177 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1784867817667,
+  "projectRoot": "D:\\Dev\\mygit\\FastapiAdmin",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": "cd D:/Dev/mygit/FastapiAdmin && git status --short | grep \"^??\" | awk '{print $2}' | grep -v \".omc/\" | grep -v \".claude/\" | grep -v \"__pycache__\" | grep -v \".ruff_cache\" | grep -v \".pytest_cache\" | grep -v \"node_modules\" | grep -v \".venv\"",
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": {
+      "defaultBranch": "master",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [
+    {
+      "timestamp": 1784704294356,
+      "source": "manual",
+      "category": "architecture",
+      "content": "Oracle DBA/V$ 视图返回的字段类型不统一：可能是 str、int、float、timedelta 等。在 Pydantic Schema 中定义全部为 str 字段时，必须添加 field_validator(\"*\", mode=\"before\") 自动转换非字符串类型。timedelta 需特殊处理为 \"HH:MM:SS\" 格式。此问题在 ob_sql_audit(tx_id)、ob_scheduler_jobs(max_run_duration) 等模块中反复出现。"
+    }
+  ],
+  "directoryMap": {
+    "backend": {
+      "path": "backend",
+      "purpose": null,
+      "fileCount": 9,
+      "lastAccessed": 1784867817564,
+      "keyFiles": [
+        "alembic.ini",
+        "banner.txt",
+        "bash.exe.stackdump",
+        "main.py",
+        "pyproject.toml"
+      ]
+    },
+    "docker": {
+      "path": "docker",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1784867817564,
+      "keyFiles": [
+        "docker-compose-example.yaml",
+        "README.md"
+      ]
+    },
+    "frontend": {
+      "path": "frontend",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1784867817565,
+      "keyFiles": []
+    },
+    "SQL": {
+      "path": "SQL",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1784867817565,
+      "keyFiles": [
+        "mysql_demo.sql",
+        "ob_oracle_demo.sql",
+        "oracle_demo.sql"
+      ]
+    },
+    "backend\\app": {
+      "path": "backend\\app",
+      "purpose": "Application code",
+      "fileCount": 2,
+      "lastAccessed": 1784867817566,
+      "keyFiles": [
+        "init_app.py",
+        "__init__.py"
+      ]
+    },
+    "frontend\\app": {
+      "path": "frontend\\app",
+      "purpose": "Application code",
+      "fileCount": 1,
+      "lastAccessed": 1784867817567,
+      "keyFiles": []
+    },
+    "frontend\\docs": {
+      "path": "frontend\\docs",
+      "purpose": "Documentation",
+      "fileCount": 1,
+      "lastAccessed": 1784867817567,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\ob_module\\controller.py",
+      "accessCount": 7,
+      "lastAccessed": 1784885944517,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\ob_module\\models.py",
+      "accessCount": 5,
+      "lastAccessed": 1784868760579,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\database.py",
+      "accessCount": 1,
+      "lastAccessed": 1784868406887,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\ob_oracle_config\\controller.py",
+      "accessCount": 1,
+      "lastAccessed": 1784868416234,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\dependencies.py",
+      "accessCount": 1,
+      "lastAccessed": 1784868427620,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\core\\base_model.py",
+      "accessCount": 1,
+      "lastAccessed": 1784868562927,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\views\\ob_oracle_query\\obOracleQuery\\index.vue",
+      "accessCount": 1,
+      "lastAccessed": 1784885884921,
+      "type": "file"
+    },
+    {
+      "path": "backend\\app\\api\\v1\\module_system\\ob_oracle_config\\model.py",
+      "accessCount": 1,
+      "lastAccessed": 1784885908585,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\views\\ob_sql_audit\\obSqlAudit\\index.vue",
+      "accessCount": 1,
+      "lastAccessed": 1784885949796,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\views\\ob_sqlstat_cur\\obSqlstatCur\\index.vue",
+      "accessCount": 1,
+      "lastAccessed": 1784885950963,
+      "type": "file"
+    },
+    {
+      "path": "frontend\\web\\src\\views\\ob_processlist\\obProcesslist\\index.vue",
+      "accessCount": 1,
+      "lastAccessed": 1784885951788,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
