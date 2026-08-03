@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd D:/Dev/mygit/MyFastapiAdmin && diff_count=0 && ok_count=0 && missing=0 && for f in $(find . -type f ! -path './.git/*' | sort); do \\\\\\n  rel=\\\"${f#./}\\\"; \\\\\\n  if [ ! -f \\\"D:/Dev/mygit/...",
-  "error": "Exit code 143\nCommand timed out after 30s",
-  "timestamp": "2026-07-24T10:20:58.423Z",
-  "retry_count": 1
-}

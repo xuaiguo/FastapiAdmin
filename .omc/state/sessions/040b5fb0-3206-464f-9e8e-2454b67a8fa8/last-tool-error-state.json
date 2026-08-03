@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd backend && python -c \\\"import pytest; print(pytest.__version__)\\\" 2>&1; cd backend && python -m pytest --version 2>&1\",\"description\":\"Check if pytest is available via python\"}",
-  "error": "Exit code 1\nTraceback (most recent call last):\r\n  File \"<string>\", line 1, in <module>\r\nModuleNotFoundError: No module named 'pytest'\r\n/usr/bin/bash: line 0: cd: backend: No such file or directory",
-  "timestamp": "2026-06-29T07:21:28.149Z",
-  "retry_count": 3
-}
