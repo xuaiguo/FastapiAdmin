@@ -89,7 +89,7 @@ import MenuAPI, { MenuTable } from "@/api/module_system/menu";
 import { DeviceEnum } from "@/enums/settings/device.enum";
 import { useUserStore, useAppStore } from "@stores";
 import { ElMessage } from "element-plus";
-import type FaMenuTreeTable from "@/components/others/fa-menu-tree-table/index.vue";
+import type FaMenuTreeTable from "@/components/navigation/fa-menu-tree-table/index.vue";
 import FaDrawer from "@/components/modal/fa-drawer/index.vue";
 
 const props = defineProps<{

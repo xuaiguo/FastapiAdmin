@@ -463,6 +463,7 @@ const uploadRef = ref<InstanceType<typeof ElUpload>>();
 
 const avatarCropVisible = ref(false);
 const avatarCropSrc = ref("");
+const avatarCropName = ref("");
 
 function revokeAvatarCropSrc() {
   if (avatarCropSrc.value.startsWith("blob:")) {
@@ -481,7 +482,7 @@ function onAvatarCropImgError() {
 
 async function onAvatarCropConfirm(dataURL: string) {
   try {
-    const file = dataURLToFile(dataURL, "avatar.jpg");
+    const file = dataURLToFile(dataURL, avatarCropName.value);
     const formData = new FormData();
     formData.append("file", file);
     const response = await UserAPI.uploadCurrentUserAvatar(formData);
@@ -664,8 +665,18 @@ const handleAvatarFileChange = (file: UploadFile) => {
     fileList.value = [];
     return;
   }
+
+  const raw = file.raw;
+  avatarCropName.value = raw.name;
+
+  // 非 canvas 兼容格式（如 svg），跳过裁剪直接上传原文件
+  if (raw.type !== "image/png" && raw.type !== "image/jpeg" && raw.type !== "image/webp") {
+    uploadRef.value?.submit();
+    return;
+  }
+
   revokeAvatarCropSrc();
-  avatarCropSrc.value = URL.createObjectURL(file.raw);
+  avatarCropSrc.value = URL.createObjectURL(raw);
   avatarCropVisible.value = true;
   uploadRef.value?.clearFiles();
   fileList.value = [];

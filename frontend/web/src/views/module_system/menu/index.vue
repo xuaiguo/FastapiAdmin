@@ -19,10 +19,7 @@
       @reset="onResetSearch"
     />
 
-    <ElTabs v-model="menuClientTab" @tab-change="handleMenuClientTabChange">
-      <ElTabPane label="Web 菜单" name="pc" />
-      <ElTabPane label="APP 菜单" name="app" />
-    </ElTabs>
+    <ElSegmented v-model="menuClientTab" :options="menuSegmentedOptions" @change="handleMenuClientTabChange" />
 
     <ElCard
       class="fa-table-card"
@@ -363,9 +360,9 @@ import type { SearchFormItem } from "@/components/forms/fa-search-bar/index.vue"
 import type FaSearchBar from "@/components/forms/fa-search-bar/index.vue";
 import type { FormItem } from "@/components/forms/fa-form/index.vue";
 import FaForm from "@/components/forms/fa-form/index.vue";
-import FaMenuRouteIcon from "@/components/others/fa-menu-route-icon/index.vue";
+import FaMenuRouteIcon from "@/components/navigation/fa-menu-route-icon/index.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import FaDescriptions from "@/components/others/fa-descriptions/index.vue";
+import FaDescriptions from "@/components/display/fa-descriptions/index.vue";
 import FaTableHeader from "@/components/tables/fa-table-header/index.vue";
 
 const userStore = useUserStore();
@@ -439,6 +436,10 @@ function formatMenuOperationCell(row: MenuTable, ctx: Parameters<typeof buildMen
   });
 }
 const menuClientTab = ref<"pc" | "app">("pc");
+const menuSegmentedOptions = [
+  { label: "Web 菜单", value: "pc" },
+  { label: "APP 菜单", value: "app" },
+];
 const searchForm = ref<MenuSearchForm>({
   name: undefined,
   status: undefined,
@@ -497,7 +498,7 @@ const createParentLocked = ref(false);
 
 const detailFormData = ref<MenuTable>({});
 
-const menuDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] =
+const menuDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] =
   [
     { label: "编号", prop: "id" },
     { label: "菜单名称", prop: "name" },

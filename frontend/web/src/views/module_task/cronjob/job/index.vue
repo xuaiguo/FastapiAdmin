@@ -167,7 +167,9 @@
                     class="job-card-dot"
                     :class="`job-card-dot--${getJobStatusClass(job.status)}`"
                   />
-                  <span class="job-card-name" :title="job.name">{{ job.name }}</span>
+                  <ElTooltip :content="job.name" placement="top">
+                    <span class="job-card-name">{{ job.name }}</span>
+                  </ElTooltip>
                   <ElTag :type="getJobStatusType(job.status)" size="small" effect="dark">
                     {{ getJobStatusLabel(job.status) }}
                   </ElTag>
@@ -863,7 +865,7 @@ const logDetailDialog = reactive({
 });
 const logDetailFormData = ref<JobLogTable>({} as JobLogTable);
 
-const logDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] = [
+const logDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] = [
   { label: "任务ID", prop: "job_id" },
   { label: "任务名称", prop: "job_name" },
   { label: "触发方式", prop: "trigger_type" },

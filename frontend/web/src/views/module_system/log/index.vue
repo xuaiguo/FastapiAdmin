@@ -199,11 +199,11 @@ import {
 import type { IObject } from "@/components/modal/types";
 import type { SearchFormItem } from "@/components/forms/fa-search-bar/index.vue";
 import type FaSearchBar from "@/components/forms/fa-search-bar/index.vue";
-import FaStatusTag from "@/components/others/fa-status-tag/index.vue";
-import FaCopyButton from "@/components/others/fa-copy-button/index.vue";
+import FaStatusTag from "@/components/display/fa-status-tag/index.vue";
+import FaCopyButton from "@/components/actions/fa-copy-button/index.vue";
 import type { ColumnOption } from "@/types/component";
 import FaTableHeader from "@/components/tables/fa-table-header/index.vue";
-import FaDescriptions from "@/components/others/fa-descriptions/index.vue";
+import FaDescriptions from "@/components/display/fa-descriptions/index.vue";
 
 defineOptions({
   name: "Log",
@@ -369,7 +369,7 @@ const opExportContentConfig = computed(() => ({
 
 const opFormData = ref<OperationLogTable>({} as OperationLogTable);
 
-const opDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] = [
+const opDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] = [
   { label: "描述", prop: "description", span: 8 },
   { label: "请求路径", prop: "request_path" },
   { label: "请求方法", prop: "request_method", slot: "request_method" },

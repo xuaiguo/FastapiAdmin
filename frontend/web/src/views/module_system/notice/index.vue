@@ -144,7 +144,7 @@ import type { FormItem } from "@/components/forms/fa-form/index.vue";
 import FaForm from "@/components/forms/fa-form/index.vue";
 import { ElMessage } from "element-plus";
 import FaTableHeader from "@/components/tables/fa-table-header/index.vue";
-import FaDescriptions from "@/components/others/fa-descriptions/index.vue";
+import FaDescriptions from "@/components/display/fa-descriptions/index.vue";
 
 defineOptions({
   name: "Notice",
@@ -243,7 +243,7 @@ const { dialogVisible } = useCrudDialog();
 
 const detailFormData = ref<NoticeTable>({});
 
-const noticeDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] =
+const noticeDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] =
   [
     { label: "标题", prop: "notice_title" },
     { label: "类型", prop: "notice_type", slot: "notice_type" },

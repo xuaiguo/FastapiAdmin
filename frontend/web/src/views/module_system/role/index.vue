@@ -172,11 +172,11 @@ import type { SearchFormItem } from "@/components/forms/fa-search-bar/index.vue"
 import type FaSearchBar from "@/components/forms/fa-search-bar/index.vue";
 import type { FormItem } from "@/components/forms/fa-form/index.vue";
 import FaForm from "@/components/forms/fa-form/index.vue";
-import StatusTag from "@/components/others/fa-status-tag/index.vue";
+import StatusTag from "@/components/display/fa-status-tag/index.vue";
 import { ElMessage } from "element-plus";
 import FaPermissonDrawer from "./components/FaPermissonDrawer.vue";
 import FaTableHeader from "@/components/tables/fa-table-header/index.vue";
-import FaDescriptions from "@/components/others/fa-descriptions/index.vue";
+import FaDescriptions from "@/components/display/fa-descriptions/index.vue";
 
 defineOptions({
   name: "Role",
@@ -382,7 +382,7 @@ const { dialogVisible } = useCrudDialog();
 
 const detailFormData = ref<RoleTable>({} as RoleTable);
 
-const roleDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] =
+const roleDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] =
   [
     { label: "角色名称", prop: "name" },
     { label: "排序", prop: "order" },

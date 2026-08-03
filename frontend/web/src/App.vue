@@ -7,17 +7,7 @@
       shadow: 'never',
     }"
   >
-    <ElWatermark
-      :font="{ color: fontColor }"
-      :content="showWatermark ? watermarkContent : ''"
-      :z-index="9999"
-      class="wh-full"
-    >
-      <RouterView></RouterView>
-
-      <!-- AI 助手 -->
-      <FaAiAssistant v-if="enableAiAssistant" />
-    </ElWatermark>
+    <RouterView></RouterView>
   </ElConfigProvider>
 </template>
 
@@ -25,15 +15,12 @@
 import { computed, onBeforeMount, onErrorCaptured, onMounted, onUnmounted } from "vue";
 import { ElMessage } from "element-plus";
 import { useWindowSize } from "@vueuse/core";
-import { useAppStore, useUserStore } from "./store";
-import { useSettingsStore } from "./store/modules/setting.store";
-import { defaultSettings } from "./config/setting";
+import { useAppStore } from "./store";
 import { ComponentSize } from "./enums/settings/layout.enum";
 import { MOBILE_BREAKPOINT } from "./utils/constants/definitions";
-import { hexToRgba, toggleTransition } from "./utils/ui";
+import { toggleTransition } from "./utils/ui";
 import { initializeTheme } from "./hooks/core/useTheme";
 import { useAppBootstrap } from "@/hooks/core/useAppBootstrap";
-import { ThemeMode } from "./enums";
 import en from "element-plus/es/locale/lang/en";
 import zhCn from "element-plus/es/locale/lang/zh-cn";
 import { router } from "@/router";
@@ -41,8 +28,6 @@ import { ElNotification } from "element-plus";
 import { initIconifyAsync } from "./plugins/iconify";
 
 const appStore = useAppStore();
-const settingsStore = useSettingsStore();
-const userStore = useUserStore();
 const { width } = useWindowSize();
 
 // H5 用小尺寸，桌面用用户设置的大小
@@ -50,30 +35,10 @@ const size = computed(() => {
   if (width.value < MOBILE_BREAKPOINT) return "small" as ComponentSize;
   return appStore.size as ComponentSize;
 });
-const showWatermark = computed(() => settingsStore.showWatermark);
-const watermarkContent = defaultSettings.watermarkContent;
 
 // 根据语言设置返回对应的语言包
 const locale = computed(() => {
   return appStore.language === "en" ? en : zhCn;
-});
-
-// 只有在启用 AI 助手且用户已登录时才显示
-const enableAiAssistant = computed(() => {
-  const isEnabled = settingsStore.userEnableAi;
-  const isLoggedIn = userStore.basicInfo && Object.keys(userStore.basicInfo).length > 0;
-  return isEnabled && isLoggedIn;
-});
-
-// 水印文字默认使用当前主题色（半透明），随主题色设置变化
-const fontColor = computed(() => {
-  const hex = settingsStore.themeColor || defaultSettings.themeColor;
-  const alpha = settingsStore.theme === ThemeMode.DARK ? 0.22 : 0.16;
-  try {
-    return hexToRgba(hex, alpha).rgba;
-  } catch {
-    return hexToRgba(defaultSettings.themeColor, alpha).rgba;
-  }
 });
 
 /**

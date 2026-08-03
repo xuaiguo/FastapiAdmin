@@ -151,7 +151,7 @@
       @confirm="handleDialogConfirm"
     >
       <template v-if="dialogVisible.type === 'detail'">
-        <div class="max-h-[65vh] overflow-y-auto">
+        <ElScrollbar max-height="65vh">
           <FaDescriptions
             :column="4"
             :data="detailFormData"
@@ -259,7 +259,7 @@
               </ElButton>
             </div>
           </div>
-        </div>
+        </ElScrollbar>
       </template>
       <template v-else>
         <FaForm
@@ -316,7 +316,7 @@
         </FaForm>
 
         <!-- 处理工单：展示工单信息 + 回复处理 -->
-        <div v-else class="flex flex-col max-h-[75vh] overflow-y-auto">
+        <ElScrollbar v-else max-height="75vh" class="flex flex-col">
           <!-- 工单信息区 -->
           <div class="flex flex-col gap-3 py-1">
             <div class="flex gap-2.5 items-center">
@@ -357,7 +357,7 @@
               />
             </div>
           </div>
-        </div>
+        </ElScrollbar>
       </template>
     </FaDialog>
   </div>
@@ -397,7 +397,7 @@ import { Plus, Delete, MoreFilled, CircleClose } from "@element-plus/icons-vue";
 import DOMPurify from "dompurify";
 import FaForm from "@/components/forms/fa-form/index.vue";
 import FaTableHeader from "@/components/tables/fa-table-header/index.vue";
-import FaDescriptions from "@/components/others/fa-descriptions/index.vue";
+import FaDescriptions from "@/components/display/fa-descriptions/index.vue";
 import FaCardGrid from "@/components/cards/fa-card-grid/index.vue";
 
 defineOptions({
@@ -623,7 +623,7 @@ const detailFormData = ref<TicketTable & { reply_content?: string }>(
   {} as TicketTable & { reply_content?: string }
 );
 
-const ticketDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] =
+const ticketDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] =
   [
     { label: "工单标题", prop: "title", span: 4 },
     { label: "工单类型", prop: "ticket_type", slot: "ticket_type" },

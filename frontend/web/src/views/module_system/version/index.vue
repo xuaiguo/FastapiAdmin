@@ -151,7 +151,7 @@ import type { ColumnOption } from "@/types/component";
 import FaTableHeader from "@/components/tables/fa-table-header/index.vue";
 import FaTable from "@/components/tables/fa-table/index.vue";
 import FaDialog from "@/components/modal/fa-dialog/index.vue";
-import FaDescriptions from "@/components/others/fa-descriptions/index.vue";
+import FaDescriptions from "@/components/display/fa-descriptions/index.vue";
 import FaForm from "@/components/forms/fa-form/index.vue";
 
 defineOptions({
@@ -324,7 +324,7 @@ const { dialogVisible } = useCrudDialog();
 
 const detailFormData = ref<VersionTable>({});
 
-const versionDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] =
+const versionDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] =
   [
     { label: "标题", prop: "title" },
     { label: "版本号", prop: "version" },

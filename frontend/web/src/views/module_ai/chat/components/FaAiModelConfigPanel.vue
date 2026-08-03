@@ -39,20 +39,24 @@
           </div>
 
           <!-- 空状态 - 直接显示添加按钮作为唯一行动 -->
-          <div v-if="items.length === 0" class="empty-state">
-            <div class="empty-illust">
-              <ElIcon class="empty-icon" :size="56"><Cpu /></ElIcon>
-              <ElIcon class="empty-icon-bg" :size="100"><ChatLineSquare /></ElIcon>
-            </div>
-            <div class="empty-title">添加你的第一个 AI 模型</div>
-            <div class="empty-desc">
-              支持 OpenAI、DeepSeek、Ollama 等任何 OpenAI 兼容服务<br />
-              配置后即可在 AI 助手页一键切换
-            </div>
+          <ElEmpty v-if="items.length === 0">
+            <template #image>
+              <div class="empty-illust">
+                <ElIcon :size="56"><Cpu /></ElIcon>
+                <ElIcon class="empty-icon-bg" :size="100"><ChatLineSquare /></ElIcon>
+              </div>
+            </template>
+            <template #description>
+              <div class="empty-title">添加你的第一个 AI 模型</div>
+              <div class="empty-desc">
+                支持 OpenAI、DeepSeek、Ollama 等任何 OpenAI 兼容服务<br />
+                配置后即可在 AI 助手页一键切换
+              </div>
+            </template>
             <ElButton type="primary" size="large" :icon="Plus" @click="openCreate">
               立即添加
             </ElButton>
-          </div>
+          </ElEmpty>
 
           <!-- 列表 -->
           <div v-else class="config-list">
@@ -587,17 +591,6 @@ onMounted(loadList);
   color: var(--el-text-color-primary);
 }
 
-/* 空状态 */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 20px;
-  text-align: center;
-}
-
 .empty-illust {
   position: relative;
   display: flex;
@@ -605,13 +598,6 @@ onMounted(loadList);
   justify-content: center;
   width: 80px;
   height: 80px;
-  margin-bottom: 8px;
-}
-
-.empty-icon {
-  position: relative;
-  z-index: 1;
-  color: var(--el-color-primary);
 }
 
 .empty-icon-bg {

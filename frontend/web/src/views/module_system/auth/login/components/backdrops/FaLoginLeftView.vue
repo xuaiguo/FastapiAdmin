@@ -6,9 +6,11 @@
       <div class="logo-title-wrap">
         <div class="logo-title-inline">
           <h1 class="title">{{ siteTitle }}</h1>
-          <div class="logo-version-badge" :title="displayVersion">
-            <span class="logo-version-pill">{{ displayVersion }}</span>
-          </div>
+          <ElTooltip :content="displayVersion" placement="bottom">
+            <div class="logo-version-badge">
+              <span class="logo-version-pill">{{ displayVersion }}</span>
+            </div>
+          </ElTooltip>
         </div>
       </div>
     </div>

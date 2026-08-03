@@ -47,14 +47,12 @@
           :class="{ 'bg-active-color': selectedPerson?.id === item.id }"
           @click="selectPerson(item)"
         >
-          <div class="relative mr-3">
-            <ElAvatar :size="40" :src="item.avatar">
-              {{ item.name.charAt(0) }}
-            </ElAvatar>
-            <div
-              class="absolute right-1 bottom-1 size-2 rounded-full"
-              :class="item.online ? 'bg-success' : 'bg-error'"
-            ></div>
+          <div class="mr-3">
+            <ElBadge is-dot :color="item.online ? 'var(--el-color-success)' : 'var(--el-color-error)'">
+              <ElAvatar :size="40" :src="item.avatar">
+                {{ item.name.charAt(0) }}
+              </ElAvatar>
+            </ElBadge>
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between mb-1">

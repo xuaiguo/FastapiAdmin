@@ -1,5 +1,5 @@
 <template>
-  <div class="json-pretty-wrapper" :style="{ maxHeight: height }">
+  <ElScrollbar class="json-pretty-wrapper" :max-height="height">
     <VueJsonPretty
       v-if="isJson"
       :data="parsed"
@@ -10,7 +10,7 @@
       :deep="3"
     />
     <pre v-else class="json-pretty-fallback">{{ displayText }}</pre>
-  </div>
+  </ElScrollbar>
 </template>
 
 <script setup lang="ts">
@@ -52,7 +52,6 @@ const displayText = computed(() => {
 <style scoped>
 .json-pretty-wrapper {
   padding: 8px;
-  overflow: auto;
   background-color: var(--el-fill-color-blank);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 4px;

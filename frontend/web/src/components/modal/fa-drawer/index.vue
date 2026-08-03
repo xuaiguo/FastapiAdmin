@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import type { DrawerProps } from "element-plus";
 import { computed, useAttrs, onMounted, onUnmounted } from "vue";
-import FaIconButton from "@/components/others/fa-icon-button/index.vue";
+import FaIconButton from "@/components/actions/fa-icon-button/index.vue";
 
 defineOptions({ name: "FaDrawer", inheritAttrs: false });
 

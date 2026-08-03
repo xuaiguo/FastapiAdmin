@@ -21,8 +21,8 @@
 </template>
 
 <script setup lang="ts">
-import type { ISelectConfig } from "@/components/others/fa-table-select/index.vue";
-import FaTableSelect from "@/components/others/fa-table-select/index.vue";
+import type { ISelectConfig } from "@/components/tables/fa-table-select/index.vue";
+import FaTableSelect from "@/components/tables/fa-table-select/index.vue";
 import UserAPI, { UserPageQuery } from "@/api/module_system/user";
 
 defineOptions({ name: "FaUserTableSelect" });

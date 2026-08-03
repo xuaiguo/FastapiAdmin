@@ -8,9 +8,11 @@
       <div class="min-w-0 flex-1">
         <div class="flex flex-wrap items-center gap-2">
           <h1 class="auth-top-bar__site-title">{{ siteTitle }}</h1>
-          <div class="logo-version-badge shrink-0" :title="displayVersion">
-            <span class="logo-version-pill">{{ displayVersion }}</span>
-          </div>
+          <ElTooltip :content="displayVersion" placement="bottom">
+            <div class="logo-version-badge shrink-0">
+              <span class="logo-version-pill">{{ displayVersion }}</span>
+            </div>
+          </ElTooltip>
         </div>
       </div>
     </div>

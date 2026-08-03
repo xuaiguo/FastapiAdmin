@@ -20,7 +20,6 @@
         :tool="true"
         :show-preview="true"
         :original-graph="false"
-        :file-type="cropFileType"
         :title="cropInnerTitle"
         :preview-title="cropPreviewTitle"
         @update:img-url="onCropConfirm"
@@ -129,7 +128,6 @@ interface Props {
   cropCutWidth?: number;
   cropCutHeight?: number;
   cropQuality?: number;
-  cropFileType?: "png" | "jpeg" | "webp";
   cropDialogTitle?: string;
   cropInnerTitle?: string;
   cropPreviewTitle?: string;
@@ -151,7 +149,6 @@ const props = withDefaults(defineProps<Props>(), {
   cropCutWidth: 360,
   cropCutHeight: 200,
   cropQuality: 1,
-  cropFileType: "jpeg",
   cropDialogTitle: "裁剪图片",
   cropInnerTitle: "调整图片",
   cropPreviewTitle: "预览",
@@ -167,6 +164,7 @@ const internalFileList = ref<UploadUserFile[]>([]);
 
 const cropVisible = ref(false);
 const cropSourceUrl = ref("");
+const cropFileName = ref("");
 
 function revokeCropUrl() {
   if (cropSourceUrl.value.startsWith("blob:")) {
@@ -185,9 +183,7 @@ function onCropError() {
 
 async function onCropConfirm(dataURL: string) {
   try {
-    const ext =
-      props.cropFileType === "png" ? "png" : props.cropFileType === "webp" ? "webp" : "jpg";
-    const file = dataURLToFile(dataURL, `upload.${ext}`);
+    const file = dataURLToFile(dataURL, cropFileName.value);
     await uploadFileInternal(file);
     cropVisible.value = false;
     revokeCropUrl();
@@ -293,6 +289,11 @@ function handleBeforeUpload(file: UploadRawFile) {
   }
 
   if (props.enableCrop) {
+    // 非 canvas 兼容格式（如 svg/gif/bmp 等），跳过裁剪直接上传
+    if (file.type !== "image/png" && file.type !== "image/jpeg" && file.type !== "image/webp") {
+      return true;
+    }
+    cropFileName.value = file.name;
     revokeCropUrl();
     cropSourceUrl.value = URL.createObjectURL(file);
     cropVisible.value = true;

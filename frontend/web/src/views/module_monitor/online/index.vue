@@ -63,7 +63,7 @@ import type { TableOperationAction } from "@/utils/table";
 import { renderTableOperationCell } from "@utils";
 import type FaSearchBar from "@/components/forms/fa-search-bar/index.vue";
 import type { SearchFormItem } from "@/components/forms/fa-search-bar/index.vue";
-import FaCopyButton from "@/components/others/fa-copy-button/index.vue";
+import FaCopyButton from "@/components/actions/fa-copy-button/index.vue";
 import type { ColumnOption } from "@/types/component";
 import FaTableHeader from "@/components/tables/fa-table-header/index.vue";
 

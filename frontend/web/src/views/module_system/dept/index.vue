@@ -287,7 +287,7 @@ const { dialogVisible } = useCrudDialog();
 
 const detailFormData = ref<DeptTable>({ code: "" });
 
-const deptDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] =
+const deptDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] =
   [
     { label: "部门名称", prop: "name" },
     { label: "部门编码", prop: "code" },

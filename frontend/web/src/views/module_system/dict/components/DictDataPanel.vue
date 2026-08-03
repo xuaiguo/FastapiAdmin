@@ -407,7 +407,7 @@ const { dialogVisible } = useCrudDialog();
 
 const detailFormData = ref<DictDataTable>({});
 
-const dictDataDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] =
+const dictDataDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] =
   [
     { label: "数据标签", prop: "dict_label" },
     { label: "数据类型", prop: "dict_type" },

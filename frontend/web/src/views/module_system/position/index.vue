@@ -377,7 +377,7 @@ const positionExportContentConfig = computed(() => ({
 
 const detailFormData = ref<PositionTable>({});
 
-const positionDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] =
+const positionDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] =
   [
     { label: "岗位名称", prop: "name" },
     { label: "排序", prop: "order" },

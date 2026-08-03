@@ -112,7 +112,7 @@
                 />
               </div>
             </template>
-            <div class="flex-1 min-h-0 overflow-auto">
+            <ElScrollbar class="flex-1 min-h-0">
               <ElTable :loading="loading" :data="cacheNames" row-key="cache_name">
                 <template #empty>
                   <ElEmpty :image-size="80" description="暂无数据" />
@@ -150,7 +150,7 @@
                   </template>
                 </ElTableColumn>
               </ElTable>
-            </div>
+            </ElScrollbar>
           </ElCard>
 
           <!-- 键名列表 -->
@@ -175,7 +175,7 @@
                 />
               </div>
             </template>
-            <div class="flex-1 min-h-0 overflow-auto">
+            <ElScrollbar class="flex-1 min-h-0">
               <ElTable
                 :loading="subLoading"
                 :data="cacheKeys.map((key) => ({ cacheKey: key }))"
@@ -216,7 +216,7 @@
                   </template>
                 </ElTableColumn>
               </ElTable>
-            </div>
+            </ElScrollbar>
           </ElCard>
 
           <!-- 缓存内容 -->
@@ -243,7 +243,7 @@
                 </ElButton>
               </div>
             </template>
-            <div class="flex-1 min-h-0 overflow-auto">
+            <ElScrollbar class="flex-1 min-h-0">
               <ElForm :model="cacheForm" label-suffix=":" label-position="top">
                 <ElFormItem label="缓存名称">
                   <ElInput v-model="cacheForm.cache_name" readonly placeholder="缓存名称" />
@@ -261,7 +261,7 @@
                   />
                 </ElFormItem>
               </ElForm>
-            </div>
+            </ElScrollbar>
           </ElCard>
         </div>
       </ElTabPane>

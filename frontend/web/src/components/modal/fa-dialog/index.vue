@@ -68,7 +68,7 @@
 import type { DialogProps } from "element-plus";
 import { ElDialog } from "element-plus";
 import { computed, ref, useAttrs, watch, onMounted, onUnmounted } from "vue";
-import FaIconButton from "@/components/others/fa-icon-button/index.vue";
+import FaIconButton from "@/components/actions/fa-icon-button/index.vue";
 
 defineOptions({ name: "FaDialog", inheritAttrs: false });
 

@@ -120,9 +120,9 @@ import type FaSearchBar from "@/components/forms/fa-search-bar/index.vue";
 import type { FormItem } from "@/components/forms/fa-form/index.vue";
 import FaForm from "@/components/forms/fa-form/index.vue";
 import DictDataPanel from "./components/DictDataPanel.vue";
-import FaStatusTag from "@/components/others/fa-status-tag/index.vue";
+import FaStatusTag from "@/components/display/fa-status-tag/index.vue";
 import FaTableHeader from "@/components/tables/fa-table-header/index.vue";
-import FaDescriptions from "@/components/others/fa-descriptions/index.vue";
+import FaDescriptions from "@/components/display/fa-descriptions/index.vue";
 
 defineOptions({
   name: "Dict",
@@ -174,7 +174,7 @@ const { dialogVisible } = useCrudDialog();
 
 const detailFormData = ref<DictTable>({});
 
-const dictDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] =
+const dictDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] =
   [
     { label: "字典名称", prop: "dict_name" },
     { label: "字典类型", prop: "dict_type", slot: "dict_type" },

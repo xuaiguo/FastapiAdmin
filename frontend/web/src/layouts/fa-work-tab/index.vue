@@ -165,7 +165,7 @@ import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { ElMessage } from "element-plus";
 import { useWorktabStore, useUserStore, useSettingsStore } from "@stores";
-import { MenuItemType } from "@/components/others/fa-menu-right/index.vue";
+import { MenuItemType } from "@/components/navigation/fa-menu-right/index.vue";
 import { useCommon } from "@/hooks/core/useCommon";
 import { formatMenuTitle, quickStartManager } from "@utils";
 import type { WorkTab } from "@/types/store";

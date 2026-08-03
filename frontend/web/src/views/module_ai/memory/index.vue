@@ -58,10 +58,12 @@
             @blur="handleSaveTitle(row)"
             @keyup.enter="handleSaveTitle(row)"
           />
-          <span v-else class="editable-cell" title="点击编辑" @click="handleEditTitle(row)">
-            {{ row.title || "未命名会话" }}
-            <ElIcon class="edit-icon"><Edit /></ElIcon>
-          </span>
+          <ElTooltip v-else content="点击编辑" placement="top">
+            <span class="editable-cell" @click="handleEditTitle(row)">
+              {{ row.title || "未命名会话" }}
+              <ElIcon class="edit-icon"><Edit /></ElIcon>
+            </span>
+          </ElTooltip>
         </template>
       </FaTable>
     </ElCard>
@@ -153,7 +155,7 @@ import type { FormItem } from "@/components/forms/fa-form/index.vue";
 import type FaForm from "@/components/forms/fa-form/index.vue";
 import { formatToDateTime, renderTableOperationCell, type TableOperationAction } from "@utils";
 import type { ColumnOption } from "@/types/component";
-import FaDescriptions from "@/components/others/fa-descriptions/index.vue";
+import FaDescriptions from "@/components/display/fa-descriptions/index.vue";
 import FaTable from "@/components/tables/fa-table/index.vue";
 import FaTableHeader from "@/components/tables/fa-table-header/index.vue";
 
@@ -355,7 +357,7 @@ const { dialogVisible, closeDialog } = useCrudDialog();
 
 const detailFormData = ref<Partial<ChatSessionDetail>>({});
 
-const memoryDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] =
+const memoryDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] =
   [
     { label: "会话ID", prop: "session_id" },
     { label: "标题", prop: "title" },

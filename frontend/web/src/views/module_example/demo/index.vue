@@ -166,7 +166,7 @@ import DemoAPI, {
   type DemoTable,
 } from "@/api/module_example/demo";
 import type { ColumnOption } from "@/types/component";
-import FaDescriptions from "@/components/others/fa-descriptions/index.vue";
+import FaDescriptions from "@/components/display/fa-descriptions/index.vue";
 import FaForm from "@/components/forms/fa-form/index.vue";
 import FaTableHeader from "@/components/tables/fa-table-header/index.vue";
 
@@ -368,7 +368,7 @@ const { dialogVisible } = useCrudDialog();
 
 const detailFormData = ref<DemoTable>({});
 
-const demoDetailItems: import("@/components/others/fa-descriptions/index.vue").DescriptionsItem[] =
+const demoDetailItems: import("@/components/display/fa-descriptions/index.vue").DescriptionsItem[] =
   [
     { label: "名称", prop: "name" },
     { label: "UUID", prop: "uuid" },

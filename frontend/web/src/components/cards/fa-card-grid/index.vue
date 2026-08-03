@@ -95,7 +95,7 @@ import {
   ElSkeletonItem,
   ElScrollbar,
 } from "element-plus";
-import FaPagination from "@/components/others/fa-pagination/index.vue";
+import FaPagination from "@/components/tables/fa-pagination/index.vue";
 
 defineOptions({ name: "FaCardGrid" });
 

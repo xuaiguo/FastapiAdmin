@@ -1,29 +1,29 @@
 <template>
-  <div class="page-content box-border px-20! py-3.5 text-center max-md:px-5!" :class="type">
-    <FaSvgIcon
-      class="icon size-22 p-2 mt-16 block rounded-full text-white!"
-      :icon="iconCode"
-      :class="type === 'success' ? 'bg-[#19BE6B]' : 'bg-[#ED4014]'"
-    />
-    <h1 class="title mt-8 text-3xl font-medium text-g-900! max-md:mt-2.5 max-md:text-2xl">
-      {{ title }}
-    </h1>
-    <p class="msg mt-5 text-base text-g-600">{{ message }}</p>
+  <div class="page-content box-border px-20! py-3.5 text-center max-md:px-5!">
+    <ElResult :icon="resultIcon" :title="title" :sub-title="message">
+      <template #icon>
+        <FaSvgIcon
+          class="size-14!"
+          :icon="iconCode"
+        />
+      </template>
+      <template #extra>
+        <slot name="buttons"></slot>
+      </template>
+    </ElResult>
     <div
       class="res mt-7.5 rounded bg-g-200/80 dark:bg-g-300/40 px-7.5 py-5.5 text-left max-md:px-7.5 max-md:py-2.5 [&_p]:flex [&_p]:items-center [&_p]:py-2 [&_p]:text-sm [&_p]:text-[#808695] [&_p_i]:mr-1.5"
     >
       <slot name="content"></slot>
     </div>
-    <div class="btn-group mt-12.5">
-      <slot name="buttons"></slot>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+
 defineOptions({ name: "FaResultPage" });
 
-// 显式声明插槽类型
 defineSlots<{
   default?: () => void;
   content?: () => void;
@@ -41,10 +41,12 @@ interface Props {
   iconCode: string;
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   type: "success",
   title: "",
   message: "",
   iconCode: "",
 });
+
+const resultIcon = computed(() => (props.type === "success" ? "success" : "error"));
 </script>
