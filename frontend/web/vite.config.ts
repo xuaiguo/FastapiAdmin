@@ -3,7 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import autoprefixer from "autoprefixer";
 import path from "node:path";
 import { fileURLToPath } from "url";
-import vueDevTools from "vite-plugin-vue-devtools";
+// import vueDevTools from "vite-plugin-vue-devtools";
 import viteCompression from "vite-plugin-compression";
 import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
@@ -237,7 +237,7 @@ export default ({ mode }: { mode: string }) => {
           ]
         : []),
       /** 仅开发启用：避免生产包体积膨胀与运行期 DevTools 开销 */
-      ...(isProduction ? [] : [vueDevTools()]),
+      // ...(isProduction ? [] : [vueDevTools()]),
     ],
     optimizeDeps: {
       include: [
