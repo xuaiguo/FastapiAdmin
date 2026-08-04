@@ -48,6 +48,28 @@ async def execute_sql(
             sql=data.sql,
             max_rows=data.max_rows,
         )
+
+        # 脱敏后处理（独立 try/except，脱敏失败不影响查询结果）
+        result["is_masked"] = False
+        result["masked_columns"] = []
+        if result.get("rows") and result.get("columns"):
+            try:
+                from ..masking.engine import apply_masking
+
+                masked_rows, masked_info = await apply_masking(
+                    config_id=data.config_id,
+                    columns=result["columns"],
+                    rows=result["rows"],
+                    db=db,
+                    sql=data.sql,
+                )
+                if masked_info:
+                    result["rows"] = masked_rows
+                    result["is_masked"] = True
+                    result["masked_columns"] = [m["column_name"] for m in masked_info]
+            except Exception as mask_err:
+                logger.warning("脱敏处理失败，返回原始数据: {}", mask_err)
+
         # 保存成功历史
         await history_service.save_history(
             config_id=data.config_id,

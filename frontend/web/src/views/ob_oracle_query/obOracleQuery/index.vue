@@ -40,6 +40,9 @@
           <span v-if="result.truncated" class="text-orange-500 ml-1">（已截断）</span>
         </span>
         <span v-if="result" class="text-gray-500">耗时 {{ result.elapsed_ms }} ms</span>
+        <span v-if="result?.is_masked" class="text-amber-600">
+          🔒 已脱敏（{{ result.masked_columns.join(', ') }}）
+        </span>
         <span v-if="errorMsg" class="text-red-500">{{ errorMsg }}</span>
         <template v-if="result && result.columns.length > 0">
           <ElButton size="small" @click="exportCSV">导出 CSV</ElButton>
@@ -61,10 +64,16 @@
           v-for="col in result.columns"
           :key="col"
           :prop="col"
-          :label="col"
           :min-width="colWidth(col)"
           show-overflow-tooltip
-        />
+        >
+          <template #header>
+            {{ col }}
+            <ElIcon v-if="result?.masked_columns?.includes(col)" class="text-amber-500" style="vertical-align: middle">
+              <Lock />
+            </ElIcon>
+          </template>
+        </ElTableColumn>
       </ElTable>
 
       <ElEmpty v-else-if="!result && !errorMsg" description="输入 SQL 后点击执行" />
@@ -130,7 +139,7 @@ import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/hint/sql-hint.js";
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { CaretRight, Clock, Delete } from "@element-plus/icons-vue";
+import { CaretRight, Clock, Delete, Lock } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Codemirror from "codemirror-editor-vue3";
 import type { EditorConfiguration } from "codemirror";

@@ -20,6 +20,8 @@ class ObOracleQueryResponse(BaseModel):
     total: int = Field(default=0, description="返回行数")
     truncated: bool = Field(default=False, description="结果是否被截断")
     elapsed_ms: float = Field(default=0, description="执行耗时(ms)")
+    is_masked: bool = Field(default=False, description="是否经过脱敏处理")
+    masked_columns: list[str] = Field(default_factory=list, description="被脱敏的列名列表")
 
 
 class QueryHistoryCreateSchema(BaseModel):

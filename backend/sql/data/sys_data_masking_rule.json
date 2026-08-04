@@ -1,0 +1,30 @@
+[
+    {
+        "rule_type": 1,
+        "rule_regex": "^(\\d{3})(\\d{4})(\\d{4})$",
+        "hide_group": 2,
+        "rule_desc": "手机号脱敏",
+        "uuid": "masking-rule-1"
+    },
+    {
+        "rule_type": 2,
+        "rule_regex": "^(\\d{6})(\\d{8})(\\d{4})$",
+        "hide_group": 2,
+        "rule_desc": "身份证号脱敏",
+        "uuid": "masking-rule-2"
+    },
+    {
+        "rule_type": 3,
+        "rule_regex": "^(\\d{4})(\\d+)(\\d{4})$",
+        "hide_group": 2,
+        "rule_desc": "银行卡号脱敏",
+        "uuid": "masking-rule-3"
+    },
+    {
+        "rule_type": 4,
+        "rule_regex": "^([^@]+)(@.+\\..+)$",
+        "hide_group": 1,
+        "rule_desc": "邮箱脱敏",
+        "uuid": "masking-rule-4"
+    }
+]

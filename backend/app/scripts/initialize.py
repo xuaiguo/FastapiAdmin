@@ -15,6 +15,7 @@ from app.api.v1.module_system.params.model import ParamsModel
 from app.api.v1.module_system.role.model import RoleModel
 from app.api.v1.module_system.user.model import UserModel, UserRolesModel
 from app.api.v1.module_system.versions.model import VersionModel
+from app.plugin.module_ob_oracle_query.masking.model import DataMaskingColumnModel, DataMaskingRuleModel
 from app.config.path_conf import SCRIPT_DIR
 from app.core.database import async_db_session, check_db, create_tables
 from app.core.logger import logger
@@ -41,6 +42,8 @@ class InitializeData:
         ObModule,
         ObOracleConfigModule,
         ObOracleConfigUser,
+        DataMaskingRuleModel,
+        DataMaskingColumnModel,
     ]
 
     # 树形模型：JSON 含嵌套 children，需递归创建对象
