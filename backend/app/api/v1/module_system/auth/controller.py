@@ -28,13 +28,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.response import ErrorResponse, RedirectContentResponse, ResponseSchema, SuccessResponse
 from app.config.setting import settings
-from app.core.base_schema import JWTOutSchema
+from app.core.base_schema import AuthSchema, JWTOutSchema
 from app.core.dependencies import db_getter, get_current_user, redis_getter
 from app.core.exceptions import CustomException
 from app.core.logger import logger
 from app.core.redis_crud import RedisCURD
 from app.core.router_class import OperationLogRoute
 from app.core.security import CustomOAuth2PasswordRequestForm
+
+from app.api.v1.module_system.user.crud import UserCRUD
+from app.api.v1.module_system.user.schema import UserCreateSchema
+from app.api.v1.module_system.user.service import UserService
 
 from .oauth_service import (
     STATE_PREFIX,
@@ -51,10 +55,20 @@ from .schema import (
     LoginOutSchema,
     SliderCompleteOutSchema,
     SliderCompleteSchema,
+    WxLoginSchema,
+    WxPhoneLoginSchema,
+    WxQrCodeOutSchema,
+    WxQrCodeSchema,
 )
 from .service import (
     CaptchaService,
     LoginService,
+)
+from .wx_mini_service import (
+    code2session,
+    ensure_wx_user,
+    get_phone_number,
+    get_qrcode,
 )
 
 AuthRouter = APIRouter(route_class=OperationLogRoute, prefix="/auth", tags=["认证授权"])
@@ -197,3 +211,179 @@ async def oauth_callback_controller(
     except CustomException as e:
         fe = await resolve_frontend()
         return RedirectContentResponse(url=oauth_service_error_redirect(fe, e.msg), status_code=302)
+
+
+# =================================================== #
+# *************** 微信小程序登录端点 ***************** #
+# =================================================== #
+
+
+@AuthRouter.post("/wx-login", summary="微信小程序登录", response_model=ResponseSchema[LoginOutSchema])
+async def wx_mini_login_controller(
+    request: Request,
+    redis: Annotated[Redis, Depends(redis_getter)],
+    db: Annotated[AsyncSession, Depends(db_getter)],
+    body: WxLoginSchema,
+) -> JSONResponse:
+    """微信小程序登录（code2Session）。
+
+    前端通过 uni.login 获取 code，后端调用微信 code2Session 接口换取 openid，
+    然后查找或自动注册用户，最终返回 JWT。
+    """
+    session_data = await code2session(code=body.code)
+    openid = session_data["openid"]
+
+    user = await ensure_wx_user(
+        db=db,
+        openid=openid,
+        nickname=body.nickname,
+        avatar=body.avatar,
+    )
+
+    if user.status == 1:
+        raise CustomException(msg="用户已被停用")
+
+    user = await UserCRUD(AuthSchema(), db).update_last_login(id=user.id)
+    if not user:
+        raise CustomException(msg="用户不存在")
+
+    token = await LoginService.create_token(
+        request=request,
+        redis=redis,
+        user=user,
+        login_type="wx_mini",
+    )
+
+    user_info = {
+        "id": user.id,
+        "username": user.username,
+        "name": user.name,
+        "avatar": user.avatar,
+        "is_superuser": user.is_superuser,
+    }
+
+    logger.info(f"微信小程序用户登录成功: {user.username}")
+
+    return SuccessResponse(
+        data=LoginOutSchema(
+            access_token=token.access_token,
+            refresh_token=token.refresh_token,
+            expires_in=token.expires_in,
+            token_type=token.token_type,
+            user_info=user_info,
+        ),
+        msg="登录成功",
+    )
+
+
+@AuthRouter.post("/wx-phone-login", summary="微信小程序手机号登录", response_model=ResponseSchema[LoginOutSchema])
+async def wx_mini_phone_login_controller(
+    request: Request,
+    redis: Annotated[Redis, Depends(redis_getter)],
+    db: Annotated[AsyncSession, Depends(db_getter)],
+    body: WxPhoneLoginSchema,
+) -> JSONResponse:
+    """微信小程序手机号快速登录。
+
+    前端 <button open-type="getPhoneNumber"> 回调 e.detail.code，
+    后端调用微信 getuserphonenumber 接口获取手机号，
+    然后通过手机号查找用户；如果不存在则自动注册。
+
+    注意：此接口需要先调用 uni.login 获取 session，
+    前端在 getPhoneNumber 回调中会同时获得 code（用于换取手机号）。
+    """
+    phone = await get_phone_number(redis=redis, code=body.code)
+
+    # 通过手机号查找已有用户
+    auth = AuthSchema()
+    user = await UserCRUD(auth, db).get(mobile=phone)
+
+    if not user:
+        # 未找到用户 → 自动注册（用手机号生成用户名）
+        username = f"wxphone_{phone[-4:]}_{secrets.token_hex(4)}"
+        # 确保用户名以字母开头
+        if not username[0].isalpha():
+            username = "w" + username
+        username = username[:32]
+
+        reg = UserCreateSchema(
+            username=username,
+            password=secrets.token_urlsafe(24),
+            name=f"用户{phone[-4:]}",
+            mobile=phone,
+            role_ids=list(settings.OAUTH_DEFAULT_ROLE_IDS),
+        )
+        try:
+            await UserService(auth, db).create(data=reg)
+        except Exception:
+            raise CustomException(msg="手机号用户注册失败")
+
+        user = await UserCRUD(auth, db).get(mobile=phone)
+        if not user:
+            raise CustomException(msg="手机号用户注册失败")
+        logger.info(f"微信手机号自动注册用户: {username}")
+
+    if user.status == 1:
+        raise CustomException(msg="用户已被停用")
+
+    user = await UserCRUD(auth, db).update_last_login(id=user.id)
+    if not user:
+        raise CustomException(msg="用户不存在")
+
+    token = await LoginService.create_token(
+        request=request,
+        redis=redis,
+        user=user,
+        login_type="wx_mini_phone",
+    )
+
+    user_info = {
+        "id": user.id,
+        "username": user.username,
+        "name": user.name,
+        "avatar": user.avatar,
+        "is_superuser": user.is_superuser,
+        "mobile": user.mobile,
+    }
+
+    logger.info(f"微信手机号用户登录成功: {user.username}")
+
+    return SuccessResponse(
+        data=LoginOutSchema(
+            access_token=token.access_token,
+            refresh_token=token.refresh_token,
+            expires_in=token.expires_in,
+            token_type=token.token_type,
+            user_info=user_info,
+        ),
+        msg="登录成功",
+    )
+
+
+@AuthRouter.post("/wx-qrcode/generate", summary="生成小程序码", response_model=ResponseSchema[WxQrCodeOutSchema])
+async def wx_qrcode_generate_controller(
+    redis: Annotated[Redis, Depends(redis_getter)],
+    body: WxQrCodeSchema,
+) -> JSONResponse:
+    """生成无限制小程序码。
+
+    调用微信 getwxacodeunlimit 接口生成小程序码图片，
+    返回 base64 编码的图片数据，前端可直接用于 Canvas 绘制或显示。
+    """
+    import base64
+
+    image_bytes = await get_qrcode(
+        redis=redis,
+        scene=body.scene,
+        page=body.page,
+        width=body.width,
+    )
+
+    # 转 base64 data URI，前端可直接作为图片 src 使用
+    b64 = base64.b64encode(image_bytes).decode("utf-8")
+    data_uri = f"data:image/png;base64,{b64}"
+
+    return SuccessResponse(
+        data=WxQrCodeOutSchema(url=data_uri),
+        msg="生成成功",
+    )

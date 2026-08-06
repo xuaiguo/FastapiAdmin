@@ -118,11 +118,14 @@ Issues and PRs are welcome! See [Contributing Guide](https://service.fastapiadmi
 
 ## 👥 Community
 
-| WeChat Group | Support |
-| ------------ | ------- |
-| ![Group QR](frontend/web/public/group.png) | ![WeChat Pay](frontend/web/public/wechatPay.jpg) |
+<p>
+<img src="frontend/web/public/group.png" width="200" height="260" style="margin-right:30px"/>
+<img src="frontend/web/public/wechatPay.jpg" width="200" height="260" />
+</p>
 
 ## 👥 Contributors
+
+> Thank you to all contributors who have contributed code to FastapiAdmin.
 
 <a href="https://github.com/fastapiadmin/FastapiAdmin/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=fastapiadmin/FastapiAdmin"/>

@@ -160,7 +160,7 @@
             :lg="4"
             class="mb-4"
           >
-            <ElCard shadow="hover" :class="`job-card job-card--${getJobStatusClass(job.status)}`">
+            <ElCard shadow="hover" :class="`fa-card job-card job-card--${getJobStatusClass(job.status)}`">
               <template #header>
                 <div class="job-card-title">
                   <span
@@ -176,7 +176,7 @@
                 </div>
               </template>
 
-              <div class="job-card-body">
+              <div class="job-card-body cursor-pointer" @click="handleOpenExecutionLogDrawer(job)">
                 <div class="job-card-body-row">
                   <FaSvgIcon :icon="getTriggerIcon(job.trigger)" class="job-card-meta-icon" />
                   <span class="job-card-meta-text">{{ formatTrigger(job.trigger) }}</span>
@@ -189,7 +189,7 @@
 
               <template #footer>
                 <ElRow :gutter="8">
-                  <ElCol :span="5">
+                  <ElCol :span="6">
                     <ElButton
                       v-hasPerm="['module_task:cronjob:job:task']"
                       :type="job.status === 1 ? 'primary' : 'warning'"
@@ -203,7 +203,7 @@
                       {{ job.status === 1 ? "恢复" : "暂停" }}
                     </ElButton>
                   </ElCol>
-                  <ElCol :span="5">
+                  <ElCol :span="6">
                     <ElButton
                       v-hasPerm="['module_task:cronjob:job:task']"
                       type="success"
@@ -217,7 +217,7 @@
                       调试
                     </ElButton>
                   </ElCol>
-                  <ElCol :span="5">
+                  <ElCol :span="6">
                     <ElButton
                       v-hasPerm="['module_task:cronjob:job:task']"
                       type="primary"
@@ -231,20 +231,7 @@
                       编辑
                     </ElButton>
                   </ElCol>
-                  <ElCol :span="5">
-                    <ElButton
-                      v-hasPerm="['module_task:cronjob:job:query']"
-                      type="info"
-                      size="small"
-                      plain
-                      class="w-full"
-                      :icon="List"
-                      @click="handleOpenExecutionLogDrawer(job)"
-                    >
-                      记录
-                    </ElButton>
-                  </ElCol>
-                  <ElCol :span="4">
+                  <ElCol :span="6">
                     <ElButton
                       v-hasPerm="['module_task:cronjob:job:task']"
                       type="danger"
@@ -404,7 +391,6 @@ import {
   Monitor,
   CaretRight,
   Edit,
-  List,
   Close,
 } from "@element-plus/icons-vue";
 import type { TableOperationAction } from "@/utils/table";
@@ -1182,22 +1168,16 @@ function handleViewJobState(row: JobLogTable) {
 }
 
 .job-card {
-  transition: box-shadow 0.25s;
-
-  &:hover {
-    box-shadow: 0 4px 12px rgb(0 0 0 / 6%);
-  }
-
   :deep(.el-card__header) {
-    padding: 8px 14px;
+    padding: 8px 16px;
   }
 
   :deep(.el-card__body) {
-    padding: 8px 14px;
+    padding: 8px 16px;
   }
 
   :deep(.el-card__footer) {
-    padding: 8px 14px;
+    padding: 8px 16px;
   }
 }
 
@@ -1234,7 +1214,7 @@ function handleViewJobState(row: JobLogTable) {
 .job-card-body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   min-width: 0;
   overflow: hidden;
 

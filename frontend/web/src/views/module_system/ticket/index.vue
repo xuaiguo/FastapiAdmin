@@ -49,6 +49,7 @@
         :items="data"
         :pagination="{ current: pageNo, size: pageSize, total }"
         :loading="loading"
+        :lg="4"
         empty-text="暂无工单"
         @pagination:size-change="onPageSizeChange"
         @pagination:current-change="onPageCurrentChange"
@@ -74,7 +75,7 @@
         </template>
 
         <template #default="{ item }">
-          <div class="flex flex-col">
+          <div class="flex flex-col cursor-pointer" @click="handleOpenDialog('detail', item.id!)">
             <div
               class="flex items-center gap-1.5 text-xs"
               style="color: var(--el-text-color-secondary)"
@@ -101,39 +102,46 @@
         </template>
 
         <template #footer="{ item }">
-          <div class="flex items-center gap-1">
-            <ElButton size="small" link type="primary" @click="handleOpenDialog('detail', item.id!)"
-              >详情</ElButton
-            >
-            <ElButton
-              v-if="item.status! < 3"
-              v-hasPerm="['module_system:ticket:update']"
-              size="small"
-              link
-              type="primary"
-              @click="handleOpenDialog('update', item.id!)"
-              >处理</ElButton
-            >
-            <ElDropdown v-if="showCardMore(item)" trigger="click">
-              <ElButton size="small" link type="primary" class="px-1 py-0.5 text-base">
-                <ElIcon><MoreFilled /></ElIcon>
+          <ElRow :gutter="6" @click.stop>
+            <ElCol :span="8">
+              <ElButton
+                v-if="item.status! < 3"
+                v-hasPerm="['module_system:ticket:update']"
+                size="small"
+                plain
+                type="primary"
+                class="w-full"
+                @click="handleOpenDialog('update', item.id!)"
+              >
+                处理
               </ElButton>
-              <template #dropdown>
-                <ElDropdownMenu>
-                  <div v-hasPerm="['module_system:ticket:update']" style="display: contents">
-                    <ElDropdownItem v-if="item.status! < 3" @click="closeTicket(item.id!)">
-                      <ElIcon><CircleClose /></ElIcon>关闭
-                    </ElDropdownItem>
-                  </div>
-                  <div v-hasPerm="['module_system:ticket:delete']" style="display: contents">
-                    <ElDropdownItem divided @click="deleteTicketRow(item.id!, item.title ?? '')">
-                      <ElIcon><Delete /></ElIcon>删除
-                    </ElDropdownItem>
-                  </div>
-                </ElDropdownMenu>
-              </template>
-            </ElDropdown>
-          </div>
+            </ElCol>
+            <ElCol :span="8">
+              <ElButton
+                v-if="item.status! < 3"
+                v-hasPerm="['module_system:ticket:update']"
+                size="small"
+                plain
+                type="warning"
+                class="w-full"
+                @click="closeTicket(item.id!)"
+              >
+                关闭
+              </ElButton>
+            </ElCol>
+            <ElCol :span="8">
+              <ElButton
+                v-hasPerm="['module_system:ticket:delete']"
+                size="small"
+                plain
+                type="danger"
+                class="w-full"
+                @click="deleteTicketRow(item.id!, item.title ?? '')"
+              >
+                删除
+              </ElButton>
+            </ElCol>
+          </ElRow>
         </template>
       </FaCardGrid>
     </ElCard>
@@ -380,10 +388,8 @@ import {
   ElTag,
   ElButton,
   ElCard,
-  ElIcon,
-  ElDropdown,
-  ElDropdownMenu,
-  ElDropdownItem,
+  ElRow,
+  ElCol,
   ElSelect,
   ElOption,
   ElRadioGroup,
@@ -393,7 +399,7 @@ import {
   ElInput,
   ElMessageBox,
 } from "element-plus";
-import { Plus, Delete, MoreFilled, CircleClose } from "@element-plus/icons-vue";
+import { Plus, Delete } from "@element-plus/icons-vue";
 import DOMPurify from "dompurify";
 import FaForm from "@/components/forms/fa-form/index.vue";
 import FaTableHeader from "@/components/tables/fa-table-header/index.vue";
@@ -606,10 +612,6 @@ function statusTagType(s: string): "warning" | "info" | "success" | "danger" | u
     3: "info",
   };
   return map[Number(s)];
-}
-
-function showCardMore(row: TicketTable): boolean {
-  return row.status! < 3;
 }
 
 // ─── 多选 ───

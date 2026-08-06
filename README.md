@@ -118,11 +118,13 @@ FastapiAdmin/            # Monorepo 全栈工程
 
 ## 👥 社区与支持
 
-| 微信群 | 赞赏支持 |
-| ------ | -------- |
-| ![群组二维码](frontend/web/public/group.png) | ![微信支付](frontend/web/public/wechatPay.jpg) |
+<p>
+<img src="frontend/web/public/group.png" width="200" height="260" style="margin-right:30px"/>
+<img src="frontend/web/public/wechatPay.jpg" width="200" height="260" />
+</p>
 
 ## 👥 贡献者
+> 感谢以下所有给 FastapiAdmin 贡献过代码的 开发者。
 
 <a href="https://github.com/fastapiadmin/FastapiAdmin/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=fastapiadmin/FastapiAdmin"/>

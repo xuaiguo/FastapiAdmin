@@ -1,17 +1,11 @@
 <!-- 聊天页 -->
 <template>
-  <div class="page-content flex p-0! max-md:flex-col" :style="{ height: containerMinHeight }">
-    <ElRow>
-      <ElCol :span="12">
-        <div class="grid-content ep-bg-purple" />
-      </ElCol>
-      <ElCol :span="12">
-        <div class="grid-content ep-bg-purple-light" />
-      </ElCol>
-    </ElRow>
-    <div
-      class="box-border w-90 h-full p-5 border-r border-g-300 max-md:w-full max-md:h-42 max-md:border-r-0"
-    >
+  <div :style="{ height: containerMinHeight }">
+    <ElSplitter :style="'height: 100%'">
+      <ElSplitterPanel size="360px" :min="260" :max="500">
+        <div
+          class="box-border h-full p-5"
+        >
       <div class="pb-5 max-md:hidden!">
         <div class="flex items-center gap-3">
           <ElAvatar :size="50" :src="selectedPerson?.avatar" />
@@ -67,8 +61,11 @@
           </div>
         </div>
       </ElScrollbar>
-    </div>
-    <div class="box-border flex-1 h-full max-md:h-[calc(70%-30px)]">
+        </div>
+      </ElSplitterPanel>
+
+      <ElSplitterPanel :min="300">
+        <div class="box-border h-full">
       <div class="flex items-center justify-between pt-4 px-4 pb-0 mb-5">
         <div>
           <span class="text-base font-medium">Art Bot</span>
@@ -149,7 +146,9 @@
           </div>
         </div>
       </div>
-    </div>
+        </div>
+      </ElSplitterPanel>
+    </ElSplitter>
   </div>
 </template>
 

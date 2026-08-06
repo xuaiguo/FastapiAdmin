@@ -1,64 +1,68 @@
 <!-- 字典管理：左侧字典类型列表 + 右侧字典数据面板 -->
 <template>
   <div class="fa-full-height">
-    <div class="flex-1 flex min-h-0 gap-4">
+    <ElSplitter :style="'height: 100%'">
       <!-- Left: Dict Type -->
-      <div class="w-165 flex flex-col min-h-0 overflow-hidden">
-        <FaSearchBar
-          v-show="showSearchBar"
-          ref="searchBarRef"
-          v-model="searchForm"
-          :items="dictTypeSearchItems"
-          :rules="searchBarRules"
-          :is-expand="false"
-          :show-expand="true"
-          :show-reset="true"
-          :show-search="true"
-          :disabled-search="false"
-          :default-expanded="false"
-          @search="handleSearchBarSearch"
-          @reset="onResetSearch"
-        />
-
-        <ElCard class="fa-table-card" :style="{ 'margin-top': showSearchBar ? '12px' : '0' }">
-          <FaTableHeader
-            v-model:columns="columnChecks"
-            v-model:showSearchBar="showSearchBar"
-            :loading="loading"
-            @refresh="refreshData"
-          >
-            <template #left>
-              <FaTableHeaderLeft
-                :perm-create="['module_system:dict_type:create']"
-                @add="handleAdd"
-              />
-            </template>
-          </FaTableHeader>
-
-          <FaTable
-            ref="faTableRef"
-            :loading="loading"
-            :data="data"
-            :columns="columns"
-            :pagination="pagination"
-            :row-class-name="dictTypeRowClassName"
-            @row-click="handleDictTypeRowClick"
-            @pagination:size-change="handleSizeChange"
-            @pagination:current-change="handleCurrentChange"
+      <ElSplitterPanel size="30%" :min="320">
+        <div class="flex flex-col h-full overflow-hidden pr-2">
+          <FaSearchBar
+            v-show="showSearchBar"
+            ref="searchBarRef"
+            v-model="searchForm"
+            :items="dictTypeSearchItems"
+            :rules="searchBarRules"
+            :is-expand="false"
+            :show-expand="true"
+            :show-reset="true"
+            :show-search="true"
+            :disabled-search="false"
+            :default-expanded="false"
+            @search="handleSearchBarSearch"
+            @reset="onResetSearch"
           />
-        </ElCard>
-      </div>
+
+          <ElCard class="fa-table-card" :style="{ 'margin-top': showSearchBar ? '12px' : '0' }">
+            <FaTableHeader
+              v-model:columns="columnChecks"
+              v-model:showSearchBar="showSearchBar"
+              :loading="loading"
+              @refresh="refreshData"
+            >
+              <template #left>
+                <FaTableHeaderLeft
+                  :perm-create="['module_system:dict_type:create']"
+                  @add="handleAdd"
+                />
+              </template>
+            </FaTableHeader>
+
+            <FaTable
+              ref="faTableRef"
+              :loading="loading"
+              :data="data"
+              :columns="columns"
+              :pagination="pagination"
+              :row-class-name="dictTypeRowClassName"
+              @row-click="handleDictTypeRowClick"
+              @pagination:size-change="handleSizeChange"
+              @pagination:current-change="handleCurrentChange"
+            />
+          </ElCard>
+        </div>
+      </ElSplitterPanel>
 
       <!-- Right: Dict Data -->
-      <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
-        <DictDataPanel
-          :key="currentDictTypeId"
-          :dict-type="currentDictType"
-          :dict-label="currentDictLabel"
-          :dict-type-id="currentDictTypeId"
-        />
-      </div>
-    </div>
+      <ElSplitterPanel :min="300">
+        <div class="flex flex-col h-full overflow-hidden pl-2">
+          <DictDataPanel
+            :key="currentDictTypeId"
+            :dict-type="currentDictType"
+            :dict-label="currentDictLabel"
+            :dict-type-id="currentDictTypeId"
+          />
+        </div>
+      </ElSplitterPanel>
+    </ElSplitter>
 
     <!-- Dict Type CRUD Dialogs -->
     <FaDialog

@@ -36,7 +36,7 @@ def console_start(
     """
     env_label = settings.ENVIRONMENT.value if hasattr(settings.ENVIRONMENT, 'value') else settings.ENVIRONMENT
     url = f"http://{host}:{port}"
-    base_url = f"{url}{settings.ROOT_PATH}"
+    base_url = url + settings.ROOT_PATH
     docs_url = base_url + settings.DOCS_URL
     frontend_url = base_url + settings.WEB_URL
 

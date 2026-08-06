@@ -133,6 +133,13 @@ class Settings(BaseSettings):
     OAUTH_ALLOWED_HOSTS: list[str] = ["*"]
 
     # ================================================= #
+    # *************** 微信小程序配置（可选）************** #
+    # ================================================= #
+    WX_MINI_APP_ID: str = ""  # 小程序 AppID
+    WX_MINI_APP_SECRET: str = ""  # 小程序 AppSecret
+    WX_MINI_ACCESS_TOKEN_CACHE_TTL: int = 7000  # access_token Redis 缓存秒数（微信上限 7200，留 200s 余量）
+
+    # ================================================= #
     # ******************* 外部 HTTP（httpx）******************* #
     # ================================================= #
     HTTPX_DEFAULT_TIMEOUT: float = 10.0  # 对外 HTTP 请求默认超时（秒）

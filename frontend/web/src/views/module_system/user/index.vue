@@ -1,84 +1,86 @@
 <!-- 用户管理：左部门树 + 右 Art 表格 -->
 <template>
   <div class="fa-full-height user-manage-page">
-    <div
-      class="user-manage-body box-border flex gap-4 h-full max-md:block max-md:gap-0 max-md:h-auto"
-    >
-      <div class="user-dept-panel shrink-0 w-58 h-full max-md:w-full max-md:h-auto max-md:mb-5">
-        <ElCard class="tree-card fa-card-xs flex flex-col h-full mt-0" shadow="hover">
-          <template #header>
-            <b>部门</b>
-          </template>
-          <ElScrollbar class="dept-tree-scroll min-h-0 flex-1">
-            <FaDeptTree
-              v-model="deptFilterId"
-              class="dept-tree-inner"
-              @node-click="handleDeptNodeClick"
-            />
-          </ElScrollbar>
-        </ElCard>
-      </div>
-
-      <div class="user-main-panel flex flex-col grow min-w-0 min-h-0">
-        <FaSearchBar
-          v-show="showSearchBar"
-          ref="searchBarRef"
-          v-model="searchForm"
-          :items="userSearchItems"
-          :rules="searchBarRules"
-          :is-expand="false"
-          :show-expand="true"
-          :show-reset="true"
-          :show-search="true"
-          :disabled-search="false"
-          :default-expanded="false"
-          include-audit
-          @search="handleSearchBarSearch"
-          @reset="onResetSearch"
-        />
-
-        <ElCard class="fa-table-card" :style="{ 'margin-top': showSearchBar ? '12px' : '0' }">
-          <FaTableHeader
-            v-model:columns="columnChecks"
-            v-model:showSearchBar="showSearchBar"
-            :loading="loading"
-            @refresh="refreshData"
-          >
-            <template #left>
-              <FaTableHeaderLeft
-                :remove-ids="selectedIds"
-                :perm-create="['module_system:user:create']"
-                :perm-import="['module_system:user:import']"
-                :perm-export="['module_system:user:export']"
-                :perm-delete="['module_system:user:delete']"
-                :perm-patch="['module_system:user:patch']"
-                :import-loading="uploadLoading"
-                :delete-loading="batchDeleting"
-                :create-loading="createLoading"
-                :more-loading="moreLoading"
-                @add="handleAdd"
-                @import="openImport"
-                @export="openExport"
-                @delete="handleBatchDelete"
-                @more="handleMoreClick"
-              />
+    <ElSplitter :style="'height: 100%'">
+      <ElSplitterPanel size="260px" :min="200" :max="400">
+        <div class="user-dept-panel h-full pr-2">
+          <ElCard class="tree-card fa-card-xs flex flex-col h-full mt-0" shadow="hover">
+            <template #header>
+              <b>部门</b>
             </template>
-          </FaTableHeader>
+            <ElScrollbar class="dept-tree-scroll min-h-0 flex-1">
+              <FaDeptTree
+                v-model="deptFilterId"
+                class="dept-tree-inner"
+                @node-click="handleDeptNodeClick"
+              />
+            </ElScrollbar>
+          </ElCard>
+        </div>
+      </ElSplitterPanel>
 
-          <FaTable
-            ref="faTableRef"
-            row-key="id"
-            :loading="loading"
-            :data="data"
-            :columns="columns"
-            :pagination="pagination"
-            @selection-change="onTableSelectionChange"
-            @pagination:size-change="handleSizeChange"
-            @pagination:current-change="handleCurrentChange"
+      <ElSplitterPanel :min="400">
+        <div class="user-main-panel flex flex-col h-full min-w-0 min-h-0 pl-2">
+          <FaSearchBar
+            v-show="showSearchBar"
+            ref="searchBarRef"
+            v-model="searchForm"
+            :items="userSearchItems"
+            :rules="searchBarRules"
+            :is-expand="false"
+            :show-expand="true"
+            :show-reset="true"
+            :show-search="true"
+            :disabled-search="false"
+            :default-expanded="false"
+            include-audit
+            @search="handleSearchBarSearch"
+            @reset="onResetSearch"
           />
-        </ElCard>
-      </div>
-    </div>
+
+          <ElCard class="fa-table-card" :style="{ 'margin-top': showSearchBar ? '12px' : '0' }">
+            <FaTableHeader
+              v-model:columns="columnChecks"
+              v-model:showSearchBar="showSearchBar"
+              :loading="loading"
+              @refresh="refreshData"
+            >
+              <template #left>
+                <FaTableHeaderLeft
+                  :remove-ids="selectedIds"
+                  :perm-create="['module_system:user:create']"
+                  :perm-import="['module_system:user:import']"
+                  :perm-export="['module_system:user:export']"
+                  :perm-delete="['module_system:user:delete']"
+                  :perm-patch="['module_system:user:patch']"
+                  :import-loading="uploadLoading"
+                  :delete-loading="batchDeleting"
+                  :create-loading="createLoading"
+                  :more-loading="moreLoading"
+                  @add="handleAdd"
+                  @import="openImport"
+                  @export="openExport"
+                  @delete="handleBatchDelete"
+                  @more="handleMoreClick"
+                />
+              </template>
+            </FaTableHeader>
+
+            <FaTable
+              ref="faTableRef"
+              row-key="id"
+              :loading="loading"
+              :data="data"
+              :columns="columns"
+              :pagination="pagination"
+              @selection-change="onTableSelectionChange"
+              @pagination:size-change="handleSizeChange"
+              @pagination:current-change="handleCurrentChange"
+            />
+          </ElCard>
+        </div>
+      </ElSplitterPanel>
+    </ElSplitter>
 
     <FaDrawer
       v-model="dialogVisible.visible"

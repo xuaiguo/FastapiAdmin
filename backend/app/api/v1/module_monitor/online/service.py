@@ -12,7 +12,7 @@ from app.core.logger import logger
 from app.core.redis_crud import RedisCURD
 from app.core.security import decode_access_token
 
-from .schema import DashboardStatsSchema, OnlineQueryParam, RecentLoginItem
+from .schema import DashboardStatsSchema, LoginTrendItem, OnlineQueryParam, RecentLoginItem
 
 
 class OnlineService:
@@ -129,12 +129,76 @@ class OnlineService:
             for r in recent_rows
         ]
 
+        # 近 7 天登录趋势：按天聚合登录次数 / 独立用户 / 新增用户（含今天，共 7 天）
+        login_trend = await OnlineService._build_login_trend(db, today_start=today_start, week_start=week_start)
+
         result = DashboardStatsSchema(
             online_users=online_count,
             total_users=user_count,
             today_login_count=today_login_count,
             today_unique_users=today_unique_count,
             week_user_created=user_week_count,
+            login_trend=login_trend,
             recent_logins=recent_logins,
         )
         return result
+
+    @staticmethod
+    async def _build_login_trend(db: AsyncSession, *, today_start: datetime, week_start: datetime) -> list[LoginTrendItem]:
+        """构建近 7 天登录趋势（含今天，共 7 天，按日期倒序填充缺口为 0）。
+
+        参数:
+        - db (AsyncSession): 数据库会话
+        - today_start (datetime): 今天零点
+        - week_start (datetime): 7 天前零点
+
+        返回:
+        - list[LoginTrendItem]: 按日期升序的 7 天趋势
+        """
+        # 查询 7 天内每天登录次数与独立用户数
+        login_sql = (
+            select(
+                func.date(LoginLogModel.created_time).label("day"),
+                func.count().label("logins"),
+                func.count(func.distinct(LoginLogModel.username)).label("unique_users"),
+            )
+            .where(
+                LoginLogModel.is_deleted.is_(False),
+                LoginLogModel.status == 1,  # 仅统计成功登录
+                LoginLogModel.created_time >= week_start,
+            )
+            .group_by(func.date(LoginLogModel.created_time))
+        )
+        login_rows = (await db.execute(login_sql)).all()
+        login_map = {str(r.day): (r.logins, r.unique_users) for r in login_rows}
+
+        # 查询 7 天内每天新增用户数
+        new_user_sql = (
+            select(
+                func.date(UserModel.created_time).label("day"),
+                func.count().label("new_users"),
+            )
+            .where(
+                UserModel.is_deleted.is_(False),
+                UserModel.created_time >= week_start,
+            )
+            .group_by(func.date(UserModel.created_time))
+        )
+        new_rows = (await db.execute(new_user_sql)).all()
+        new_map = {str(r.day): r.new_users for r in new_rows}
+
+        # 生成连续 7 天日期序列（升序），缺口补 0
+        trend: list[LoginTrendItem] = []
+        for offset in range(7):
+            d = week_start.date() + timedelta(days=offset)
+            day_str = d.isoformat()
+            logins, unique_users = login_map.get(day_str, (0, 0))
+            trend.append(
+                LoginTrendItem(
+                    day=day_str,
+                    logins=int(logins or 0),
+                    unique_users=int(unique_users or 0),
+                    new_users=int(new_map.get(day_str, 0) or 0),
+                )
+            )
+        return trend
