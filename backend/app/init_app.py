@@ -38,6 +38,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
         host=settings.SERVER_HOST,
         port=settings.SERVER_PORT,
         reload=settings.DEBUG,
+        database_type=settings.DATABASE_TYPE,
         database_ready=True,
         redis_ready=True,
         scheduler_ready=SchedulerUtil.is_running(),
