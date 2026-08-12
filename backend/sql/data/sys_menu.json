@@ -4032,6 +4032,46 @@
                         "description": null
                     }
                 ]
+            },
+            {
+                "name": "表大小统计",
+                "type": 2,
+                "icon": "ri:pie-chart-2-line",
+                "order": 11,
+                "permission": "module_ob_table_data_size:size:query",
+                "route_name": "ObTableDataSize",
+                "route_path": "obTableDataSize",
+                "component_path": "ob_table_data_size/obTableDataSize/index",
+                "status": 0,
+                "keep_alive": 1,
+                "hidden": 0,
+                "always_show": 0,
+                "title": "表大小统计",
+                "params": null,
+                "affix": 0,
+                "redirect": null,
+                "description": "OceanBase 租户表大小统计",
+                "children": [
+                    {
+                        "name": "查询",
+                        "type": 3,
+                        "icon": null,
+                        "order": 1,
+                        "permission": "module_ob_table_data_size:size:query",
+                        "route_name": null,
+                        "route_path": null,
+                        "component_path": null,
+                        "status": 0,
+                        "keep_alive": 0,
+                        "hidden": 0,
+                        "always_show": 0,
+                        "title": null,
+                        "params": null,
+                        "affix": 0,
+                        "redirect": null,
+                        "description": null
+                    }
+                ]
             }
         ]
     },
