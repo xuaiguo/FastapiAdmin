@@ -17,6 +17,7 @@ def console_start(
     port: int,
     reload: bool,
     *,
+    database_type: str | None = None,
     database_ready: bool | None = None,
     redis_ready: bool | None = None,
     scheduler_ready: bool | None = None,
@@ -26,6 +27,7 @@ def console_start(
     参数:
     - host (str): 监听主机。
     - port (int): 监听端口。
+    - database_type (str | None): 数据库类型。
     - reload (bool): 是否开启热重载。
     - database_ready (bool | None): 数据库是否就绪。
     - redis_ready (bool | None): Redis 是否就绪。
@@ -66,7 +68,7 @@ def console_start(
     status_grid.add_column(justify="right")
     status_grid.add_column()
     status_grid.add_row(
-        "MySQL", _status_text(database_ready),
+        database_type,  _status_text(database_ready),
         sep,
         "Redis", _status_text(redis_ready),
         sep,
