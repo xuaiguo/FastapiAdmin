@@ -96,7 +96,7 @@
             <ElCol :xs="24" :sm="12" :md="12" class="mb-5">
               <ElCard
                 shadow="hover"
-                class="overflow-hidden border border-(--el-border-color-lighter) rounded-xl flex flex-col h-full"
+                class="fa-card overflow-hidden border border-(--el-border-color-lighter) rounded-xl flex flex-col h-138"
               >
                 <template #header>
                   <div class="flex flex-wrap gap-3 items-start justify-between w-full">
@@ -142,35 +142,13 @@
       </ElRow>
 
       <ElRow :gutter="20">
-        <ElCol :xs="24" :sm="6" :md="5" class="mb-5">
-          <FaImageCard
-            :imageUrl="imageCards.imageUrl"
-            :title="imageCards.title"
-            :category="imageCards.category"
-            :readTime="imageCards.readTime"
-            :views="imageCards.views"
-            :comments="imageCards.comments"
-            :date="imageCards.date"
-            @click="handleImageCardClick"
-          />
+        <ElCol :xs="24" :sm="6" :md="6" class="mb-5">
+          <ImageCards />
         </ElCol>
-        <ElCol :xs="24" :sm="6" :md="5" class="mb-5">
-          <FaCardBanner
-            :image="bannerIcon4"
-            title="版本更新提醒"
-            description="FastapiAdmin v3.0.0 已发布，包含优化和新功能。"
-            :button="{
-              show: true,
-              text: '立即更新',
-              color: 'var(--theme-color)',
-              textColor: '#fff',
-            }"
-            :cancelButton="{ show: true, text: '稍后提醒', color: '#eee', textColor: '#333' }"
-            @click="handleBannerDemoConfirm"
-            @cancel="handleBannerDemoCancel"
-          />
+        <ElCol :xs="24" :sm="6" :md="6" class="mb-5">
+          <ItBanners />
         </ElCol>
-        <ElCol :xs="24" :sm="12" :md="14" class="mb-5">
+        <ElCol :xs="24" :sm="12" :md="12" class="mb-5">
           <AboutProject />
         </ElCol>
       </ElRow>
@@ -184,9 +162,8 @@ defineOptions({ name: "Home", inheritAttrs: false });
 import { ref, onMounted, defineAsyncComponent } from "vue";
 import { ElMessage } from "element-plus";
 import { getDashboardMock } from "@/mock/dashboard";
-
-import bannerIcon4 from "@imgs/3d/icon4.webp";
-import cover2 from "@imgs/cover/img2.webp";
+import ImageCards from "./modules/image_cards.vue";
+import ItBanners from "./modules/it_banners.vue";
 import Banner from "./modules/banner.vue";
 import NewUser from "./modules/new-user.vue";
 import TodoList from "./modules/todo-list.vue";
@@ -216,38 +193,11 @@ const FaDonutChartCard = defineAsyncComponent(
   () => import("@/components/cards/fa-donut-chart-card/index.vue")
 );
 
-// 非关键组件异步导入（延迟加载，提升首屏速度）
-const FaCardBanner = defineAsyncComponent(
-  () => import("@/components/banners/fa-card-banner/index.vue")
-);
-const FaImageCard = defineAsyncComponent(
-  () => import("@/components/cards/fa-image-card/index.vue")
-);
 const FaTimelineListCard = defineAsyncComponent(
   () => import("@/components/cards/fa-timeline-list-card/index.vue")
 );
-function handleBannerDemoConfirm() {
-  // TODO: 接入真实操作
-}
-function handleBannerDemoCancel() {
-  // TODO: 接入真实操作
-}
-// === 卡片演示数据 ← workplace ===
-const imageCards = {
-  id: 1,
-  imageUrl: cover2,
-  title: "大数据分析助力企业决策的实践案例",
-  category: "技术",
-  readTime: "3分钟",
-  views: 7234,
-  comments: 5,
-  date: "12月20日 周二",
-};
 
 function handleMore() {
   ElMessage.info("查看更多");
-}
-function handleImageCardClick() {
-  // TODO: 接入真实跳转
 }
 </script>

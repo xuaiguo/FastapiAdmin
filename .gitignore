@@ -37,7 +37,6 @@ cython_debug
 
 venv
 .venv
-# ENV
 
 node_modules
 .npm
@@ -47,33 +46,26 @@ node_modules
 backend/logs
 backend/*.db
 backend/alembic/versions/*
+backend/env/.env.dev
+backend/env/.env.prod
+backend/env/.env.test
 !backend/alembic/versions/.gitkeep
 
+docker/.env
 docker/nginx/app/dist
 docker/nginx/docs/dist
 docker/nginx/web/dist
 docker/nginx/ssl/*
 !docker/nginx/ssl/.gitkeep
-# 环境变量文件（真实配置，不提交）
-docker/.env
-backend/env/.env.dev
-backend/env/.env.prod
-backend/env/.env.test
-frontend/.env.development
-frontend/.env.production
+
 frontend/web/.env
 frontend/web/.env.development
 frontend/web/.env.production
 
-frontend/node_modules
-frontend/dist
-frontend/src/types/auto-imports.d.ts
-frontend/src/types/components.d.ts
-
-frontend/docs/*
+# frontend/docs/*
 !frontend/docs/.gitkeep
 
-frontend/app/*
+# frontend/app/*
 !frontend/app/.gitkeep
 
 .plan

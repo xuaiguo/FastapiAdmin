@@ -84,6 +84,30 @@ async def _async_fill_login_location(redis, login_log_id: int, ip: str | None) -
         logger.warning(f"异步补全登录归属地失败: {e}")
 
 
+async def _async_fill_session_location(redis, session_id: str, ip: str | None) -> None:
+    """后台异步补全会话缓存中的归属地（微信/OAuth 登录不写登录日志，需单独更新 Redis 会话）。"""
+    if not ip:
+        return
+    try:
+        location = await IpLocalUtil.resolve_location_async(redis, ip)
+        logger.info(f"异步解析IP归属地结果: ip={ip}, session_id={session_id}, location={location}")
+        if location == "归属地查询中" or not location:
+            return
+        key = f"{RedisInitKeyConfig.USER_SESSION.key}:{session_id}"
+        raw = await RedisCURD(redis).get(key)
+        if not raw:
+            return
+        if isinstance(raw, bytes):
+            raw = raw.decode("utf-8")
+        session_dict = json.loads(raw)
+        session_dict["login_location"] = location
+        ttl = await RedisCURD(redis).ttl(key)
+        await RedisCURD(redis).set(key, json.dumps(session_dict, default=str), expire=max(int(ttl), 1))
+        logger.info(f"会话归属地已更新: session_id={session_id}, location={location}")
+    except Exception as e:
+        logger.warning(f"异步补全会话归属地失败: {e}")
+
+
 class LoginService:
     """登录认证服务"""
 
@@ -275,7 +299,14 @@ class LoginService:
         }
 
     @classmethod
-    async def create_token(cls, request: Request, redis: Redis, user: UserModel, login_type: str) -> JWTOutSchema:
+    async def create_token(
+        cls,
+        request: Request,
+        redis: Redis,
+        user: UserModel,
+        login_type: str,
+        background_tasks: BackgroundTasks | None = None,
+    ) -> JWTOutSchema:
         """创建访问令牌和刷新令牌"""
         session_id = str(uuid.uuid4())
         ua_result = ua_parser.parse(request.headers.get("user-agent") or "")
@@ -335,6 +366,10 @@ class LoginService:
             value=refresh_token,
             expire=int(refresh_expires.total_seconds()),
         )
+
+        # 归属地为待解析时后台补全会话中的 login_location（微信/OAuth 登录路径）
+        if background_tasks and login_location == "归属地查询中":
+            background_tasks.add_task(_async_fill_session_location, redis, session_id, request_ip)
 
         return JWTOutSchema(
             access_token=access_token,

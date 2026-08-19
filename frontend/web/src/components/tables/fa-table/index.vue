@@ -69,6 +69,9 @@
                     :is="() => renderColumnHeader(headerScope, col)"
                   />
                 </template>
+                <template #filter-icon="{ filterOpened }">
+                  <Filter class="fa-filter-icon" :class="{ 'is-opened': filterOpened }" />
+                </template>
                 <template #default="slotScope">
                   <component
                     v-if="col.useSlot && col.prop && shouldRenderSlotScope(slotScope)"
@@ -138,6 +141,7 @@ import { useCommon } from "@/hooks/core/useCommon";
 import { useTableHeight } from "@/hooks/core/useTableHeight";
 import { useWindowSize } from "@vueuse/core";
 import { VueDraggable } from "vue-draggable-plus";
+import { Filter } from "@element-plus/icons-vue";
 import { MOBILE_BREAKPOINT } from "@utils/constants/definitions";
 import type { ColumnOption } from "@/types/component";
 
@@ -542,6 +546,57 @@ const cleanColumnProps = (col: ColumnOption) => {
   return columnProps;
 };
 
+/** 创建人 / 更新人列识别：通过 prop 或 label 匹配 */
+const PERSON_FILTER_RE = /(?:create|update)(?:d)?_(?:by|user|name|id)|creator|updater/i;
+const isPersonFilterColumn = (col: ColumnOption): boolean => {
+  // 已显式配置筛选则跳过自动逻辑
+  if (col.filters || col.filterMethod) return false;
+  const prop = col.prop || "";
+  const label = col.label || "";
+  return PERSON_FILTER_RE.test(prop) || /创建人|更新人|创建者|更新者/.test(label);
+};
+
+/** 将创建人/更新人列 prop 归一化为名称取值路径：
+ *  created_id → created_by.name；created_by / created_by.name 等保持不变 */
+const getPersonNamePath = (prop: string): string => prop.replace(/_id(?:\..*)?$/i, "_by.name");
+
+/** 解析嵌套路径取值（如 created_by.name），与 ElTable 单元格取值规则一致 */
+const getPathValue = (row: Record<string, any>, path: string): unknown => {
+  let value: unknown = row;
+  for (const key of path.split(".")) {
+    if (value == null) return undefined;
+    value = (value as Record<string, unknown>)[key];
+  }
+  return value;
+};
+
+/** 单元格值规范化为筛选文本：对象时优先取 name（created_by/updated_by 为对象） */
+const toFilterText = (v: unknown): string => {
+  if (v && typeof v === "object" && "name" in v) {
+    return String((v as { name: unknown }).name ?? "");
+  }
+  return String(v);
+};
+
+/** 从当前表格数据中提取某列的去重值作为筛选选项 */
+const getColumnFilterOptions = (col: ColumnOption): { text: string; value: string }[] => {
+  if (!col.prop) return [];
+  const seen = new Set<string>();
+  const options: { text: string; value: string }[] = [];
+  const path = getPersonNamePath(col.prop);
+  for (const row of props.data || []) {
+    const v = getPathValue(row as Record<string, any>, path);
+    if (v === null || v === undefined || v === "") continue;
+    const text = toFilterText(v);
+    if (!text) continue;
+    if (!seen.has(text)) {
+      seen.add(text);
+      options.push({ text, value: text });
+    }
+  }
+  return options;
+};
+
 /** 普通列：单元格已由插槽内 TableFormatterOutlet 渲染，勿再把 formatter 传给 ElTableColumn，避免与 EP 内置 renderCell 混用 */
 const cleanBodyColumnProps = (col: ColumnOption) => {
   const columnProps = cleanColumnProps(col);
@@ -550,6 +605,13 @@ const cleanBodyColumnProps = (col: ColumnOption) => {
   const isOpCol = col.prop === "operation" || col.label === "操作";
   if (isOpCol && isMobile.value) {
     columnProps.width = 80;
+  }
+  // 创建人 / 更新人列：自动生成表头筛选选项，无需调用方手写 filters
+  if (isPersonFilterColumn(col)) {
+    columnProps.filters = getColumnFilterOptions(col);
+    columnProps.filterMethod = (value: any, row: any) =>
+      toFilterText(getPathValue(row as Record<string, any>, getPersonNamePath(col.prop as string))) ===
+      String(value);
   }
   return columnProps;
 };
@@ -779,6 +841,18 @@ defineExpose({
     &.right {
       justify-content: flex-end;
     }
+  }
+
+  /* 表头筛选图标：替换 EP 默认箭头为漏斗，悬停/展开/已筛选时高亮为主题色 */
+  :deep(.el-table__column-filter-trigger .fa-filter-icon) {
+    color: var(--el-text-color-placeholder);
+    transition: color 0.2s ease;
+  }
+
+  :deep(.el-table__column-filter-trigger:hover .fa-filter-icon),
+  :deep(.el-table__column-filter-trigger .fa-filter-icon.is-opened),
+  :deep(.cell.highlight .fa-filter-icon) {
+    color: var(--theme-color);
   }
 }
 </style>

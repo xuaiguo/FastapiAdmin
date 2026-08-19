@@ -190,7 +190,7 @@ const {
         label: "IP地址",
         minWidth: 150,
         formatter: (row: OnlineUserTable) =>
-          h("span", { class: "inline-flex items-center flex-wrap gap-0.5" }, [
+          h("span", { class: "inline-flex items-center gap-0.5 whitespace-nowrap" }, [
             row.ipaddr ?? "",
             row.ipaddr
               ? h(FaCopyButton, {
