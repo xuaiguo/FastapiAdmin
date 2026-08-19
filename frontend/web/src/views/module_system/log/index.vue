@@ -584,10 +584,10 @@ const {
       {
         prop: "login_ip",
         label: "登录IP",
-        minWidth: 140,
+        minWidth: 190,
         formatter: (row: LoginLogTable) =>
           row.login_ip
-            ? h("span", { class: "inline-flex items-center gap-0.5" }, [
+            ? h("span", { class: "inline-flex items-center gap-0.5 whitespace-nowrap" }, [
                 h(
                   "span",
                   {

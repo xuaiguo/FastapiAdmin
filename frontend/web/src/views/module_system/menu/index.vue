@@ -19,7 +19,7 @@
       @reset="onResetSearch"
     />
 
-    <ElSegmented v-model="menuClientTab" :options="menuSegmentedOptions" @change="handleMenuClientTabChange" />
+    <ElSegmented class="mt-3" v-model="menuClientTab" :options="menuSegmentedOptions" @change="handleMenuClientTabChange" />
 
     <ElCard
       class="fa-table-card"

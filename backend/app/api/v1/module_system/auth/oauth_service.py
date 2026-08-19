@@ -13,7 +13,7 @@ from typing import Any, Literal
 from urllib.parse import quote, urlencode
 
 import httpx
-from fastapi import Request
+from fastapi import BackgroundTasks, Request
 from redis.asyncio.client import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -347,6 +347,7 @@ async def complete_oauth_login(
     provider: OAuthProvider,
     code: str,
     state: str,
+    background_tasks: BackgroundTasks | None = None,
 ) -> tuple[JWTOutSchema, str]:
     rc = RedisCURD(redis)
     raw = await rc.get(f"{STATE_PREFIX}{state}")
@@ -394,7 +395,7 @@ async def complete_oauth_login(
             raise CustomException(msg="用户不存在")
 
         login_type = f"oauth_{provider}"
-        token = await LoginService.create_token(request=request, redis=redis, user=user, login_type=login_type)
+        token = await LoginService.create_token(request=request, redis=redis, user=user, login_type=login_type, background_tasks=background_tasks)
         return token, frontend
     finally:
         await rc.delete(f"{STATE_PREFIX}{state}")

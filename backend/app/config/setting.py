@@ -144,7 +144,7 @@ class Settings(BaseSettings):
     # ================================================= #
     HTTPX_DEFAULT_TIMEOUT: float = 10.0  # 对外 HTTP 请求默认超时（秒）
     IP_LOCATION_ENABLE: bool = True  # 是否启用 IP 归属地查询（登录时对外发起 HTTP 请求）
-    IP_LOCATION_CACHE_TTL: int = 604800  # IP 归属地缓存时间（秒，默认 7 天）
+    IP_LOCATION_CACHE_TTL: int = 2592000  # IP 归属地缓存时间（秒，默认 30 天）
     IP_LOCATION_QUERY_TIMEOUT: float = 3.0  # IP 归属地查询单次 HTTP 超时（秒）
 
     # ================================================= #

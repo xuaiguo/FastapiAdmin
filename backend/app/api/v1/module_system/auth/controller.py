@@ -169,6 +169,7 @@ async def oauth_login_redirect_controller(
 @AuthRouter.get("/oauth/{provider}/callback", summary="第三方OAuth回调", include_in_schema=False)
 async def oauth_callback_controller(
     request: Request,
+    background_tasks: BackgroundTasks,
     redis: Annotated[Redis, Depends(redis_getter)],
     db: Annotated[AsyncSession, Depends(db_getter)],
     provider: Annotated[OAuthProvider, Path(description="wechat | qq | github | gitee")],
@@ -205,6 +206,7 @@ async def oauth_callback_controller(
             provider=provider,
             code=code,
             state=state,
+            background_tasks=background_tasks,
         )
         success_url = oauth_service_frontend_redirect_from_token(fe, token)
         return RedirectContentResponse(url=success_url, status_code=302)
@@ -224,6 +226,7 @@ async def wx_mini_login_controller(
     redis: Annotated[Redis, Depends(redis_getter)],
     db: Annotated[AsyncSession, Depends(db_getter)],
     body: WxLoginSchema,
+    background_tasks: BackgroundTasks,
 ) -> JSONResponse:
     """微信小程序登录（code2Session）。
 
@@ -252,6 +255,7 @@ async def wx_mini_login_controller(
         redis=redis,
         user=user,
         login_type="wx_mini",
+        background_tasks=background_tasks,
     )
 
     user_info = {
@@ -282,6 +286,7 @@ async def wx_mini_phone_login_controller(
     redis: Annotated[Redis, Depends(redis_getter)],
     db: Annotated[AsyncSession, Depends(db_getter)],
     body: WxPhoneLoginSchema,
+    background_tasks: BackgroundTasks,
 ) -> JSONResponse:
     """微信小程序手机号快速登录。
 
@@ -335,6 +340,7 @@ async def wx_mini_phone_login_controller(
         redis=redis,
         user=user,
         login_type="wx_mini_phone",
+        background_tasks=background_tasks,
     )
 
     user_info = {
