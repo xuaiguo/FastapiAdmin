@@ -26,6 +26,9 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from redis.asyncio.client import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.v1.module_system.user.crud import UserCRUD
+from app.api.v1.module_system.user.schema import UserCreateSchema
+from app.api.v1.module_system.user.service import UserService
 from app.common.response import ErrorResponse, RedirectContentResponse, ResponseSchema, SuccessResponse
 from app.config.setting import settings
 from app.core.base_schema import AuthSchema, JWTOutSchema
@@ -35,10 +38,6 @@ from app.core.logger import logger
 from app.core.redis_crud import RedisCURD
 from app.core.router_class import OperationLogRoute
 from app.core.security import CustomOAuth2PasswordRequestForm
-
-from app.api.v1.module_system.user.crud import UserCRUD
-from app.api.v1.module_system.user.schema import UserCreateSchema
-from app.api.v1.module_system.user.service import UserService
 
 from .oauth_service import (
     STATE_PREFIX,
