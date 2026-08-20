@@ -90,16 +90,41 @@ FastapiAdmin/            # Monorepo full-stack project
 
 ## 📌 Built-in Features
 
+### Core Modules (always enabled, cannot be removed)
+
 | Module | Capabilities |
 |--------|-------------|
 | 📊 Dashboard | Workbench, Analytics |
-| ⚙️ System | Users, Roles, Menus, Departments, Positions, Dicts, Config, Notices |
-| 👀 Monitoring | Online users, Server, Cache |
-| 📋 Tasks | Scheduled task management |
-| 📝 Logs | Operation auditing |
-| 🧰 Dev Tools | **Code Generator** (table → full CRUD), Form Builder, API Docs |
-| 📁 Files | Unified file management |
-| 🤖 AI Agent | Agno-powered assistant |
+| ⚙️ System Management | Users, Roles, Menus, Departments, Positions, Dicts, Config, Notices, Tickets, Versions |
+| 👀 Monitoring | Online users, Server monitoring, Cache monitoring |
+| 📝 Logs | Operation audit |
+| 🧰 Dev Tools | API Docs |
+
+### Extension Modules (enabled by default, trim via `ENABLED_MODULES`)
+
+| Module | Capabilities | Toggle |
+|--------|-------------|--------|
+| 🧩 Task Management | Scheduled tasks + visual workflow orchestration (built-in business nodes) | `task` |
+| 🔧 Code Generator | Table → full frontend/backend code | `generator` |
+| 📁 Storage | Unified file / object storage (SFTP / S3 / OSS / COS / OBS) | `storage` |
+| 🤖 AI Chat | Agno-powered agent conversations | `ai` |
+| 💬 Internal Chat | Text-only private / group chat between users (WebSocket real-time push + unread badge) | `chat` |
+
+## 🔧 Module Toggling
+
+Extension modules can be enabled/disabled on demand via `ENABLED_MODULES` in `backend/app/config/setting.py` — **just remove an item from the list; no code or menu deletion needed**. The corresponding REST endpoints, WebSocket endpoints and initialization logic will not be loaded automatically:
+
+```python
+# e.g. Disable internal chat and AI assistant, keep the rest
+ENABLED_MODULES = ["generator", "task", "storage"]
+```
+
+## 🚦 Deployment Notes
+
+- **Chat scope**: Internal chat is positioned as **lightweight internal communication** — text-only messages. **No file transfer, recall, read receipts, or multi-device sync (IM features)**. For strong IM needs, integrate mature products such as WeCom / DingTalk / Feishu. It can be disabled anytime by removing `chat` from `ENABLED_MODULES`.
+- **Single-instance deployment**: Real-time features (internal chat WebSocket, scheduled task scheduler) rely on in-memory connections and local scheduling within a single instance — please deploy as a **single instance**. For horizontal scaling, integrate Redis Pub/Sub or a message queue yourself.
+- **Key security**: Configure all third-party keys (AI, cloud storage, etc.) in the `backend/env/.env.*` environment variables. **Never commit them to the repository or store them in the database**.
+- **Database migrations**: Manage schema changes with Alembic migrations in production (`uv run alembic upgrade head`); `create_all` is only a fallback for first-time initialization.
 
 ## 🔧 Screenshots
 

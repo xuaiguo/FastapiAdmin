@@ -149,7 +149,14 @@
           class="chat-button relative"
           @click="openChat"
         >
-          <div class="breathing-dot absolute top-2 right-2 size-1.5 bg-success! rounded-full"></div>
+          <ElBadge
+            v-if="chatStore.unreadTotal > 0"
+            :value="chatStore.unreadTotal > 99 ? '99+' : chatStore.unreadTotal"
+            :max="99"
+            class="absolute top-0 right-0"
+          >
+            <div class="size-1.5"></div>
+          </ElBadge>
         </FaIconButton>
 
         <!-- 设置按钮 -->
@@ -188,7 +195,7 @@
     <FaWorkTab />
 
     <!-- 通知 -->
-    <FaNotification v-model:value="showNotice" ref="notice" />
+    <FaNotification v-model:value="showNotice" />
   </div>
 </template>
 
@@ -204,6 +211,7 @@ import {
   useUserStore,
   useNoticeStore,
   useConfigStore,
+  useChatStore,
   refreshAppCaches,
 } from "@stores";
 import AppConfig from "@/config";
@@ -228,6 +236,7 @@ const userStore = useUserStore();
 const menuStore = useMenuStore();
 const configStore = useConfigStore();
 const noticeStore = useNoticeStore();
+const chatStore = useChatStore();
 
 /** 租户配置：logo_url / name */
 const headerLogoSrc = computed(() => {
@@ -265,7 +274,6 @@ const { language } = storeToRefs(userStore);
 const { visibleMenus: menuList } = storeToRefs(menuStore);
 
 const showNotice = ref(false);
-const notice = ref(null);
 
 // 菜单类型判断
 const isLeftMenu = computed(() => menuType.value === MenuTypeEnum.LEFT);
@@ -279,6 +287,8 @@ onMounted(() => {
   initLanguage();
   document.addEventListener("click", bodyCloseNotice);
   noticeStore.getNotice();
+  chatStore.initChat();
+  chatStore.refreshUnread();
 });
 
 onUnmounted(() => {
@@ -389,7 +399,7 @@ const visibleNotice = (): void => {
 };
 
 /**
- * 打开聊天窗口
+ * 打开聊天窗口（fa-chat-window 全局组件监听 openChat 事件）
  */
 const openChat = (): void => {
   mittBus.emit("openChat");
@@ -514,7 +524,7 @@ const openChat = (): void => {
   animation: shrink 0.6s forwards;
 }
 
-/* 搜索触发按钮 hover 边框变主题色 */
+/* 会话列表 hover 边框变主题色 */
 .search-bar-trigger:hover {
   border-color: var(--el-color-primary) !important;
 }
@@ -525,11 +535,6 @@ const openChat = (): void => {
 
 .chat-button:hover :deep(.fa-svg-icon) {
   animation: shake 0.5s ease-in-out;
-}
-
-/* Breathing animation for chat dot */
-.breathing-dot {
-  animation: breathing 1.5s ease-in-out infinite;
 }
 
 /* iPad breakpoint adjustments */

@@ -10,6 +10,21 @@
     </div>
 
     <ElScrollbar class="flex-1" view-class="p-4">
+      <div
+        v-if="currentType"
+        class="mb-3 flex items-start gap-2 rounded-lg border border-(--el-border-color-lighter) bg-(--el-fill-color-light) px-3 py-2.5"
+      >
+        <ElIcon :size="16" :color="currentType.color"><component :is="currentType.icon" /></ElIcon>
+        <div class="flex flex-col min-w-0 leading-tight">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-(--el-text-color-primary)">{{ currentType.name }}</span>
+            <ElTag size="small" :type="currentType.tagType" effect="light">{{ currentType.categoryText }}</ElTag>
+          </div>
+          <span v-if="currentType.description" class="mt-0.5 text-[11px] text-(--el-text-color-secondary)">
+            {{ currentType.description }}
+          </span>
+        </div>
+      </div>
       <FaForm
         v-model="formData"
         :items="nodePanelFormItems"
@@ -24,7 +39,7 @@
       >
         <template #type>
           <ElSelect v-model="formData.type" placeholder="请选择节点类型" @change="handleTypeChange">
-            <ElOption v-for="t in nodeTypes" :key="t.id" :label="t.name" :value="t.code" />
+            <ElOption v-for="t in nodeTypes" :key="t.id ?? t.code" :label="t.name" :value="t.code" />
           </ElSelect>
         </template>
         <template #args>
@@ -60,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from "vue";
+import { ref, watch, onMounted, computed, type Component } from "vue";
 import {
   ElButton,
   ElInput,
@@ -69,8 +84,9 @@ import {
   ElMessage,
   ElIcon,
   ElScrollbar,
+  ElTag,
 } from "element-plus";
-import { Close } from "@element-plus/icons-vue";
+import { Close, UploadFilled, Download, Link, CircleCheckFilled, Delete, Promotion, Bell, ChatDotRound, Connection, Odometer, QuestionFilled, SetUp } from "@element-plus/icons-vue";
 import type { FormItem } from "@/components/forms/fa-form/index.vue";
 import FaForm from "@/components/forms/fa-form/index.vue";
 import WorkflowNodeTypeAPI, { type WorkflowNodeTypeOption } from "@/api/module_task/workflow/nodes";
@@ -86,6 +102,40 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(["close", "save", "delete"]);
 
 const nodeTypes = ref<WorkflowNodeTypeOption[]>([]);
+
+const CATEGORY_META: Record<string, { label: string; color: string; tagType: any; icon: Component }> = {
+  trigger: { label: "触发器", color: "#e6a23c", tagType: "warning", icon: Odometer },
+  action: { label: "动作", color: "#409eff", tagType: "primary", icon: Promotion },
+  condition: { label: "条件", color: "#67c23a", tagType: "success", icon: QuestionFilled },
+  control: { label: "控制", color: "#909399", tagType: "info", icon: SetUp },
+};
+
+const NODE_ICON: Record<string, Component> = {
+  storage_upload: UploadFilled,
+  storage_download: Download,
+  storage_url: Link,
+  storage_exists: CircleCheckFilled,
+  storage_delete: Delete,
+  notice_send: Bell,
+  ai_chat: ChatDotRound,
+  http_check: Connection,
+};
+
+const currentType = computed(() => {
+  const code = formData.value.type;
+  if (!code) return null;
+  const t = nodeTypes.value.find((item) => item.code === code);
+  const category = t?.category || "action";
+  const meta = CATEGORY_META[category] || CATEGORY_META.action!;
+  return {
+    name: t?.name || code,
+    description: t?.description || "",
+    color: meta.color,
+    icon: NODE_ICON[code] || meta.icon,
+    categoryText: meta.label,
+    tagType: meta.tagType,
+  };
+});
 
 const formData = ref({
   type: props.node?.type || "",

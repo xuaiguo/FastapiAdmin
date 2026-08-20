@@ -18,6 +18,7 @@ export function initStore(app: App<Element>) {
 }
 
 export * from "./modules/app.store";
+export * from "./modules/chat.store";
 export * from "./modules/config.store";
 export * from "./modules/dict.store";
 export * from "./modules/menu.store";

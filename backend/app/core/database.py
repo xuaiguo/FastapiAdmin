@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from redis import exceptions
 from redis.asyncio import Redis
-from sqlalchemy import Engine, create_engine
+from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -55,7 +55,16 @@ def create_async_engine_and_session(db_url: str = settings.ASYNC_DB_URI) -> tupl
                 pool_pre_ping=settings.POOL_PRE_PING,
                 future=settings.FUTURE,
                 pool_recycle=settings.POOL_RECYCLE,
+                connect_args={"timeout": 30},  # 等待锁释放，避免并发写立即报 database is locked
             )
+
+            @event.listens_for(async_engine.sync_engine, "connect")
+            def _set_sqlite_pragma(dbapi_connection, connection_record) -> None:
+                """SQLite 启用 WAL + busy_timeout，提升读写并发（后台任务与请求并存时尤为必要）。"""
+                cursor = dbapi_connection.cursor()
+                cursor.execute("PRAGMA journal_mode=WAL")
+                cursor.execute("PRAGMA busy_timeout=30000")
+                cursor.close()
         else:
             async_engine = create_async_engine(
                 url=db_url,

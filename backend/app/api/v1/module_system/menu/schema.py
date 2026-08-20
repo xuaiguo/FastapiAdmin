@@ -48,6 +48,14 @@ class MenuCreateSchema(BaseModel):
             raise ValueError("状态仅支持 0(正常) 或 1(禁用)")
         return v
 
+    @field_validator("show_text_badge")
+    @classmethod
+    def _trim_show_text_badge(cls, v: str | None) -> str | None:
+        """文字角标：去除首尾空格，保留空串语义（空串 = 清除角标）。"""
+        if v is None:
+            return None
+        return v.strip()
+
     @model_validator(mode="before")
     @classmethod
     def _normalize(cls, values):
@@ -64,7 +72,6 @@ class MenuCreateSchema(BaseModel):
                 "description",
                 "link",
                 "active_path",
-                "show_text_badge",
             ]:
                 if k in values and isinstance(values[k], str):
                     stripped = values[k].strip()
@@ -135,6 +142,14 @@ class MenuUpdateSchema(BaseModel):
             raise ValueError("状态仅支持 0(正常) 或 1(禁用)")
         return v
 
+    @field_validator("show_text_badge")
+    @classmethod
+    def _trim_show_text_badge(cls, v: str | None) -> str | None:
+        """文字角标：去除首尾空格，保留空串语义（空串 = 清除角标）。"""
+        if v is None:
+            return None
+        return v.strip()
+
     @model_validator(mode="before")
     @classmethod
     def _normalize(cls, values):
@@ -151,7 +166,6 @@ class MenuUpdateSchema(BaseModel):
                 "description",
                 "link",
                 "active_path",
-                "show_text_badge",
             ]:
                 if k in values and isinstance(values[k], str):
                     stripped = values[k].strip()
