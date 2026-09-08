@@ -57,7 +57,7 @@ import ObTableDataSizeAPI, {
 
 defineOptions({ name: "ObTableDataSize", inheritAttrs: false });
 
-// ====== 数据源选择（仅 Service Name = SYS 的 OB Oracle 数据源） ======
+// ====== 数据源选择（按模块+用户过滤） ======
 const route = useRoute();
 const moduleName = computed(() => route.name as string);
 const configList = ref<ObOracleConfigOption[]>([]);
@@ -69,10 +69,7 @@ onMounted(async () => {
     const resData = (res as any)?.data;
     const payload = resData?.data || resData || {};
     const rows = payload.items || payload.rows || [];
-    // 前端过滤：只保留 Service Name = SYS 的数据源
-    configList.value = (rows as ObOracleConfigOption[]).filter(
-      (c) => (c.service_name || "").toUpperCase() === "SYS"
-    );
+    configList.value = rows as ObOracleConfigOption[];
     if (configList.value.length > 0) {
       selectedConfigId.value = configList.value[0]!.id;
     }
